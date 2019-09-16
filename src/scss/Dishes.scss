@@ -1,0 +1,62 @@
+@import "./Variables.scss";
+
+.empty-dishes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 50px;
+  color: $dark-text-color;
+}
+
+.modal-header {
+  background-color: $primary;
+  color: white;
+}
+
+.modal-header div {
+  font-size: 30px;
+}
+
+.modal {
+  font-family: "Open Sans Condensed", sans-serif;
+}
+
+.modal-content {
+  border: none;
+}
+
+.modal-header .close {
+  color: white;
+  margin-top: -0.5rem;
+}
+
+.close:hover {
+  color: antiquewhite;
+}
+
+.new-dish {
+  color: $primary;
+  display: block;
+  position: fixed;
+  bottom: 1rem;
+  right: 50%;
+  transform: translate(50%);
+  font-size: 4rem;
+  z-index: 99;
+}
+
+.new-dish:hover {
+  color: $primary-dark;
+}
+
+.badge-primary {
+  background-color: $primary !important;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.trash {
+  color: $dark-text-color;
+}

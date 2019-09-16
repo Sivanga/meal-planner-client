@@ -1,0 +1,22 @@
+@import "./Variables.scss";
+
+.create-new {
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 50px;
+
+  color: $dark-text-color;
+}
+
+.new-menu {
+  color: $primary;
+  display: flex;
+  justify-content: center;
+  margin: 1rem;
+}
+
+.previous-menus {
+  text-align: center;
+  color: $dark-text-color;
+  margin-top: 5rem;
+}

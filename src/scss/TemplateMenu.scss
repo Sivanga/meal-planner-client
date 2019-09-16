@@ -1,0 +1,50 @@
+@import "./Variables.scss";
+
+#remove-row {
+  display: none;
+}
+
+.meal-row:hover {
+  #remove-row {
+    display: block;
+  }
+}
+
+.day-column {
+  cursor: pointer;
+}
+
+.day-disable,
+.meal-disable {
+  background: rgba($dark-text-color, 0.5);
+}
+
+#plus-icon {
+  padding-left: 16px;
+}
+
+.remove-row-wrapper {
+  min-width: 37px;
+  display: flex;
+  justify-content: center;
+}
+
+.generate-btn {
+  display: flex;
+  margin: auto;
+  margin-top: 5rem;
+  background-color: $primary !important;
+  color: white;
+
+  &:hover {
+    background-color: $primary-dark !important;
+    color: white;
+  }
+}
+
+.menu-error {
+  font-size: 1rem;
+  justify-content: center;
+  text-align: center;
+  color: red;
+}

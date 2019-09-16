@@ -1,0 +1,18 @@
+@import "./Variables.scss";
+
+.navbar {
+  box-shadow: none;
+}
+
+.navbar.navbar-light .navbar-nav .nav-item .nav-link {
+  font-size: 1.5rem;
+  color: $primary;
+}
+
+.navbar-light .navbar-nav .nav-link .active {
+  color: $dark-text-color;
+}
+
+.btn-light {
+  color: $primary;
+}

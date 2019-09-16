@@ -1,0 +1,46 @@
+@import "./Variables.scss";
+
+form {
+  position: relative;
+  font-size: 1.5rem;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+}
+
+.dishImage {
+  height: 250px;
+  width: 300px;
+  outline: 2px dashed lightgray;
+  outline-offset: -10px;
+  padding: 10px;
+  background: rgb(238, 237, 236);
+  left: 0;
+  right: 0;
+}
+
+.btn-new-dish {
+  color: white;
+  background-color: $primary;
+  font-size: 1.2rem;
+}
+
+.btn-new-dish:hover {
+  background-color: $primary-dark;
+  color: white;
+}
+
+.error {
+  font-size: 0.9rem;
+  color: red;
+}
+
+.file-browser {
+  cursor: pointer;
+  color: rgb(44, 138, 255);
+}
+.file-browser:hover {
+  text-decoration: underline;
+}

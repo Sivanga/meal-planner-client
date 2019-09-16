@@ -1,0 +1,26 @@
+@import "./Variables.scss";
+
+.header-wrapper {
+  position: relative;
+}
+.jumbotron {
+  color: $primary;
+  font-size: 3.5rem;
+  width: 100%;
+  letter-spacing: 0.1em;
+  background-color: white;
+  padding: 0;
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  box-shadow: none;
+}
+
+.header-small {
+  font-size: 2rem;
+  display: block;
+}
+
+hr {
+  margin-top: 0px;
+}
