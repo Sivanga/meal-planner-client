@@ -59,7 +59,7 @@ class Dishes extends Component {
       </Modal>
     );
 
-    if (this.props.dishes.length === 0) {
+    if (!this.props.dishes || this.props.dishes.length === 0) {
       return (
         <>
           <div className="empty-dishes">

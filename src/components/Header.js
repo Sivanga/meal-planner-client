@@ -2,12 +2,12 @@ import React from "react";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import NavBar from "./NavBar";
 import "../scss/Header.scss";
-
-function Header(props) {
+function Header() {
   var style = {
     marginBottom: "0px",
     height: "270px"
   };
+
   return (
     <div>
       <div className="header-wrapper" style={style}>

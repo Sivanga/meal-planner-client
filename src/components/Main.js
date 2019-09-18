@@ -3,6 +3,7 @@ import Dishes from "./Dishes.js";
 import Menu from "./Menu/Menu";
 import Notfound from "./NotFound";
 import GenerateMenu from "./Menu/GenerateMenu";
+import Login from "./Login";
 
 import { Switch, Route } from "react-router-dom";
 
@@ -13,6 +14,7 @@ function Main(props) {
       <Route path="/menu" component={Menu} />
       <Route path="/generate" render={props => <GenerateMenu {...props} />} />
       <Route path="/dishes" component={Dishes} />
+      <Route path="/login" component={Login} />
       <Route component={Notfound} />
     </Switch>
   );

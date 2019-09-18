@@ -1,0 +1,18 @@
+@import "./Variables.scss";
+
+.login-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-btn {
+  background-color: $primary !important;
+  color: white;
+
+  &:hover {
+    background-color: $primary-dark !important;
+    color: white;
+  }
+}

@@ -35,13 +35,13 @@ function NavBar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <MDBBtn outline color="elegant">
-                Login
-              </MDBBtn>
+              <Nav.Link as={Link} to="/login" href="/login">
+                <MDBBtn outline color="elegant">
+                  Login
+                </MDBBtn>
+              </Nav.Link>
             </Nav.Item>
           </Nav>
-
-          {/* TODO: Implement */}
         </Navbar.Collapse>
       </div>
     </Navbar>
