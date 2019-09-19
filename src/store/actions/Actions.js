@@ -1,10 +1,25 @@
-import { ADD_DISH } from "../constants/Action-types";
-import { REMOVE_DISH } from "../constants/Action-types";
+import { FETCH_DISHES } from "../constants/Action-types";
+import { dishesDbRef } from "../../firebase";
 
-export function addDish(payload) {
-  return { type: ADD_DISH, payload };
-}
+/**
+ * Add dish to backend. Update list will be invoked by fetchDishes observer
+ */
+export const addDish = payload => async dispatch => {
+  dishesDbRef.push().set({ dish: payload.dish });
+};
 
-export function removeDish(payload) {
-  return { type: REMOVE_DISH, payload };
-}
+/**
+ * Remove dish from backend. Update list will be invoked by fetchDishes observer
+ */
+export const removeDish = payload => async dispatch => {
+  dishesDbRef.child(payload.id).remove();
+};
+
+/**
+ * Fetch list of dishes and observe for changes.
+ * Dispatch action FETCH_DISHES on chahnge.
+ */
+export const fetchDishes = () => async dispatch =>
+  dishesDbRef.on("value", snapshot => {
+    dispatch({ type: FETCH_DISHES, payload: snapshot.val() || {} });
+  });

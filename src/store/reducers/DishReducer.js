@@ -1,4 +1,4 @@
-import { ADD_DISH, REMOVE_DISH } from "../constants/Action-types";
+import { FETCH_DISHES } from "../constants/Action-types";
 
 const initialState = [
   {
@@ -28,15 +28,17 @@ const initialState = [
   }
 ];
 
-function DishReducer(state = initialState, action) {
+function DishReducer(state = [], action) {
   switch (action.type) {
-    case ADD_DISH:
-      var dish = action.payload.dish;
-      dish.id = state.length + 1;
-      return [dish, ...state];
-    case REMOVE_DISH:
-      var id = action.payload.id;
-      return [...state.filter(dish => dish.id !== id)];
+    case FETCH_DISHES:
+      // Create new state for updated dishes array
+      // Give each dish it's backend generated id for future reference
+      const dishes = action.payload;
+      const newState = Object.keys(dishes).map(key => {
+        dishes[key].dish._id = key;
+        return dishes[key].dish;
+      });
+      return newState;
     default:
       return state;
   }

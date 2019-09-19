@@ -15,7 +15,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const databaseRef = firebase.database().ref();
-export const mealPlannerDbRef = databaseRef.child("meal-planner");
+
+export const dishesDbRef = databaseRef.child("dishes");
 
 export const autProviders = [
   firebase.auth.GoogleAuthProvider.PROVIDER_ID,
