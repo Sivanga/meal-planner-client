@@ -1,11 +1,31 @@
 import { FETCH_DISHES } from "../constants/Action-types";
-import { dishesDbRef } from "../../firebase";
+import { dishesDbRef, storageRef } from "../../firebase";
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
  */
 export const addDish = payload => async dispatch => {
-  dishesDbRef.push().set({ dish: payload.dish });
+  if (!payload.dish.imageFile) {
+    return pushToDb(payload.dish);
+  }
+
+  // First upload dish image to storage
+  const storageRefChild = storageRef.child(
+    "images/" + payload.dish.imageFile.name
+  );
+  storageRefChild.put(payload.dish.imageFile).then(function(snapshot) {
+    // Update the dish image file and save to db
+    storageRefChild.getDownloadURL().then(url => {
+      payload.dish.imageFile = url;
+      pushToDb(payload.dish);
+    });
+  });
+};
+
+const pushToDb = dish => {
+  dishesDbRef.push().set({
+    dish: dish
+  });
 };
 
 /**

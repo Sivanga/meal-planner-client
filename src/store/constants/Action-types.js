@@ -1,1 +1,2 @@
 export const FETCH_DISHES = "FETCH_DISHES";
+export const LOADING_DISHES = "LOADING_DISHES";

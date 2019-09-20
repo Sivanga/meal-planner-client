@@ -1,6 +1,7 @@
 import * as firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
+import "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCUcZFnJsEGLp2Uj6wxBeSX0sZ3g6WeRyk",
@@ -15,8 +16,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const databaseRef = firebase.database().ref();
-
 export const dishesDbRef = databaseRef.child("dishes");
+
+export const storageRef = firebase.storage().ref();
 
 export const autProviders = [
   firebase.auth.GoogleAuthProvider.PROVIDER_ID,

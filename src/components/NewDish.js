@@ -13,7 +13,8 @@ class NewDish extends Component {
 
     this.state = {
       name: null,
-      image: null,
+      localImageUrl: null,
+      imageFile: null,
       tags: [],
       errors: {
         name: ""
@@ -30,10 +31,11 @@ class NewDish extends Component {
   }
 
   handleDrop(files) {
-    var image = URL.createObjectURL(files[0]);
-
+    var localImageUrl = URL.createObjectURL(files[0]);
+    var imageFile = files[0];
     this.setState({
-      image: image
+      localImageUrl: localImageUrl,
+      imageFile: imageFile
     });
   }
 
@@ -64,8 +66,8 @@ class NewDish extends Component {
 
   render() {
     var imageSrc = DishPlaceholder;
-    if (this.state.image) {
-      imageSrc = this.state.image;
+    if (this.state.localImageUrl) {
+      imageSrc = this.state.localImageUrl;
     }
 
     return (

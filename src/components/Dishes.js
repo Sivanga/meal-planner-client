@@ -8,7 +8,10 @@ import PropTypes from "prop-types";
 import "../scss/Dishes.scss";
 
 const mapStateToProps = state => {
-  return { dishes: state.dishes };
+  return {
+    dishes: state.dishes.dishes,
+    dataReceived: state.dishes.dataReceived
+  };
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -24,14 +27,13 @@ function AddDish(props) {
 }
 
 const Dishes = props => {
-
   /**
    * Show modal state
    */
   const [modalShow, setModalShow] = useState(false);
 
   /**
-   * Fetch dishes in first render. 
+   * Fetch dishes in first render.
    * FETCH_DISHES Action creator will have an observable to notify for further changes
    */
   useEffect(() => {
@@ -58,11 +60,11 @@ const Dishes = props => {
     </Modal>
   );
 
-  if (
-    !props.dishes ||
-    !Array.isArray(props.dishes) ||
-    props.dishes.length === 0
-  )
+  if (!props.dataReceived) {
+    return <div className="loading">Loading...</div>;
+  }
+
+  if (props.dishes.length === 0)
     return (
       <>
         <div className="empty-dishes">
@@ -81,16 +83,8 @@ const Dishes = props => {
       <CardColumns>
         {props.dishes.map((dish, index) => (
           <Card key={index}>
-            {dish.image && (
-              <Card.Img
-                variant="top"
-                src={
-                  dish.image.isSample
-                    ? process.env.PUBLIC_URL + "/" + dish.image
-                    : dish.image
-                }
-                alt={dish.name}
-              />
+            {dish.imageFile && (
+              <Card.Img variant="top" src={dish.imageFile} alt={dish.name} />
             )}
 
             <Card.Body>
