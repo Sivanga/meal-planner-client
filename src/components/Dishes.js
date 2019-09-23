@@ -4,13 +4,14 @@ import { Modal, Card, CardColumns } from "react-bootstrap";
 import { addDish, removeDish, fetchDishes } from "../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import classNames from "classnames";
 
 import "../scss/Dishes.scss";
 
 const mapStateToProps = state => {
   return {
     dishes: state.dishes.dishes,
-    dataReceived: state.dishes.dataReceived
+    dataReceived: state.dishes.dataReceived.dataReceived
   };
 };
 
@@ -82,11 +83,20 @@ const Dishes = props => {
     <div>
       <CardColumns>
         {props.dishes.map((dish, index) => (
-          <Card key={index}>
+          <Card
+            key={index}
+            className={classNames({
+              "local-dish": dish.isLocal
+            })}
+          >
             {dish.imageFile && (
-              <Card.Img variant="top" src={dish.imageFile} alt={dish.name} />
+              <Card.Img
+                variant="top"
+                src={dish.isLocal ? dish.localImageUrl : dish.imageFile}
+                alt={dish.name}
+              />
             )}
-
+            {dish.isLocal && <i className="fas fa-spinner fa-pulse"></i>}
             <Card.Body>
               <Card.Title>{dish.name}</Card.Title>
               {dish.tags && (
