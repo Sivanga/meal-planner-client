@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { auth } from "../../firebase";
+import { auth, userDbRef } from "../../firebase";
 import FirebaseAuthContext from "./FirebaseContext";
 
 const FirebaseAuthProvider = props => {
@@ -12,6 +12,10 @@ const FirebaseAuthProvider = props => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       console.log("Firebase provider auth on change. user: ", user);
       setAuthState({ authStatusReported: true, user: user });
+
+      if (user) {
+        userDbRef(user.uid).set({ name: user.displayName, email: user.email });
+      }
     });
     return () => unsubscribe();
   }, []);

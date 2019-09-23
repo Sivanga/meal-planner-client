@@ -15,12 +15,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const databaseRef = firebase.database().ref();
-export const dishesDbRef = databaseRef.child("dishes");
-
-export const storageRef = firebase.storage().ref();
-
-export const autProviders = [
+// Auth
+export const authProviders = [
   firebase.auth.GoogleAuthProvider.PROVIDER_ID,
   firebase.auth.FacebookAuthProvider.PROVIDER_ID,
   firebase.auth.TwitterAuthProvider.PROVIDER_ID,
@@ -29,5 +25,13 @@ export const autProviders = [
   firebase.auth.PhoneAuthProvider.PROVIDER_ID
 ];
 export const auth = firebase.auth();
+
+// DB
+const databaseRef = firebase.database().ref();
+export const dishesDbRef = databaseRef.child("dishes");
+export const userDbRef = uid => databaseRef.child(`users/${uid}`);
+
+// Storage
+export const storageRef = firebase.storage().ref();
 
 export default firebase;
