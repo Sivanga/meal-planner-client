@@ -1,49 +1,47 @@
-import { FETCH_DISHES } from "../constants/Action-types";
+import {
+  FETCH_DISHES,
+  ADD_DISH,
+  DATA_RECEIVED
+} from "../constants/Action-types";
 
-const initialState = [
-  // {
-  //   id: 0,
-  //   isSample: true,
-  //   name: "Shakshuka",
-  //   image: "shakshuka.jpg",
-  //   tags: [{ id: 1, name: "Vegeterian" }, { id: 2, name: "Dinner" }]
-  // },
-  // {
-  //   id: 1,
-  //   isSample: true,
-  //   name: "Noodles Soup",
-  //   image: "noodles.jpg",
-  //   tags: [
-  //     { id: 1, name: "Chicken" },
-  //     { id: 2, name: "Lunch" },
-  //     { id: 3, name: "Winter" }
-  //   ]
-  // },
-  // {
-  //   id: 3,
-  //   isSample: true,
-  //   name: "Spaggheti",
-  //   image: "spagetti.jpg",
-  //   tags: [{ id: 1, name: "Vegeterian" }, { id: 2, name: "Lunch" }]
-  // },
-  // { dataReceived: false }
-];
-
-function DishReducer(state = [], action) {
+function dishes(state = [], action) {
   switch (action.type) {
-    case FETCH_DISHES:
-      // Create new state for updated dishes array
-      // Give each dish it's backend generated id for future reference
-      const dishes = action.payload;
-      const newDishes = Object.keys(dishes).map(key => {
-        dishes[key].dish._id = key;
-        return dishes[key].dish;
+    case ADD_DISH:
+      // Set isLocal. This will be overidden in beckend
+      var newDish = Object.assign({}, action.payload, {
+        isLocal: true
       });
-      const newState = { dishes: newDishes, dataReceived: true };
-      return newState;
+      // newDish.isLocal = true;
+      return [newDish, ...state];
+    case FETCH_DISHES:
+      // // Create new state for updated dishes array
+      // // Give each dish it's backend generated id for future reference
+      var newDishes = [];
+      Object.keys(action.payload).map(key => {
+        action.payload[key].dish._id = key;
+        newDishes.unshift(action.payload[key].dish);
+      });
+      return newDishes;
     default:
       return state;
   }
 }
 
-export default DishReducer;
+function dataReceived(state = {}, action) {
+  switch (action.type) {
+    case DATA_RECEIVED:
+      return Object.assign({}, state, {
+        dataReceived: action.payload
+      });
+
+    default:
+      return state;
+  }
+}
+
+export default function DishReducer(state = {}, action) {
+  return {
+    dishes: dishes(state.dishes, action),
+    dataReceived: dataReceived(state.dataReceived, action)
+  };
+}
