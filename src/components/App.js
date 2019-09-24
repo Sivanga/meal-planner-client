@@ -3,18 +3,18 @@ import "../components/App.js";
 import Header from "./Header";
 import Main from "./Main.js";
 import "../scss/App.scss";
-import FirebaseAuthProvider from "./auth/FirebaseAuthProvider";
+import { ProvideAuth } from "./auth/UseAuth";
 
 const App = () => {
   return (
-    <FirebaseAuthProvider>
+    <ProvideAuth>
       <div className="App">
         <Header />
         <div className="Main">
           <Main />
         </div>
       </div>
-    </FirebaseAuthProvider>
+    </ProvideAuth>
   );
 };
 

@@ -19,7 +19,7 @@ function dishes(state = [], action) {
       var newDishes = [];
       Object.keys(action.payload).map(key => {
         action.payload[key].dish._id = key;
-        newDishes.unshift(action.payload[key].dish);
+        return newDishes.unshift(action.payload[key].dish);
       });
       return newDishes;
     default:

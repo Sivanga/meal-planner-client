@@ -24,14 +24,18 @@ export const authProviders = [
   firebase.auth.EmailAuthProvider.PROVIDER_ID,
   firebase.auth.PhoneAuthProvider.PROVIDER_ID
 ];
-export const auth = firebase.auth();
+export const authRef = firebase.auth();
 
 // DB
 const databaseRef = firebase.database().ref();
-export const dishesDbRef = databaseRef.child("dishes");
+export const dishesDbRef = uid => databaseRef.child(`dishes/${uid}`);
 export const userDbRef = uid => databaseRef.child(`users/${uid}`);
 
 // Storage
-export const storageRef = firebase.storage().ref();
+export const storageRef = uid =>
+  firebase
+    .storage()
+    .ref()
+    .child(`/${uid}`);
 
 export default firebase;

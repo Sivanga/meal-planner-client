@@ -5,6 +5,7 @@ import { addDish, removeDish, fetchDishes } from "../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import { useAuth } from "../components/auth/UseAuth";
 
 import "../scss/Dishes.scss";
 
@@ -16,9 +17,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  addDish: dish => dispatch(addDish(dish)),
-  removeDish: id => dispatch(removeDish(id)),
-  fetchDishes: () => dispatch(fetchDishes())
+  addDish: (dish, uid) => dispatch(addDish(dish, uid)),
+  removeDish: (id, uid) => dispatch(removeDish(id, uid)),
+  fetchDishes: uid => dispatch(fetchDishes(uid))
 });
 
 function AddDish(props) {
@@ -28,6 +29,7 @@ function AddDish(props) {
 }
 
 const Dishes = props => {
+  const auth = useAuth();
   /**
    * Show modal state
    */
@@ -38,16 +40,17 @@ const Dishes = props => {
    * FETCH_DISHES Action creator will have an observable to notify for further changes
    */
   useEffect(() => {
-    props.fetchDishes();
-  }, []);
+    if (!auth.authState.user) return;
+    props.fetchDishes(auth.authState.user.uid);
+  }, [auth]);
 
   const onDishAdded = dish => {
-    props.addDish({ dish });
+    props.addDish({ dish }, auth.authState.user.uid);
     setModalShow(false);
   };
 
   const handleDishRemove = id => {
-    props.removeDish({ id });
+    props.removeDish({ id }, auth.authState.user.uid);
   };
 
   const modal = (
@@ -61,8 +64,20 @@ const Dishes = props => {
     </Modal>
   );
 
+  /**
+   * If there's no logged in user, show message
+   */
+  if (!auth.authState.user && auth.authState.authStatusReported) {
+    return (
+      <div className="center-text">Please log in to see your saved dishes!</div>
+    );
+  }
+
+  /**
+   * If dishes data is still loading, show message
+   */
   if (!props.dataReceived) {
-    return <div className="loading">Loading...</div>;
+    return <div className="center-text">Loading...</div>;
   }
 
   if (props.dishes.length === 0)
