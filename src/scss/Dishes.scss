@@ -77,3 +77,37 @@
   bottom: 1rem;
   color: white;
 }
+
+.read-more {
+  box-shadow: none;
+  font-weight: 900 !important;
+  font-size: 0.8rem;
+  flex-grow: 1;
+  text-align: start;
+
+  &:hover {
+    box-shadow: none;
+  }
+}
+
+.card-footer-container {
+  display: flex;
+  flex-direction: row;
+}
+
+#recipe {
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.btn-modal {
+  color: white;
+  background-color: $primary !important;
+  font-size: 1.2rem;
+  border-color: $primary;
+  &:hover {
+    background-color: $primary-dark;
+    color: white;
+    border-color: $primary;
+  }
+}

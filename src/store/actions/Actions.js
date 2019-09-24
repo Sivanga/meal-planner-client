@@ -54,7 +54,7 @@ export const removeDish = (payload, uid) => async dispatch => {
   }
 
   dishesDbRef(uid)
-    .child(payload.id)
+    .child(payload)
     .remove();
 };
 

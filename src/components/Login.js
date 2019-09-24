@@ -30,7 +30,7 @@ const Login = () => {
         </div>
       ) : (
         <div className="login-container">
-          <p>Welcome {auth.authState.user.displayName}!</p>
+          <p>Hello {auth.authState.user.displayName}!</p>
           <Button
             className="login-btn"
             onClick={() => firebase.auth().signOut()}

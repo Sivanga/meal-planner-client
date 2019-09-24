@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NewDish from "./NewDish";
-import { Modal, Card, CardColumns } from "react-bootstrap";
+import { Modal, Card, CardColumns, Collapse, Button } from "react-bootstrap";
 import { addDish, removeDish, fetchDishes } from "../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -29,11 +29,25 @@ function AddDish(props) {
 }
 
 const Dishes = props => {
-  const auth = useAuth();
   /**
-   * Show modal state
+   * Auth hook to get update for changes from auth provider
    */
-  const [modalShow, setModalShow] = useState(false);
+  const auth = useAuth();
+
+  /**
+   *  New dish modal state
+   */
+  const [newDishModalShow, setNewDishModalShow] = useState(false);
+
+  /**
+   *  Dish id to be deleted
+   */
+  const [deleteDishId, setDeleteDishId] = useState(-1);
+
+  /**
+   * Show recipe for chosen card
+   */
+  const [expandCardsArray, setExpandCardsArray] = useState([]);
 
   /**
    * Fetch dishes in first render.
@@ -44,23 +58,60 @@ const Dishes = props => {
     props.fetchDishes(auth.authState.user.uid);
   }, [auth]);
 
-  const onDishAdded = dish => {
+  const onDishAdd = dish => {
     props.addDish({ dish }, auth.authState.user.uid);
-    setModalShow(false);
+    setNewDishModalShow(false);
   };
 
   const handleDishRemove = id => {
-    props.removeDish({ id }, auth.authState.user.uid);
+    props.removeDish(id, auth.authState.user.uid);
+    setDeleteDishId(-1);
   };
 
-  const modal = (
-    <Modal show={modalShow} onHide={() => setModalShow(false)}>
+  /**
+   * Toggle the card open state by id
+   * @param {card index to be togelled} index
+   */
+  const handleExpandCard = index => {
+    var newArray = { ...expandCardsArray };
+    newArray[index]
+      ? (newArray[index] = !newArray[index])
+      : (newArray[index] = true);
+    setExpandCardsArray(newArray);
+  };
+
+  const newDishmodal = (
+    <Modal show={newDishModalShow} onHide={() => setNewDishModalShow(false)}>
       <Modal.Header className="text-center" closeButton>
         <Modal.Title className="w-100 m-auto">Add new dish</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <NewDish onDishAdded={dish => onDishAdded(dish)} />
+        <NewDish onDishAdded={dish => onDishAdd(dish)} />
       </Modal.Body>
+    </Modal>
+  );
+
+  const deleteDishModal = (
+    <Modal
+      show={deleteDishId !== -1}
+      onHide={() => setDeleteDishId(-1)}
+      size="sm"
+      centered
+    >
+      <Modal.Header className="text-center" closeButton>
+        <Modal.Title className="w-100 m-auto">Delete dish?</Modal.Title>
+      </Modal.Header>
+      <Modal.Footer>
+        <Button className="btn-modal" onClick={() => setDeleteDishId(-1)}>
+          No
+        </Button>
+        <Button
+          className="btn-modal"
+          onClick={() => handleDishRemove(deleteDishId)}
+        >
+          Yes
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 
@@ -87,10 +138,10 @@ const Dishes = props => {
           <div>
             Looks like you don't have any dishes yet :(
             <br /> Want to add one?
-            <AddDish handleShow={() => setModalShow(true)} />
+            <AddDish handleShow={() => setNewDishModalShow(true)} />
           </div>
         </div>
-        {modal}
+        {newDishmodal}
       </>
     );
 
@@ -123,20 +174,34 @@ const Dishes = props => {
                   ))}
                 </ul>
               )}
-              <span
-                onClick={() => {
-                  handleDishRemove(dish._id);
-                }}
-              >
-                <i className="fas fa-trash-alt fa-sm trash"></i>
-              </span>
+              <div className="card-footer-container">
+                <a
+                  className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more"
+                  style={{ visibility: dish.recipe ? "visible" : "hidden" }}
+                  onClick={() => {
+                    handleExpandCard(index);
+                  }}
+                  aria-controls="recipe"
+                  aria-expanded={expandCardsArray[index] === true}
+                >
+                  {expandCardsArray[index] === true ? "READ LESS" : "READ MORE"}
+                </a>
+
+                <span onClick={() => setDeleteDishId(dish._id)}>
+                  <i className="fas fa-trash-alt fa-sm trash"></i>
+                </span>
+              </div>
+              <Collapse in={expandCardsArray[index] === true}>
+                <div id="recipe">{dish.recipe}</div>
+              </Collapse>
             </Card.Body>
           </Card>
         ))}
       </CardColumns>
 
-      <AddDish handleShow={() => setModalShow(true)} />
-      {modal}
+      <AddDish handleShow={() => setNewDishModalShow(true)} />
+      {newDishmodal}
+      {deleteDishModal}
     </div>
   );
 };

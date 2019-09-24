@@ -15,6 +15,7 @@ class NewDish extends Component {
       name: null,
       localImageUrl: null,
       imageFile: null,
+      recipe: null,
       tags: [],
       errors: {
         name: ""
@@ -24,6 +25,10 @@ class NewDish extends Component {
 
   handleNameChange(event) {
     this.setState({ name: event.target.value });
+  }
+
+  handleRecipeChange(event) {
+    this.setState({ recipe: event.target.value });
   }
 
   handleTagChange(tags) {
@@ -111,6 +116,13 @@ class NewDish extends Component {
         </Form.Group>
         <Form.Group controlId="dishTags">
           <DishTags onChange={this.handleTagChange.bind(this)} />
+        </Form.Group>
+        <Form.Group controlId="dishTextArea">
+          <Form.Label>Recipe?</Form.Label>
+          <Form.Control
+            as="textarea"
+            onChange={this.handleRecipeChange.bind(this)}
+          />
         </Form.Group>
         <Button variant="outline" type="submit" className="btn-new-dish">
           Add
