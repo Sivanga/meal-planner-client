@@ -1,5 +1,5 @@
 import React from "react";
-import Dishes from "./Dishes.js";
+import Dishes from "../components/dishes/Dishes";
 import Menu from "./Menu/Menu";
 import Notfound from "./NotFound";
 import GenerateMenu from "./Menu/GenerateMenu";

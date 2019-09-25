@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactTags from "react-tag-autocomplete";
 import PropTypes from "prop-types";
 
-import "../scss/DishTags.scss";
+import "../../scss/DishTags.scss";
 
 class DishTags extends Component {
   constructor(props) {

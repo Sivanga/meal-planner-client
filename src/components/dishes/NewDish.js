@@ -1,22 +1,25 @@
 import React, { Component } from "react";
 import { Form, Button } from "react-bootstrap";
-import DragAndDrop from "./abstract/DragAndDrop";
-import DishPlaceholder from "../images/DishPlaceholder.png";
+import DragAndDrop from "../abstract/DragAndDrop";
+import DishPlaceholder from "../../images/DishPlaceholder.png";
 import DishTags from "./DishTags";
 import PropTypes from "prop-types";
 
-import "../scss/NewDish.scss";
+import "../../scss/NewDish.scss";
 
 class NewDish extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      name: null,
-      localImageUrl: null,
-      imageFile: null,
-      recipe: null,
-      tags: [],
+      dish: {
+        name: null,
+        localImageUrl: null,
+        imageFile: null,
+        recipe: null,
+        tags: [],
+        sharePublic: false
+      },
       errors: {
         name: ""
       }
@@ -24,23 +27,51 @@ class NewDish extends Component {
   }
 
   handleNameChange(event) {
-    this.setState({ name: event.target.value });
+    this.setState({
+      dish: {
+        ...this.state.dish,
+        name: event.target.value
+      }
+    });
   }
 
   handleRecipeChange(event) {
-    this.setState({ recipe: event.target.value });
+    this.setState({
+      dish: {
+        ...this.state.dish,
+        recipe: event.target.value
+      }
+    });
   }
 
   handleTagChange(tags) {
-    this.setState({ tags: tags });
+    this.setState({
+      dish: {
+        ...this.state.dish,
+        tags: tags
+      }
+    });
   }
 
   handleDrop(files) {
     var localImageUrl = URL.createObjectURL(files[0]);
     var imageFile = files[0];
+
     this.setState({
-      localImageUrl: localImageUrl,
-      imageFile: imageFile
+      dish: {
+        ...this.state.dish,
+        localImageUrl: localImageUrl,
+        imageFile: imageFile
+      }
+    });
+  }
+
+  handleSharePublicToggle() {
+    this.setState({
+      dish: {
+        ...this.state.dish,
+        sharePublic: !this.state.sharePublic
+      }
     });
   }
 
@@ -51,11 +82,13 @@ class NewDish extends Component {
     let errors = this.state.errors;
 
     errors.name =
-      this.state.name.length < 3 ? "Name must be at least 3 characters" : "";
+      this.state.dish.name.length < 3
+        ? "Name must be at least 3 characters"
+        : "";
     this.setState({ errors: errors });
 
     if (errors.name.length === 0) {
-      this.props.onDishAdded(this.state);
+      this.props.onDishAdded(this.state.dish);
     }
 
     this.inputOpenFileRef = React.createRef();
@@ -71,8 +104,8 @@ class NewDish extends Component {
 
   render() {
     var imageSrc = DishPlaceholder;
-    if (this.state.localImageUrl) {
-      imageSrc = this.state.localImageUrl;
+    if (this.state.dish.localImageUrl) {
+      imageSrc = this.state.dish.localImageUrl;
     }
 
     return (
@@ -122,6 +155,13 @@ class NewDish extends Component {
           <Form.Control
             as="textarea"
             onChange={this.handleRecipeChange.bind(this)}
+          />
+        </Form.Group>
+        <Form.Group controlId="sharePublic">
+          <Form.Check
+            type="checkbox"
+            label="Share public?"
+            onClick={this.handleSharePublicToggle.bind(this)}
           />
         </Form.Group>
         <Button variant="outline" type="submit" className="btn-new-dish">

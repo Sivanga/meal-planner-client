@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import NewDish from "./NewDish";
 import { Modal, Card, CardColumns, Collapse, Button } from "react-bootstrap";
-import { addDish, removeDish, fetchDishes } from "../store/actions/Actions";
+import { addDish, removeDish, fetchDishes } from "../../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { useAuth } from "../components/auth/UseAuth";
-
-import "../scss/Dishes.scss";
+import { useAuth } from "../auth/UseAuth";
+import "../../scss/Dishes.scss";
 
 const mapStateToProps = state => {
   return {
@@ -146,63 +145,70 @@ const Dishes = props => {
     );
 
   return (
-    <div>
-      <CardColumns>
-        {props.dishes.map((dish, index) => (
-          <Card
-            key={index}
-            className={classNames({
-              "local-dish": dish.isLocal
-            })}
-          >
-            {dish.imageFile && (
-              <Card.Img
-                variant="top"
-                src={dish.isLocal ? dish.localImageUrl : dish.imageFile}
-                alt={dish.name}
-              />
-            )}
-            {dish.isLocal && <i className="fas fa-spinner fa-pulse"></i>}
-            <Card.Body>
-              <Card.Title>{dish.name}</Card.Title>
-              {dish.tags && (
-                <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
-                  {dish.tags.map(tag => (
-                    <li key={tag.id} className="badge badge-pill badge-primary">
-                      {tag.name}
-                    </li>
-                  ))}
-                </ul>
+    <>
+      <div>
+        <CardColumns>
+          {props.dishes.map((dish, index) => (
+            <Card
+              key={index}
+              className={classNames({
+                "local-dish": dish.isLocal
+              })}
+            >
+              {dish.imageFile && (
+                <Card.Img
+                  variant="top"
+                  src={dish.isLocal ? dish.localImageUrl : dish.imageFile}
+                  alt={dish.name}
+                />
               )}
-              <div className="card-footer-container">
-                <a
-                  className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more"
-                  style={{ visibility: dish.recipe ? "visible" : "hidden" }}
-                  onClick={() => {
-                    handleExpandCard(index);
-                  }}
-                  aria-controls="recipe"
-                  aria-expanded={expandCardsArray[index] === true}
-                >
-                  {expandCardsArray[index] === true ? "READ LESS" : "READ MORE"}
-                </a>
+              {dish.isLocal && <i className="fas fa-spinner fa-pulse"></i>}
+              <Card.Body>
+                <Card.Title>{dish.name}</Card.Title>
+                {dish.tags && (
+                  <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
+                    {dish.tags.map(tag => (
+                      <li
+                        key={tag.id}
+                        className="badge badge-pill badge-primary"
+                      >
+                        {tag.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="card-footer-container">
+                  <a
+                    className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more"
+                    style={{ visibility: dish.recipe ? "visible" : "hidden" }}
+                    onClick={() => {
+                      handleExpandCard(index);
+                    }}
+                    aria-controls="recipe"
+                    aria-expanded={expandCardsArray[index] === true}
+                  >
+                    {expandCardsArray[index] === true
+                      ? "READ LESS"
+                      : "READ MORE"}
+                  </a>
 
-                <span onClick={() => setDeleteDishId(dish._id)}>
-                  <i className="fas fa-trash-alt fa-sm trash"></i>
-                </span>
-              </div>
-              <Collapse in={expandCardsArray[index] === true}>
-                <div id="recipe">{dish.recipe}</div>
-              </Collapse>
-            </Card.Body>
-          </Card>
-        ))}
-      </CardColumns>
+                  <span onClick={() => setDeleteDishId(dish._id)}>
+                    <i className="fas fa-trash-alt fa-sm trash"></i>
+                  </span>
+                </div>
+                <Collapse in={expandCardsArray[index] === true}>
+                  <div id="recipe">{dish.recipe}</div>
+                </Collapse>
+              </Card.Body>
+            </Card>
+          ))}
+        </CardColumns>
 
-      <AddDish handleShow={() => setNewDishModalShow(true)} />
-      {newDishmodal}
-      {deleteDishModal}
-    </div>
+        <AddDish handleShow={() => setNewDishModalShow(true)} />
+        {newDishmodal}
+        {deleteDishModal}
+      </div>
+    </>
   );
 };
 
