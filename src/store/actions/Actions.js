@@ -1,9 +1,11 @@
 import {
   FETCH_DISHES,
   ADD_DISH,
-  DATA_RECEIVED
+  DATA_RECEIVED,
+  FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
-import { dishesDbRef, storageRef } from "../../firebase";
+import { dishesDbRef, storageRef, publicDishesRef } from "../../firebase";
+import * as firebase from "firebase/app";
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
@@ -77,4 +79,17 @@ const noAuthError = methodName => {
   console.error(
     methodName + " No auth found. User should login for this action"
   );
+};
+
+/**
+ * Fetch all public dishes that aren't the user's owned dishes
+ * @param {current user id} uid
+ */
+export const fetchPublicDishes = uid => async dispatch => {
+  dishesDbRef(uid)
+    .orderByChild(`dish/sharePublic`)
+    .equalTo(true)
+    .once("value", snapshot => {
+      dispatch({ type: FETCH_PUBLIC_DISHES, payload: snapshot.val() });
+    });
 };

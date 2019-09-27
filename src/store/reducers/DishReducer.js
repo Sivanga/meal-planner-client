@@ -1,7 +1,8 @@
 import {
   FETCH_DISHES,
   ADD_DISH,
-  DATA_RECEIVED
+  DATA_RECEIVED,
+  FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
 
 function dishes(state = [], action) {
@@ -22,6 +23,20 @@ function dishes(state = [], action) {
         return newDishes.unshift(action.payload[key].dish);
       });
       return newDishes;
+
+    default:
+      return state;
+  }
+}
+
+function publicDishes(state = [], action) {
+  switch (action.type) {
+    case FETCH_PUBLIC_DISHES:
+      var publicDishes = [];
+      Object.keys(action.payload).map(key => {
+        return publicDishes.push(action.payload[key].dish);
+      });
+      return publicDishes;
     default:
       return state;
   }
@@ -42,6 +57,7 @@ function dataReceived(state = {}, action) {
 export default function DishReducer(state = {}, action) {
   return {
     dishes: dishes(state.dishes, action),
+    publicDishes: publicDishes(state.publicDishes, action),
     dataReceived: dataReceived(state.dataReceived, action)
   };
 }
