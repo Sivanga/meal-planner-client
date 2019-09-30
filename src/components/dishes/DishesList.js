@@ -3,7 +3,7 @@ import { Card, CardColumns, Collapse, Modal, Button } from "react-bootstrap";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 
-const DishesList = ({ dishes, handleDishRemove, isPublic }) => {
+const DishesList = ({ dishes, handleDishRemove, isPublicDishes }) => {
   /**
    * Show recipe for chosen card
    */
@@ -59,7 +59,12 @@ const DishesList = ({ dishes, handleDishRemove, isPublic }) => {
     <>
       {deleteDishModal}
 
-      <CardColumns>
+      <CardColumns
+        className={classNames({
+          publicCardColumns: isPublicDishes,
+          privateCardColumns: !isPublicDishes
+        })}
+      >
         {dishes.map((dish, index) => (
           <Card
             key={index}
@@ -87,8 +92,8 @@ const DishesList = ({ dishes, handleDishRemove, isPublic }) => {
                 </ul>
               )}
               <div className="card-footer-container">
-                <a
-                  className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more"
+                <span
+                  className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more bc-white"
                   style={{ visibility: dish.recipe ? "visible" : "hidden" }}
                   onClick={() => {
                     handleExpandCard(index);
@@ -97,10 +102,15 @@ const DishesList = ({ dishes, handleDishRemove, isPublic }) => {
                   aria-expanded={expandCardsArray[index] === true}
                 >
                   {expandCardsArray[index] === true ? "READ LESS" : "READ MORE"}
-                </a>
-                {!isPublic && (
+                </span>
+                {!isPublicDishes && (
                   <span onClick={() => setDeleteDishId(dish._id)}>
                     <i className="fas fa-trash-alt fa-sm trash"></i>
+                  </span>
+                )}
+                {isPublicDishes && (
+                  <span>
+                    <i className="fas fa-heart fa-sm"></i>
                   </span>
                 )}
               </div>
@@ -117,7 +127,8 @@ const DishesList = ({ dishes, handleDishRemove, isPublic }) => {
 
 DishesList.propTypes = {
   dishes: PropTypes.arrayOf(PropTypes.object),
-  handleDishRemove: PropTypes.func
+  handleDishRemove: PropTypes.func,
+  isPublicDishes: PropTypes.bool
 };
 
 export default DishesList;

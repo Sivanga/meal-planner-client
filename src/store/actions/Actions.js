@@ -4,8 +4,7 @@ import {
   DATA_RECEIVED,
   FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
-import { dishesDbRef, storageRef, publicDishesRef } from "../../firebase";
-import * as firebase from "firebase/app";
+import { dishesDbRef, storageRef, publicDishesDbRef } from "../../firebase";
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
@@ -44,6 +43,14 @@ const pushToDb = (dish, uid) => {
     .set({
       dish: dish
     });
+
+  // push to public dishes if needed
+  if (dish.sharePublic) {
+    dish.ownerUid = uid;
+    publicDishesDbRef()
+      .push()
+      .set({ dish: dish });
+  }
 };
 
 /**
@@ -86,10 +93,12 @@ const noAuthError = methodName => {
  * @param {current user id} uid
  */
 export const fetchPublicDishes = uid => async dispatch => {
-  dishesDbRef(uid)
-    .orderByChild(`dish/sharePublic`)
-    .equalTo(true)
-    .once("value", snapshot => {
-      dispatch({ type: FETCH_PUBLIC_DISHES, payload: snapshot.val() });
-    });
+  var ref = publicDishesDbRef();
+  ref.orderByChild("dish/ownerUid").on("value", snapshot => {
+    var payload = {
+      publicDishes: snapshot.val() || {},
+      uid: uid
+    };
+    dispatch({ type: FETCH_PUBLIC_DISHES, payload: payload });
+  });
 };

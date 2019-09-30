@@ -111,19 +111,24 @@ const Dishes = props => {
   /**
    * Dishes list */
   return (
-    <>
-      <div>
+    <div className="dishesContainer">
+      <div className="privateDishContainer">
         <DishesList
           dishes={props.dishes}
           handleDishRemove={id => handleDishRemove(id)}
+          isPublicDishes={false}
         />
 
         <AddDish handleShow={() => setNewDishModalShow(true)} />
         {newDishmodal}
       </div>
-      Public dishes:
-      <DishesList isPublic={true} dishes={props.publicDishes} />
-    </>
+      {props.publicDishes && props.publicDishes.length > 0 && (
+        <div className="publicDishContainer">
+          <div className="publicDishesTitle">Public dishes:</div>
+          <DishesList dishes={props.publicDishes} isPublicDishes={true} />
+        </div>
+      )}
+    </div>
   );
 };
 

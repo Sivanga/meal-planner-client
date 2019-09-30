@@ -33,8 +33,13 @@ function publicDishes(state = [], action) {
   switch (action.type) {
     case FETCH_PUBLIC_DISHES:
       var publicDishes = [];
-      Object.keys(action.payload).map(key => {
-        return publicDishes.push(action.payload[key].dish);
+      Object.keys(action.payload.publicDishes).map(key => {
+        // Return only public dishes that aren't the current user's
+        if (
+          action.payload.publicDishes[key].dish.ownerUid !== action.payload.uid
+        ) {
+          publicDishes.push(action.payload.publicDishes[key].dish);
+        }
       });
       return publicDishes;
     default:
