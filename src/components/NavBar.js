@@ -27,6 +27,11 @@ function NavBar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
+              <Nav.Link as={Link} to="/myFavorites" href="/myFavorites">
+                My Favorites
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={Link} to="/about" href="/about">
                 About
               </Nav.Link>

@@ -59,12 +59,7 @@ const DishesList = ({ dishes, handleDishRemove, isPublicDishes }) => {
     <>
       {deleteDishModal}
 
-      <CardColumns
-        className={classNames({
-          publicCardColumns: isPublicDishes,
-          privateCardColumns: !isPublicDishes
-        })}
-      >
+      <CardColumns>
         {dishes.map((dish, index) => (
           <Card
             key={index}
