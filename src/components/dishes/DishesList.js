@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Card, CardColumns, Collapse, Modal, Button } from "react-bootstrap";
+import {
+  Card,
+  CardColumns,
+  Collapse,
+  Modal,
+  Button,
+  Alert
+} from "react-bootstrap";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 
@@ -23,6 +30,11 @@ const DishesList = ({
   const [deleteDishId, setUnfavoriteDishId] = useState(-1);
 
   /**
+   * Show/ hide login alert
+   */
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
+
+  /**
    * Toggle the card open state by id
    * @param {card index to be togelled} index
    */
@@ -41,7 +53,7 @@ const DishesList = ({
 
   const favoriteDish = dish => {
     if (!currentUid) {
-      alert("Please log in first!");
+      setShowLoginAlert(true);
       return;
     }
     handleDishFavorite(dish, currentUid);
@@ -76,9 +88,21 @@ const DishesList = ({
     </Modal>
   );
 
+  const loginAlert = (
+    <Alert
+      show={showLoginAlert}
+      variant="danger"
+      onClose={() => setShowLoginAlert(false)}
+      dismissible
+    >
+      <Alert.Heading>Please log in first!</Alert.Heading>
+    </Alert>
+  );
+
   return (
     <>
       {deleteDishModal}
+      {loginAlert}
       <CardColumns>
         {dishes.map((dish, index) => (
           <Card
