@@ -10,7 +10,7 @@ function NavBar() {
   const auth = useAuth();
 
   return (
-    <Navbar bg="white" expand="sm" collapseOnSelect>
+    <Navbar bg="white" expand="sm" collapseOnSelect fixed>
       <div className="container">
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

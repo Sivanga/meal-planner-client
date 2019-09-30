@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
-import DishesList from "./DishesList";
+import DishesList, { DishListEnum } from "./DishesList";
 
 const mapStateToProps = state => {
   return {
@@ -102,12 +102,17 @@ const MyFavorites = props => {
 
   /**
    * Dishes list */
+  var currentUid = null;
+  if (auth.authState.user && auth.authState.user.uid) {
+    currentUid = auth.authState.user.uid;
+  }
   return (
     <>
       <DishesList
         dishes={props.dishes}
         handleDishRemove={id => handleDishRemove(id)}
-        isPublicDishes={false}
+        dishListEnum={DishListEnum.MY_FAVORITES_LIST}
+        currentUid={currentUid}
       />
 
       <AddDish handleShow={() => setNewDishModalShow(true)} />

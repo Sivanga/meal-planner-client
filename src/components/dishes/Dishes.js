@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from "react";
-import NewDish from "./NewDish";
-import { Modal } from "react-bootstrap";
+import React, { useEffect } from "react";
 import {
-  addDish,
-  removeDish,
-  fetchDishes,
-  fetchPublicDishes
+  fetchPublicDishes,
+  addToFavorites,
+  removeDish
 } from "../../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
-import DishesList from "./DishesList";
+import DishesList, { DishListEnum } from "./DishesList";
 
 const mapStateToProps = state => {
   return {
@@ -21,7 +18,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid))
+  fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
+  addToFavorites: (dish, uid) => dispatch(addToFavorites(dish, uid)),
+  removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid))
 });
 
 const Dishes = props => {
@@ -35,9 +34,20 @@ const Dishes = props => {
    * FETCH_DISHES Action creator will have an observable to notify for further changes
    */
   useEffect(() => {
-    if (!auth.authState.user) return;
-    props.fetchPublicDishes(auth.authState.user.uid);
+    var uid = null;
+    if (auth.authState.user && auth.authState.user.uid) {
+      uid = auth.authState.user.uid;
+    }
+    props.fetchPublicDishes(uid);
   }, [auth]);
+
+  const handleDishFavorite = (dish, uid) => {
+    props.addToFavorites(dish, uid);
+  };
+
+  const handleDishUnfavorite = id => {
+    props.removeFromFavorites(id, auth.authState.user.uid);
+  };
 
   /**
    * If dishes data is still loading, show message
@@ -48,7 +58,19 @@ const Dishes = props => {
 
   /**
    * Dishes list */
-  return <DishesList dishes={props.publicDishes} isPublicDishes={true} />;
+  var currentUid = null;
+  if (auth.authState.user && auth.authState.user.uid) {
+    currentUid = auth.authState.user.uid;
+  }
+  return (
+    <DishesList
+      dishes={props.publicDishes}
+      dishListEnum={DishListEnum.PUBLIC_LIST}
+      currentUid={currentUid}
+      handleDishFavorite={(dish, uid) => handleDishFavorite(dish, uid)}
+      handleDishRemove={id => handleDishUnfavorite(id)}
+    />
+  );
 };
 
 Dishes.propTypes = {
