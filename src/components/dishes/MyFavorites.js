@@ -6,12 +6,14 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
-import DishesList, { DishListEnum } from "./DishesList";
+import DishesList from "./DishesList";
+import { DishListEnum } from "./DishCard";
 
 const mapStateToProps = state => {
   return {
     dishes: state.dishes.dishes,
-    dataReceived: state.dishes.dataReceived.dataReceived
+    dataReceived:
+      state.dishes.privateDishesDataReceived.privateDishesDataReceived
   };
 };
 

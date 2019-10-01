@@ -1,7 +1,8 @@
 import {
   FETCH_DISHES,
   ADD_DISH,
-  DATA_RECEIVED,
+  PRIVATE_DISHES_DATA_RECEIVED,
+  PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
 import {
@@ -15,7 +16,6 @@ import {
  * Add dish to backend. Update list will be invoked by fetchDishes observer
  */
 export const addDish = (payload, uid) => async dispatch => {
-
   // Add the dish locally
   dispatch({ type: ADD_DISH, payload: payload.dish });
 
@@ -44,7 +44,6 @@ export const addDish = (payload, uid) => async dispatch => {
 };
 
 const pushToDb = (dish, uid) => {
-  
   // Get a ref for a new dish
   var newDishKey = dishesDbRef(uid).push().key;
   var updates = {};
@@ -66,7 +65,6 @@ const pushToDb = (dish, uid) => {
  * Remove dish from backend. Update list will be invoked by fetchDishes observer
  */
 export const removeDish = (payload, uid) => async dispatch => {
-  
   // Remove the dish under current user
   dishesDbRef(uid)
     .child(payload)
@@ -98,7 +96,7 @@ export const fetchDishes = uid => async dispatch => {
     return;
   }
   dishesDbRef(uid).on("value", snapshot => {
-    dispatch({ type: DATA_RECEIVED, payload: true });
+    dispatch({ type: PRIVATE_DISHES_DATA_RECEIVED, payload: true });
     dispatch({ type: FETCH_DISHES, payload: snapshot.val() || {} });
   });
 };
@@ -114,8 +112,8 @@ export const fetchPublicDishes = uid => async dispatch => {
       publicDishes: snapshot.val() || {},
       uid: uid
     };
-    dispatch({ type: DATA_RECEIVED, payload: true });
     dispatch({ type: FETCH_PUBLIC_DISHES, payload: payload });
+    dispatch({ type: PUBLIC_DISHES_DATA_RECEIVED, payload: true });
   });
 };
 

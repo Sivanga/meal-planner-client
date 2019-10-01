@@ -9,11 +9,14 @@ import { disableNewlines } from "../Menu/SharedContentEdible";
 import { useAuth } from "../auth/UseAuth";
 
 import { connect } from "react-redux";
+import DishCard from "../dishes/DishCard";
+import { DishListEnum } from "../dishes/DishCard";
 
 const mapStateToProps = state => {
   return {
     dishes: state.dishes.dishes,
-    dataReceived: state.dishes.dataReceived.dataReceived
+    dataReceived:
+      state.dishes.privateDishesDataReceived.privateDishesDataReceived
   };
 };
 
@@ -137,9 +140,15 @@ const GenerateMenu = props => {
                   onBlur={e => onDishChange(e, dayIndex, mealIndex)}
                 >
                   {/* Random dish */}
-                  {day.enabled
-                    ? computeRandomDishes[mealIndex][dayIndex].name
-                    : null}
+
+                  {day.enabled ? (
+                    <DishCard
+                      dish={computeRandomDishes[mealIndex][dayIndex]}
+                      index={0}
+                      currentUid={auth.authState.user.uid}
+                      dishListEnum={DishListEnum.NO_LIST}
+                    />
+                  ) : null}
                 </td>
               ))}
             </tr>
