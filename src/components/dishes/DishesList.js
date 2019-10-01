@@ -180,7 +180,7 @@ DishesList.propTypes = {
     DishListEnum.MY_FAVORITES_LIST,
     DishListEnum.PUBLIC_LIST
   ]),
-  currentUid: PropTypes.number
+  currentUid: PropTypes.string
 };
 
 export default DishesList;

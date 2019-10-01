@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "../../scss/TemplateMenu.scss";
-import { MDBTable, MDBTableBody, MDBTableHead, Button } from "mdbreact";
+import {
+  MDBTable,
+  MDBTableBody,
+  MDBTableHead,
+  Button,
+  MDBInput
+} from "mdbreact";
+import { Alert } from "react-bootstrap";
 import classNames from "classnames/bind";
 import PropTypes from "prop-types";
 import GenerateMenu from "./GenerateMenu";
@@ -9,16 +16,16 @@ import { disableNewlines } from "../Menu/SharedContentEdible";
 const TemplateMenu = props => {
   /**
    * day: Name of the day
-   * disabled: if disabled by the user it will not be editable
+   * enabled: if enabled by the user it will be editable
    */
   const [days, setDays] = useState([
-    { day: "Monday", disabled: false },
-    { day: "Tuesday", disabled: false },
-    { day: "Wednesday", disabled: false },
-    { day: "Thursday", disabled: false },
-    { day: "Friday", disabled: false },
-    { day: "Saturday", disabled: false },
-    { day: "Sunday", disabled: false }
+    { day: "Monday", enabled: true },
+    { day: "Tuesday", enabled: true },
+    { day: "Wednesday", enabled: true },
+    { day: "Thursday", enabled: true },
+    { day: "Friday", enabled: true },
+    { day: "Saturday", enabled: true },
+    { day: "Sunday", enabled: true }
   ]);
 
   /**
@@ -36,6 +43,8 @@ const TemplateMenu = props => {
    * Used when validate menu before generating a new one
    */
   const [menuErrors, setMenuErrors] = useState([]);
+
+  const [showDaysAlert, setShowDaysAlert] = useState(true);
 
   /**
    * Used to focus on the newest cell that was created when adding a new meal
@@ -62,23 +71,24 @@ const TemplateMenu = props => {
   /**
    * Toggle disable/enable day and update state
    */
-  const toggleDisableDay = index => {
+  const toggleEnableDay = index => {
     var newDays = [...days];
     newDays.map((day, i) => {
       if (index === i) {
-        return (day.disabled = !day.disabled);
+        return (day.enabled = !day.enabled);
       } else {
         return day;
       }
     });
     setDays(newDays);
+    setShowDaysAlert(false);
   };
 
   /**
    * Focus the newlyAddedCell after render is done
    * Validate the menu after render
    */
-  useEffect(function use() {
+  useEffect(() => {
     if (addingNewValue && newlyAddedCell.current) {
       newlyAddedCell.current.focus();
     }
@@ -93,7 +103,7 @@ const TemplateMenu = props => {
     // Make sure there's at least one day
     // Make sure there's at least one meal
     var newMenuErros = [];
-    var enabledDays = days.filter(day => !day.disabled);
+    var enabledDays = days.filter(day => day.enabled);
     if (enabledDays.length < 1) {
       newMenuErros.push("Please enable at least one day");
     }
@@ -124,24 +134,54 @@ const TemplateMenu = props => {
     setMeals(newMeals);
   };
 
+  const chooseDaysAlert = (
+    <Alert show={showDaysAlert} variant="success">
+      <p>First choose your days</p>
+      <div className="d-flex justify-content-end">
+        <Button
+          onClick={() => setShowDaysAlert(false)}
+          variant="outline-success"
+        >
+          OK
+        </Button>
+      </div>
+    </Alert>
+  );
+
   return (
     <>
+      {chooseDaysAlert}
+      {/* Validation Error*/}
+      {menuErrors.length > 0 && (
+        <div>
+          {menuErrors.map((error, index) => (
+            <div key={index} className="menu-error">
+              {error}
+            </div>
+          ))}
+        </div>
+      )}
       <MDBTable>
         <MDBTableHead>
           <tr>
             {/*Empty cells for table left top corner*/}
             <th />
-            <th />
+            <th>Days/Meals</th>
 
             {/*Days headers*/}
             {days.map((day, index) => (
               <th
                 key={index}
                 className={classNames("day-column", {
-                  "day-disable": day.disabled
+                  dayEnabled: day.enabled
                 })}
-                onClick={() => toggleDisableDay(index)}
               >
+                <MDBInput
+                  checked={day.enabled}
+                  type="radio"
+                  id="radio1"
+                  onClick={() => toggleEnableDay(index)}
+                />
                 {day.day}
               </th>
             ))}
@@ -168,6 +208,7 @@ const TemplateMenu = props => {
                 onKeyDown={onKeyDown}
                 ref={newlyAddedCell}
                 onBlur={e => onMealChange(e, index)}
+                className="meal"
               >
                 {meal}
               </th>
@@ -175,7 +216,7 @@ const TemplateMenu = props => {
                 <td
                   key={index}
                   className={classNames({
-                    "meal-disable": day.disabled
+                    mealEnabled: day.enabled
                   })}
                 >
                   {/* Empty cell for meal. 
@@ -194,16 +235,7 @@ const TemplateMenu = props => {
           onClick={() => addMeal()}
         />
       </span>
-      {/* Validation Error*/}
-      {menuErrors.length > 0 && (
-        <div>
-          {menuErrors.map((error, index) => (
-            <div key={index} className="menu-error">
-              {error}
-            </div>
-          ))}
-        </div>
-      )}
+
       <Button
         className={classNames("generate-btn", {
           disabled: menuErrors.length > 0

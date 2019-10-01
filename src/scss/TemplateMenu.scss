@@ -1,5 +1,20 @@
 @import "./Variables.scss";
 
+.table {
+  border: 1px solid rgb(221, 225, 229);
+}
+
+.table thead th {
+  border-bottom: none;
+  height: 5rem;
+  font-size: 1.3rem;
+  padding-bottom: 27px;
+}
+
+.meal {
+  font-size: 1.3rem;
+}
+
 #remove-row {
   display: none;
 }
@@ -14,9 +29,9 @@
   cursor: pointer;
 }
 
-.day-disable,
-.meal-disable {
-  background: rgba($dark-text-color, 0.5);
+.dayEnabled,
+.mealEnabled {
+  // background: rgb(211, 237, 218);
 }
 
 #plus-icon {
@@ -47,4 +62,19 @@
   justify-content: center;
   text-align: center;
   color: red;
+}
+
+.form-control {
+  width: 15px;
+  padding: 0px;
+  position: relative;
+  margin: auto;
+
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.form-check {
+  padding: 0;
 }
