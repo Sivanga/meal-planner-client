@@ -1,0 +1,20 @@
+.deleteOverlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 97%;
+  background: rgba($color: #000000, $alpha: 0.7);
+  z-index: 2;
+  border-radius: 0.2rem;
+  color: white;
+  text-align: center;
+  padding-top: 50%;
+  font-weight: 800;
+}
+
+.dish-card {
+  position: relative;
+}

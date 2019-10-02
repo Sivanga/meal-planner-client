@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CardColumns, Modal, Button, Alert } from "react-bootstrap";
+import { CardColumns, Alert } from "react-bootstrap";
 import DishCard from "./DishCard";
 import PropTypes from "prop-types";
 import { DishListEnum } from "./DishCard";
@@ -12,48 +12,13 @@ const DishesList = ({
   currentUid
 }) => {
   /**
-   *  Dish id to be deleted
-   */
-  const [deleteDishId, setUnfavoriteDishId] = useState(-1);
-
-  /**
    * Show/ hide login alert
    */
   const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   const onDishRemove = id => {
     handleDishRemove(id);
-    setUnfavoriteDishId(-1);
   };
-
-  const deleteDishModal = (
-    <Modal
-      show={deleteDishId !== -1}
-      onHide={() => setUnfavoriteDishId(-1)}
-      size="sm"
-      centered
-    >
-      <Modal.Header className="text-center" closeButton>
-        <Modal.Title className="w-100 m-auto">Unfavorite dish?</Modal.Title>
-      </Modal.Header>
-      <Modal.Footer>
-        <Button
-          className="btn-modal"
-          onClick={() => setUnfavoriteDishId(-1)}
-          size="sm"
-        >
-          No
-        </Button>
-        <Button
-          size="sm"
-          className="btn-modal"
-          onClick={() => onDishRemove(deleteDishId)}
-        >
-          Yes
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
 
   const loginAlert = (
     <Alert
@@ -68,7 +33,6 @@ const DishesList = ({
 
   return (
     <>
-      {deleteDishModal}
       {loginAlert}
       <CardColumns>
         {dishes.map((dish, index) => (
@@ -77,7 +41,7 @@ const DishesList = ({
             dish={dish}
             index={index}
             onLoginNeeded={() => setShowLoginAlert(true)}
-            handleDishUnfavorite={id => setUnfavoriteDishId(id)}
+            handleDishUnfavorite={id => onDishRemove(id)}
             handleDishFavorite={dish => handleDishFavorite(dish, currentUid)}
             dishListEnum={dishListEnum}
             currentUid={currentUid}
