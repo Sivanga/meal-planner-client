@@ -64,7 +64,7 @@
   color: red;
 }
 
-.form-control {
+.tampleateMenuDayInput {
   width: 15px;
   padding: 0px;
   position: relative;
@@ -75,6 +75,8 @@
   }
 }
 
-.form-check {
-  padding: 0;
+.day-column {
+  .form-check {
+    padding: 0;
+  }
 }

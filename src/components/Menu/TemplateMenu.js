@@ -179,8 +179,8 @@ const TemplateMenu = props => {
                 <MDBInput
                   checked={day.enabled}
                   type="radio"
-                  id="radio1"
                   onClick={() => toggleEnableDay(index)}
+                  className="tampleateMenuDayInput"
                 />
                 {day.day}
               </th>
