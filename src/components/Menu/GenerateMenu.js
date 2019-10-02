@@ -11,6 +11,7 @@ import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import DishCard from "../dishes/DishCard";
 import { DishListEnum } from "../dishes/DishCard";
+import DishesList from "../dishes/DishesList";
 
 const mapStateToProps = state => {
   return {
@@ -104,57 +105,68 @@ const GenerateMenu = props => {
 
   return (
     <>
-      <MDBTable className="table-bordered">
-        <MDBTableHead>
-          {/*Empty cell for table left top corner*/}
-          <tr>
-            <th />
-            {/*Days headers*/}
-            {days.map((day, index) => (
-              <th
-                id="generated-day"
-                key={index}
-                className={classNames("day-column", {
-                  dayEnabled: day.enabled
-                })}
-              >
-                {day.day}
-              </th>
-            ))}
-          </tr>
-        </MDBTableHead>
-        <MDBTableBody>
-          {meals.map((meal, mealIndex) => (
-            <tr key={mealIndex} className="meal-row">
-              {/* Row for each meal */}
-              <th>{meal}</th>
-              {days.map((day, dayIndex) => (
-                <td
-                  key={dayIndex}
-                  className={classNames({
-                    mealEnabled: day.enabled
-                  })}
-                  contentEditable={day.enabled ? "true" : "false"}
-                  suppressContentEditableWarning={true}
-                  onKeyPress={disableNewlines}
-                  onBlur={e => onDishChange(e, dayIndex, mealIndex)}
-                >
-                  {/* Random dish */}
+      <div className="generateMenuContainer">
+        <div className="generateMenuTable">
+          <MDBTable className={classNames("table-bordered")}>
+            <MDBTableHead>
+              {/*Empty cell for table left top corner*/}
+              <tr>
+                <th />
+                {/*Days headers*/}
+                {days.map((day, index) => (
+                  <th
+                    id="generated-day"
+                    key={index}
+                    className={classNames("day-column", {
+                      dayEnabled: day.enabled
+                    })}
+                  >
+                    {day.day}
+                  </th>
+                ))}
+              </tr>
+            </MDBTableHead>
+            <MDBTableBody>
+              {meals.map((meal, mealIndex) => (
+                <tr key={mealIndex} className="meal-row">
+                  {/* Row for each meal */}
+                  <th className="meal-name">{meal}</th>
+                  {days.map((day, dayIndex) => (
+                    <td
+                      key={dayIndex}
+                      className={classNames({
+                        mealEnabled: day.enabled
+                      })}
+                      contentEditable={day.enabled ? "true" : "false"}
+                      suppressContentEditableWarning={true}
+                      onKeyPress={disableNewlines}
+                      onBlur={e => onDishChange(e, dayIndex, mealIndex)}
+                    >
+                      {/* Random dish */}
 
-                  {day.enabled ? (
-                    <DishCard
-                      dish={computeRandomDishes[mealIndex][dayIndex]}
-                      index={0}
-                      currentUid={auth.authState.user.uid}
-                      dishListEnum={DishListEnum.NO_LIST}
-                    />
-                  ) : null}
-                </td>
+                      {day.enabled ? (
+                        <DishCard
+                          dish={computeRandomDishes[mealIndex][dayIndex]}
+                          index={0}
+                          currentUid={auth.authState.user.uid}
+                          dishListEnum={DishListEnum.NO_LIST}
+                        />
+                      ) : null}
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </MDBTableBody>
-      </MDBTable>
+            </MDBTableBody>
+          </MDBTable>
+        </div>
+        <div className="generateMenuFavoriteDishes">
+          <DishesList
+            dishes={props.dishes}
+            dishListEnum={DishListEnum.GENERATE_MENU}
+          />
+          
+        </div>
+      </div>
       <Button className="generate-btn" onClick={() => onDoneClick()}>
         Done
       </Button>

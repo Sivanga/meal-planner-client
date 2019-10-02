@@ -2,3 +2,26 @@
 #generated-day {
   cursor: auto;
 }
+
+.generateMenuContainer {
+  display: flex;
+  flex-direction: row;
+  min-width: 100vw;
+  height: 100vh;
+}
+
+.generateMenuTable {
+  flex: 1.5;
+  overflow: scroll;
+  margin-right: 1rem;
+}
+
+.generateMenuFavoriteDishes {
+  background-color: rgba(black, 0.5);
+  padding: 1rem;
+  flex: 0.5;
+  height: 100vh;
+  overflow: auto;
+  margin-right: 1rem;
+  min-width: 150px;
+}

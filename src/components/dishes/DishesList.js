@@ -3,6 +3,7 @@ import { CardColumns, Alert } from "react-bootstrap";
 import DishCard from "./DishCard";
 import PropTypes from "prop-types";
 import { DishListEnum } from "./DishCard";
+import classNames from "classnames";
 
 const DishesList = ({
   dishes,
@@ -34,7 +35,11 @@ const DishesList = ({
   return (
     <>
       {loginAlert}
-      <CardColumns>
+      <CardColumns
+        className={classNames({
+          singleColumn: dishListEnum === DishListEnum.GENERATE_MENU
+        })}
+      >
         {dishes.map((dish, index) => (
           <DishCard
             key={index}
@@ -58,7 +63,9 @@ DishesList.propTypes = {
   handleDishFavorite: PropTypes.func,
   dishListEnum: PropTypes.oneOf([
     DishListEnum.MY_FAVORITES_LIST,
-    DishListEnum.PUBLIC_LIST
+    DishListEnum.GENERATE_MENU,
+    DishListEnum.PUBLIC_LIST,
+    DishListEnum.NO_LIST
   ]),
   currentUid: PropTypes.string
 };

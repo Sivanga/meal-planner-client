@@ -7,7 +7,8 @@ import "../../scss/DishCard.scss";
 export const DishListEnum = {
   MY_FAVORITES_LIST: 1,
   PUBLIC_LIST: 2,
-  NO_LIST: 3
+  GENERATE_MENU: 3,
+  NO_LIST: 4
 };
 
 const DishCard = ({
@@ -153,6 +154,7 @@ DishCard.propTypes = {
   dishListEnum: PropTypes.oneOf([
     DishListEnum.MY_FAVORITES_LIST,
     DishListEnum.PUBLIC_LIST,
+    DishListEnum.GENERATE_MENU,
     DishListEnum.NO_LIST
   ]),
   currentUid: PropTypes.string,
