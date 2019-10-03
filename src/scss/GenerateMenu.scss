@@ -1,27 +1,84 @@
 @import "./Variables.scss";
-#generated-day {
-  cursor: auto;
-}
+
+$panel-width-large: 15rem;
+$panel-width-small: 10rem;
 
 .generateMenuContainer {
+  overflow: hidden;
+  width: 100vw;
+}
+
+.generateMenuTableContainer {
+  min-width: 100vw;
+  position: relative;
+}
+
+// Dummy wrapper to push to table on the left when the panel open and close.
+.dummy-wrapper {
   display: flex;
   flex-direction: row;
-  min-width: 100vw;
-  height: 100vh;
+  position: relative;
+  width: 100%;
+
+  // Table
+  .generateMenuTable {
+    overflow: auto;
+    flex: 1;
+    max-width: 100%;
+  }
+
+  // Dummy view to push the table together with the panel
+  .panel-dummy {
+    width: $panel-width-small;
+    display: hidden;
+    transition: opacity 0.5 ease-out;
+    opacity: 1;
+
+    &.show {
+      display: block;
+    }
+
+    &.hide {
+      display: none;
+    }
+
+    @media only screen and (min-width: 768px) {
+      width: $panel-width-large;
+    }
+  }
 }
 
-.generateMenuTable {
-  flex: 1.5;
-  overflow: scroll;
-  margin-right: 1rem;
+// Panel
+.panel-wrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: $panel-width-small;
+  transform: translateX(100%);
+  transition: 0.3s ease-out;
+  background: $dark-text-color;
+  &.show {
+    transform: translateX(0%);
+  }
+
+  &.hide {
+    transform: translateX(100%);
+  }
+
+  @media only screen and (min-width: 768px) {
+    width: $panel-width-large;
+  }
 }
 
+// Panel content
 .generateMenuFavoriteDishes {
-  background-color: rgba(black, 0.5);
-  padding: 1rem;
-  flex: 0.5;
-  height: 100vh;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: #eee;
   overflow: auto;
-  margin-right: 1rem;
-  min-width: 150px;
+  padding: 0.5rem;
 }

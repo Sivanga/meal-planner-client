@@ -4,7 +4,7 @@ import ConfigureStore from "./store/ConfigureStore";
 import ReactDOM from "react-dom";
 import "mdbreact/dist/css/mdb.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "@fortawesome/fontawesome-free/css/all.css ";
+import "@fortawesome/fontawesome-free/css/all.css";
 
 import "./index.css";
 import App from "./components/App";

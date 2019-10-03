@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { MDBTable, MDBTableBody, MDBTableHead, Button } from "mdbreact";
 import classNames from "classnames";
@@ -41,6 +41,12 @@ const GenerateMenu = props => {
     if (!auth.authState.user) return;
     props.fetchDishes(auth.authState.user.uid);
   }, [auth]);
+
+  const [showPanel, setShowPanel] = useState(false);
+
+  const onPanelToggle = () => {
+    setShowPanel(!showPanel);
+  };
 
   /**
    * useMemo in order to not recompute randomDishes on each render.
@@ -104,73 +110,83 @@ const GenerateMenu = props => {
   }
 
   return (
-    <>
-      <div className="generateMenuContainer">
-        <div className="generateMenuTable">
-          <MDBTable className={classNames("table-bordered")}>
-            <MDBTableHead>
-              {/*Empty cell for table left top corner*/}
-              <tr>
-                <th />
-                {/*Days headers*/}
-                {days.map((day, index) => (
-                  <th
-                    id="generated-day"
-                    key={index}
-                    className={classNames("day-column", {
-                      dayEnabled: day.enabled
-                    })}
-                  >
-                    {day.day}
-                  </th>
-                ))}
-              </tr>
-            </MDBTableHead>
-            <MDBTableBody>
-              {meals.map((meal, mealIndex) => (
-                <tr key={mealIndex} className="meal-row">
-                  {/* Row for each meal */}
-                  <th className="meal-name">{meal}</th>
-                  {days.map((day, dayIndex) => (
-                    <td
-                      key={dayIndex}
-                      className={classNames({
-                        mealEnabled: day.enabled
-                      })}
-                      contentEditable={day.enabled ? "true" : "false"}
-                      suppressContentEditableWarning={true}
-                      onKeyPress={disableNewlines}
-                      onBlur={e => onDishChange(e, dayIndex, mealIndex)}
-                    >
-                      {/* Random dish */}
+    <div className="generateMenuContainer">
+      <div className="generateMenuTableContainer">
+        <input id="clicker" type="checkbox" onClick={() => onPanelToggle()} />
 
-                      {day.enabled ? (
-                        <DishCard
-                          dish={computeRandomDishes[mealIndex][dayIndex]}
-                          index={0}
-                          currentUid={auth.authState.user.uid}
-                          dishListEnum={DishListEnum.NO_LIST}
-                        />
-                      ) : null}
-                    </td>
+        <div className="dummy-wrapper">
+          <div className="generateMenuTable">
+            <MDBTable>
+              <MDBTableHead>
+                {/*Empty cell for table left top corner*/}
+                <tr>
+                  <th />
+                  {/*Days headers*/}
+                  {days.map((day, index) => (
+                    <th
+                      id="generated-day"
+                      key={index}
+                      className={classNames("day-column", {
+                        dayEnabled: day.enabled
+                      })}
+                    >
+                      {day.day}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </MDBTableBody>
-          </MDBTable>
-        </div>
-        <div className="generateMenuFavoriteDishes">
-          <DishesList
-            dishes={props.dishes}
-            dishListEnum={DishListEnum.GENERATE_MENU}
+              </MDBTableHead>
+              <MDBTableBody>
+                {meals.map((meal, mealIndex) => (
+                  <tr key={mealIndex} className="meal-row">
+                    {/* Row for each meal */}
+                    <th className="meal-name">{meal}</th>
+                    {days.map((day, dayIndex) => (
+                      <td
+                        key={dayIndex}
+                        className={classNames({
+                          mealEnabled: day.enabled
+                        })}
+                        contentEditable={day.enabled ? "true" : "false"}
+                        suppressContentEditableWarning={true}
+                        onKeyPress={disableNewlines}
+                        onBlur={e => onDishChange(e, dayIndex, mealIndex)}
+                      >
+                        {/* Random dish */}
+
+                        {day.enabled ? (
+                          <DishCard
+                            dish={computeRandomDishes[mealIndex][dayIndex]}
+                            index={0}
+                            currentUid={auth.authState.user.uid}
+                            dishListEnum={DishListEnum.NO_LIST}
+                          />
+                        ) : null}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </MDBTableBody>
+            </MDBTable>
+          </div>
+
+          <div
+            className={classNames("panel-dummy", showPanel ? "show" : "hide")}
           />
-          
+        </div>
+        <div className={classNames("panel-wrap", showPanel ? "show" : "hide")}>
+          <div className="generateMenuFavoriteDishes">
+            <DishesList
+              dishes={props.dishes}
+              dishListEnum={DishListEnum.GENERATE_MENU}
+            />
+          </div>
         </div>
       </div>
+
       <Button className="generate-btn" onClick={() => onDoneClick()}>
         Done
       </Button>
-    </>
+    </div>
   );
 };
 
