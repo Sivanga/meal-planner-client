@@ -6,6 +6,7 @@ $panel-width-small: 10rem;
 .generateMenuContainer {
   overflow: hidden;
   width: 100vw;
+  padding: 1rem;
 }
 
 .generateMenuTableContainer {
@@ -81,4 +82,13 @@ $panel-width-small: 10rem;
   color: #eee;
   overflow: auto;
   padding: 0.5rem;
+}
+
+.mealDisabled {
+  background: rgba($primary-dark, 0.5);
+}
+
+#generated-day {
+  min-width: 100px;
+  text-align: center;
 }

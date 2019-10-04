@@ -116,7 +116,7 @@ const GenerateMenu = props => {
 
         <div className="dummy-wrapper">
           <div className="generateMenuTable">
-            <MDBTable>
+            <MDBTable bordered>
               <MDBTableHead>
                 {/*Empty cell for table left top corner*/}
                 <tr>
@@ -144,7 +144,7 @@ const GenerateMenu = props => {
                       <td
                         key={dayIndex}
                         className={classNames({
-                          mealEnabled: day.enabled
+                          mealDisabled: !day.enabled
                         })}
                         contentEditable={day.enabled ? "true" : "false"}
                         suppressContentEditableWarning={true}
