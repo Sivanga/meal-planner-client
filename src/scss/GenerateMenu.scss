@@ -92,3 +92,64 @@ $panel-width-small: 10rem;
   min-width: 100px;
   text-align: center;
 }
+
+/** Grid table styles **/
+@import "./Variables.scss";
+
+$column-width-min: 180px;
+
+.wrapper {
+  overflow: auto;
+}
+
+ol.collection {
+  margin: 0px;
+  padding: 0px;
+}
+
+li {
+  list-style: none;
+}
+
+.item-container {
+  display: grid;
+  grid-template-columns: 100px repeat(7, minmax($column-width-min, 1fr));
+}
+
+.attribute {
+  border-bottom: 1px solid gray;
+  padding: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Day Header */
+.collection-container > .item-container:first-child > .attribute {
+  background-color: $primary;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+/* Meal Header */
+.collection-container > .item-container > div:first-child {
+  // border-left: 1px solid gray;
+  background-color: $primary;
+  color: white;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 1 Column Card Layout */
+@media screen and (max-width: 580px) {
+  $column-width-min: 200px;
+  .item-container {
+    display: grid;
+    grid-template-columns: 100px repeat(7, minmax($column-width-min, 1fr));
+  }
+}

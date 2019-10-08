@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import DishCard from "../dishes/DishCard";
 import { DishListEnum } from "../dishes/DishCard";
 import DishesList from "../dishes/DishesList";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const mapStateToProps = state => {
   return {
@@ -85,8 +86,23 @@ const GenerateMenu = props => {
     computeRandomDishes = newComputeRandomDishes;
   };
 
+  /**
+   * Used to create unique index from the matrix
+   */
+  const matrixToIndex = (mealIndex, dayIndex) => {
+    var index = days.length * mealIndex + dayIndex;
+    return index;
+  };
+
   const onDoneClick = () => {
     console.log("computeRandomDishes: ", computeRandomDishes);
+  };
+
+  const onDragEnd = result => {
+    console.log("onDragEnd, result: ", result);
+
+    // Dropped outside the table
+    if (!result.destination) return;
   };
 
   /**
@@ -116,69 +132,62 @@ const GenerateMenu = props => {
 
         <div className="dummy-wrapper">
           <div className="generateMenuTable">
-            <MDBTable bordered>
-              <MDBTableHead>
-                {/*Empty cell for table left top corner*/}
-                <tr>
-                  <th />
-                  {/*Days headers*/}
-                  {days.map((day, index) => (
-                    <th
-                      id="generated-day"
-                      key={index}
-                      className={classNames("day-column", {
-                        dayEnabled: day.enabled
+            <ol className="collection collection-container">
+              <li className="item item-container" key="-1">
+                <div key="day/meal" className="attribute">
+                  Day/Meal
+                </div>
+                {/* Days headers */}
+                {days.map((day, index) => (
+                  <div
+                    id="generated-day"
+                    key={index}
+                    className={classNames("day-column", "attribute", {
+                      dayEnabled: "day.enabled"
+                    })}
+                  >
+                    {day.day}
+                  </div>
+                ))}
+              </li>
+              {meals.map((meal, mealIndex) => (
+                <li key={mealIndex} className="item item-container">
+                  <div key="meal-name" className="attribute meal-name">
+                    {meal}
+                  </div>
+                  {days.map((day, dayIndex) => (
+                    <div
+                      key={dayIndex}
+                      className={classNames("attribute", {
+                        mealDisabled: !day.enabled
                       })}
                     >
-                      {day.day}
-                    </th>
+                      {day.enabled ? (
+                        <DishCard
+                          dish={computeRandomDishes[mealIndex][dayIndex]}
+                          index={matrixToIndex(mealIndex, dayIndex)}
+                          currentUid={auth.authState.user.uid}
+                          dishListEnum={DishListEnum.NO_LIST}
+                        />
+                      ) : null}
+                    </div>
                   ))}
-                </tr>
-              </MDBTableHead>
-              <MDBTableBody>
-                {meals.map((meal, mealIndex) => (
-                  <tr key={mealIndex} className="meal-row">
-                    {/* Row for each meal */}
-                    <th className="meal-name">{meal}</th>
-                    {days.map((day, dayIndex) => (
-                      <td
-                        key={dayIndex}
-                        className={classNames({
-                          mealDisabled: !day.enabled
-                        })}
-                        contentEditable={day.enabled ? "true" : "false"}
-                        suppressContentEditableWarning={true}
-                        onKeyPress={disableNewlines}
-                        onBlur={e => onDishChange(e, dayIndex, mealIndex)}
-                      >
-                        {/* Random dish */}
-
-                        {day.enabled ? (
-                          <DishCard
-                            dish={computeRandomDishes[mealIndex][dayIndex]}
-                            index={0}
-                            currentUid={auth.authState.user.uid}
-                            dishListEnum={DishListEnum.NO_LIST}
-                          />
-                        ) : null}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </MDBTableBody>
-            </MDBTable>
+                </li>
+              ))}
+            </ol>
           </div>
-
           <div
             className={classNames("panel-dummy", showPanel ? "show" : "hide")}
           />
-        </div>
-        <div className={classNames("panel-wrap", showPanel ? "show" : "hide")}>
-          <div className="generateMenuFavoriteDishes">
-            <DishesList
-              dishes={props.dishes}
-              dishListEnum={DishListEnum.GENERATE_MENU}
-            />
+          <div
+            className={classNames("panel-wrap", showPanel ? "show" : "hide")}
+          >
+            <div className="generateMenuFavoriteDishes">
+              <DishesList
+                dishes={props.dishes}
+                dishListEnum={DishListEnum.GENERATE_MENU}
+              />
+            </div>
           </div>
         </div>
       </div>

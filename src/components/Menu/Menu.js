@@ -5,7 +5,6 @@ import "../..//scss/Menu.scss";
 function Menu(props) {
   const [createNewMenu, setCreateNewMenu] = useState(false);
   if (createNewMenu) return <NewMenu />;
-
   return (
     <>
       <div className="create-new">Create new!</div>
