@@ -126,76 +126,120 @@ const GenerateMenu = props => {
   }
 
   return (
-    <div className="generateMenuContainer">
-      <div className="generateMenuTableContainer">
-        <input id="clicker" type="checkbox" onClick={() => onPanelToggle()} />
+    <DragDropContext onDragEnd={result => onDragEnd(result)}>
+      <div className="generateMenuContainer">
+        <div className="generateMenuTableContainer">
+          <input id="clicker" type="checkbox" onClick={() => onPanelToggle()} />
 
-        <div className="dummy-wrapper">
-          <div className="generateMenuTable">
-            <ol className="collection collection-container">
-              <li className="item item-container" key="-1">
-                <div key="day/meal" className="attribute">
-                  Day/Meal
-                </div>
-                {/* Days headers */}
-                {days.map((day, index) => (
-                  <div
-                    id="generated-day"
-                    key={index}
-                    className={classNames("day-column", "attribute", {
-                      dayEnabled: "day.enabled"
-                    })}
-                  >
-                    {day.day}
+          <div className="dummy-wrapper">
+            <div className="generateMenuTable">
+              <ol className="collection collection-container">
+                <li className="item item-container" key="-1">
+                  <div key="day/meal" className="attribute">
+                    Day/Meal
                   </div>
-                ))}
-              </li>
-              {meals.map((meal, mealIndex) => (
-                <li key={mealIndex} className="item item-container">
-                  <div key="meal-name" className="attribute meal-name">
-                    {meal}
-                  </div>
-                  {days.map((day, dayIndex) => (
+                  {/* Days headers */}
+                  {days.map((day, index) => (
                     <div
-                      key={dayIndex}
-                      className={classNames("attribute", {
-                        mealDisabled: !day.enabled
+                      id="generated-day"
+                      key={index}
+                      className={classNames("day-column", "attribute", {
+                        dayEnabled: "day.enabled"
                       })}
                     >
-                      {day.enabled ? (
-                        <DishCard
-                          dish={computeRandomDishes[mealIndex][dayIndex]}
-                          index={matrixToIndex(mealIndex, dayIndex)}
-                          currentUid={auth.authState.user.uid}
-                          dishListEnum={DishListEnum.NO_LIST}
-                        />
-                      ) : null}
+                      {day.day}
                     </div>
                   ))}
                 </li>
-              ))}
-            </ol>
-          </div>
-          <div
-            className={classNames("panel-dummy", showPanel ? "show" : "hide")}
-          />
-          <div
-            className={classNames("panel-wrap", showPanel ? "show" : "hide")}
-          >
-            <div className="generateMenuFavoriteDishes">
-              <DishesList
-                dishes={props.dishes}
-                dishListEnum={DishListEnum.GENERATE_MENU}
-              />
+                {meals.map((meal, mealIndex) => (
+                  <Droppable
+                    droppableId={mealIndex.toString()}
+                    key={mealIndex}
+                    direction="horizontal"
+                  >
+                    {(provided, snapshot) => (
+                      <li
+                        key={mealIndex}
+                        className={classNames("item item-container", {
+                          isDraggingOver: snapshot.isDraggingOver
+                        })}
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        {...provided.droppablePlaceholder}
+                      >
+                        <div key={mealIndex} className="attribute meal-name">
+                          {meal}
+                        </div>
+                        {days.map((day, dayIndex) => (
+                          <Draggable
+                            draggableId={matrixToIndex(
+                              mealIndex,
+                              dayIndex
+                            ).toString()}
+                            index={dayIndex}
+                            key={dayIndex}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                key={dayIndex}
+                                className={classNames("attribute", {
+                                  mealDisabled: !day.enabled,
+                                  isDragging: snapshot.isDragging
+                                })}
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                {console.log("snapshot: ", snapshot)}
+                                {/* {"id: " +
+                                  matrixToIndex(
+                                    mealIndex,
+                                    dayIndex
+                                  ).toString() +
+                                  " index: " +
+                                  dayIndex} */}
+                                {day.enabled ? (
+                                  <DishCard
+                                    dish={
+                                      computeRandomDishes[mealIndex][dayIndex]
+                                    }
+                                    index={matrixToIndex(mealIndex, dayIndex)}
+                                    currentUid={auth.authState.user.uid}
+                                    dishListEnum={DishListEnum.NO_LIST}
+                                  />
+                                ) : null}
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </li>
+                    )}
+                  </Droppable>
+                ))}
+              </ol>
+            </div>
+            <div
+              className={classNames("panel-dummy", showPanel ? "show" : "hide")}
+            />
+            <div
+              className={classNames("panel-wrap", showPanel ? "show" : "hide")}
+            >
+              <div className="generateMenuFavoriteDishes">
+                <DishesList
+                  dishes={props.dishes}
+                  dishListEnum={DishListEnum.GENERATE_MENU}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Button className="generate-btn" onClick={() => onDoneClick()}>
-        Done
-      </Button>
-    </div>
+        <Button className="generate-btn" onClick={() => onDoneClick()}>
+          Done
+        </Button>
+      </div>
+    </DragDropContext>
   );
 };
 

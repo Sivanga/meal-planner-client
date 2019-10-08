@@ -88,6 +88,18 @@ $panel-width-small: 10rem;
   background: rgba($primary-dark, 0.5);
 }
 
+.isDragging {
+  background: lightgreen;
+  margin: 0;
+  padding: 0;
+}
+
+.isDraggingOver {
+  background: lightblue;
+  margin: 0;
+  padding: 0;
+}
+
 #generated-day {
   min-width: 100px;
   text-align: center;
@@ -95,8 +107,6 @@ $panel-width-small: 10rem;
 
 /** Grid table styles **/
 @import "./Variables.scss";
-
-$column-width-min: 180px;
 
 .wrapper {
   overflow: auto;
@@ -111,9 +121,16 @@ li {
   list-style: none;
 }
 
+@media screen and (max-width: 580px) {
+  .item-container {
+    display: grid;
+    grid-template-columns: 100px repeat(8, minmax(2000px, 1fr));
+  }
+}
+
 .item-container {
   display: grid;
-  grid-template-columns: 100px repeat(7, minmax($column-width-min, 1fr));
+  grid-template-columns: 100px repeat(8, minmax(140px, 1fr));
 }
 
 .attribute {
@@ -143,13 +160,4 @@ li {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* 1 Column Card Layout */
-@media screen and (max-width: 580px) {
-  $column-width-min: 200px;
-  .item-container {
-    display: grid;
-    grid-template-columns: 100px repeat(7, minmax($column-width-min, 1fr));
-  }
 }
