@@ -40,20 +40,15 @@ const GenerateMenu = props => {
 
   useEffect(() => {
     if (!auth.authState.user) return;
-    props.fetchDishes(auth.authState.user.uid);
-  }, [auth]);
-
-  const [showPanel, setShowPanel] = useState(false);
-
-  const onPanelToggle = () => {
-    setShowPanel(!showPanel);
-  };
+    if (!props.dishes || props.dishes.length === 0)
+      props.fetchDishes(auth.authState.user.uid);
+    computeRandomDishes();
+  }, [auth, props.dishes]);
 
   /**
-   * useMemo in order to not recompute randomDishes on each render.
-   * Assign random dishes by the length of enabled days and meals
+   * Assign random dishes by the size of days and meals
    */
-  var computeRandomDishes = useMemo(() => {
+  var computeRandomDishes = () => {
     if (props.dishes.length === 0) {
       return;
     }
@@ -71,8 +66,16 @@ const GenerateMenu = props => {
 
       return true;
     });
-    return randomDishes;
-  }, [days, meals, props.dishes]);
+    setRandomDishes(randomDishes);
+  };
+
+  const [randomDishes, setRandomDishes] = useState(null);
+
+  const [showPanel, setShowPanel] = useState(false);
+
+  const onPanelToggle = () => {
+    setShowPanel(!showPanel);
+  };
 
   /**
    * Used to update the state with the edited dishes in randomDishes
@@ -81,9 +84,9 @@ const GenerateMenu = props => {
    */
   const onDishChange = (event, dayIndex, mealIndex) => {
     const newDish = event.currentTarget.textContent;
-    var newComputeRandomDishes = [...computeRandomDishes];
-    newComputeRandomDishes[mealIndex][dayIndex] = newDish;
-    computeRandomDishes = newComputeRandomDishes;
+    var newrandomDishes = [...randomDishes];
+    newrandomDishes[mealIndex][dayIndex] = newDish;
+    setRandomDishes(newrandomDishes);
   };
 
   /**
@@ -95,14 +98,56 @@ const GenerateMenu = props => {
   };
 
   const onDoneClick = () => {
-    console.log("computeRandomDishes: ", computeRandomDishes);
+    console.log("randomDishes: ", randomDishes);
   };
 
-  const onDragEnd = result => {
-    console.log("onDragEnd, result: ", result);
-
+  const onDragEnd = ({ source, destination }) => {
     // Dropped outside the table
-    if (!result.destination) return;
+    if (!destination) return;
+
+    reorderLists(source, destination);
+  };
+
+  const reorderLists = (source, destination) => {
+    const current = [...randomDishes[source.droppableId]];
+    const next = [...randomDishes[destination.droppableId]];
+    const target = current[source.index];
+
+    // moving to same list
+    if (source.droppableId === destination.droppableId) {
+      const reordered = reorder(current, source.index, destination.index);
+      const result = {
+        ...randomDishes,
+        [source.droppableId]: reordered
+      };
+      setRandomDishes(result);
+      return;
+    }
+
+    // moving to different list
+    // remove from original
+    current.splice(source.index, 1);
+    // insert into next
+    const removed = next.splice(destination.index, 1, target);
+    current.splice(source.index, 0, removed[0]);
+
+    const result = {
+      ...randomDishes,
+      [source.droppableId]: current,
+      [destination.droppableId]: next
+    };
+    console.log("randomDishes\n result: ", result);
+
+    setRandomDishes(result);
+    return;
+  };
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
   };
 
   /**
@@ -117,7 +162,7 @@ const GenerateMenu = props => {
   /**
    * If dishes data is still loading, show message
    */
-  if (!props.dataReceived) {
+  if (!props.dataReceived || !randomDishes) {
     return <div className="center-text">Loading...</div>;
   }
 
@@ -190,19 +235,10 @@ const GenerateMenu = props => {
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                               >
-                                {console.log("snapshot: ", snapshot)}
-                                {/* {"id: " +
-                                  matrixToIndex(
-                                    mealIndex,
-                                    dayIndex
-                                  ).toString() +
-                                  " index: " +
-                                  dayIndex} */}
-                                {day.enabled ? (
+                                {day.enabled &&
+                                randomDishes[mealIndex][dayIndex] ? (
                                   <DishCard
-                                    dish={
-                                      computeRandomDishes[mealIndex][dayIndex]
-                                    }
+                                    dish={randomDishes[mealIndex][dayIndex]}
                                     index={matrixToIndex(mealIndex, dayIndex)}
                                     currentUid={auth.authState.user.uid}
                                     dishListEnum={DishListEnum.NO_LIST}
@@ -236,7 +272,7 @@ const GenerateMenu = props => {
         </div>
 
         <Button className="generate-btn" onClick={() => onDoneClick()}>
-          Done
+          Save
         </Button>
       </div>
     </DragDropContext>

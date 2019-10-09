@@ -35,6 +35,8 @@ class DishTags extends Component {
   }
 
   handleTagAddition(tag) {
+    // Set id
+    tag.id = this.state.tags.length + 1;
     const tags = [].concat(this.state.tags, tag);
     this.setState({ tags });
     this.props.onChange(tags);

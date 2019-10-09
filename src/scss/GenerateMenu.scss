@@ -17,9 +17,7 @@ $panel-width-small: 10rem;
 // Dummy wrapper to push to table on the left when the panel open and close.
 .dummy-wrapper {
   display: flex;
-  flex-direction: row;
   position: relative;
-  width: 100%;
 
   // Table
   .generateMenuTable {
@@ -45,6 +43,10 @@ $panel-width-small: 10rem;
 
     @media only screen and (min-width: 768px) {
       width: $panel-width-large;
+    }
+
+    @media only screen and (min-width: 1440px) {
+      width: 5rem;
     }
   }
 }
@@ -89,15 +91,11 @@ $panel-width-small: 10rem;
 }
 
 .isDragging {
-  background: lightgreen;
-  margin: 0;
-  padding: 0;
+  // background: lightgreen;
 }
 
 .isDraggingOver {
   background: lightblue;
-  margin: 0;
-  padding: 0;
 }
 
 #generated-day {
