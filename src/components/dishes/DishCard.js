@@ -7,8 +7,8 @@ import "../../scss/DishCard.scss";
 export const DishListEnum = {
   MY_FAVORITES_LIST: 1,
   PUBLIC_LIST: 2,
-  GENERATE_MENU: 3,
-  NO_LIST: 4
+  NO_LIST: 3,
+  GENERATE_MENU_LIST: 4
 };
 
 const DishCard = ({
@@ -56,7 +56,11 @@ const DishCard = ({
   };
 
   return (
-    <div className="dish-card">
+    <div
+      className={classNames("dish-card", {
+        "card-with-margin": dishListEnum === DishListEnum.GENERATE_MENU_LIST
+      })}
+    >
       <Card
         className={classNames({
           "local-dish": dish.isLocal
@@ -154,8 +158,8 @@ DishCard.propTypes = {
   dishListEnum: PropTypes.oneOf([
     DishListEnum.MY_FAVORITES_LIST,
     DishListEnum.PUBLIC_LIST,
-    DishListEnum.GENERATE_MENU,
-    DishListEnum.NO_LIST
+    DishListEnum.NO_LIST,
+    DishListEnum.GENERATE_MENU_LIST
   ]),
   currentUid: PropTypes.string,
   onLoginNeeded: PropTypes.func

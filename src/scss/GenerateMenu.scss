@@ -1,72 +1,38 @@
 @import "./Variables.scss";
 
-$panel-width-large: 15rem;
-$panel-width-small: 10rem;
+$panel-width-large: 11rem;
+$panel-width-small: 7rem;
 
 .generateMenuContainer {
   overflow: hidden;
   width: 100vw;
-  padding: 1rem;
-}
-
-.generateMenuTableContainer {
-  min-width: 100vw;
   position: relative;
 }
 
-// Dummy wrapper to push to table on the left when the panel open and close.
-.dummy-wrapper {
-  display: flex;
-  position: relative;
-
-  // Table
-  .generateMenuTable {
-    overflow: auto;
-    flex: 1;
-    max-width: 100%;
-  }
-
-  // Dummy view to push the table together with the panel
-  .panel-dummy {
-    width: $panel-width-small;
-    display: hidden;
-    transition: opacity 0.5 ease-out;
-    opacity: 1;
-
-    &.show {
-      display: block;
-    }
-
-    &.hide {
-      display: none;
-    }
-
-    @media only screen and (min-width: 768px) {
-      width: $panel-width-large;
-    }
-
-    @media only screen and (min-width: 1440px) {
-      width: 5rem;
-    }
-  }
+// Table
+.generateMenuTable {
+  overflow: auto;
+  padding: 5px;
 }
 
 // Panel
 .panel-wrap {
+  overflow: auto;
   position: absolute;
   top: 0;
   bottom: 0;
   right: 0;
   width: $panel-width-small;
-  transform: translateX(100%);
+  margin-top: 1.9rem;
+  transform: translate(100%);
   transition: 0.3s ease-out;
   background: $dark-text-color;
   &.show {
-    transform: translateX(0%);
+    transform: translate(0%);
   }
 
   &.hide {
-    transform: translateX(100%);
+    transform: translate(100%);
   }
 
   @media only screen and (min-width: 768px) {
@@ -74,24 +40,8 @@ $panel-width-small: 10rem;
   }
 }
 
-// Panel content
-.generateMenuFavoriteDishes {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  color: #eee;
-  overflow: auto;
-  padding: 0.5rem;
-}
-
 .mealDisabled {
   background: rgba($primary-dark, 0.5);
-}
-
-.isDragging {
-  // background: lightgreen;
 }
 
 .isDraggingOver {
@@ -119,16 +69,8 @@ li {
   list-style: none;
 }
 
-@media screen and (max-width: 580px) {
-  .item-container {
-    display: grid;
-    grid-template-columns: 100px repeat(8, minmax(2000px, 1fr));
-  }
-}
-
-.item-container {
-  display: grid;
-  grid-template-columns: 100px repeat(8, minmax(140px, 1fr));
+.collection-container {
+  overflow: scroll;
 }
 
 .attribute {
@@ -137,6 +79,7 @@ li {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  font-size: 1rem;
 }
 
 /* Day Header */
@@ -146,7 +89,7 @@ li {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 
 /* Meal Header */
@@ -154,8 +97,49 @@ li {
   // border-left: 1px solid gray;
   background-color: $primary;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+// Mobile first
+.item-container {
+  display: grid;
+  grid-template-columns: 80px repeat(8, minmax(100px, 1fr));
+  width: 250%;
+  font-size: 0.5rem;
+}
+
+@media screen and (min-width: 370px) {
+  .item-container {
+    width: 220%;
+  }
+}
+
+@media screen and (min-width: 425px) {
+  .item-container {
+    width: 190%;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .item-container {
+    width: 100%;
+    grid-template-columns: 60px repeat(8, minmax(100px, 1fr));
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .item-container {
+    width: 98%;
+    grid-template-columns: 70px repeat(8, minmax(135px, 1fr));
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .item-container {
+    width: 97%;
+    grid-template-columns: 90px repeat(8, minmax(190px, 1fr));
+  }
 }

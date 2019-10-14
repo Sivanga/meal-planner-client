@@ -35,11 +35,7 @@ const DishesList = ({
   return (
     <>
       {loginAlert}
-      <CardColumns
-        className={classNames({
-          singleColumn: dishListEnum === DishListEnum.GENERATE_MENU
-        })}
-      >
+      <CardColumns>
         {dishes.map((dish, index) => (
           <DishCard
             key={index}
@@ -63,7 +59,6 @@ DishesList.propTypes = {
   handleDishFavorite: PropTypes.func,
   dishListEnum: PropTypes.oneOf([
     DishListEnum.MY_FAVORITES_LIST,
-    DishListEnum.GENERATE_MENU,
     DishListEnum.PUBLIC_LIST,
     DishListEnum.NO_LIST
   ]),
