@@ -7,7 +7,6 @@ https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/patterns/using
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import DishCard, { DishListEnum } from "./DishCard";
-import "../../scss/Portal.scss";
 
 const portal: HTMLElement = document.createElement("div");
 
