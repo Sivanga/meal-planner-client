@@ -8,19 +8,14 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import DishCard, { DishListEnum } from "./DishCard";
 
-const portal: HTMLElement = document.createElement("div");
-
+const portal = document.createElement("div");
 if (!document.body) {
   throw new Error("body not ready for portal creation!");
 }
+document.body.appendChild(portal);
 
 const PortalDishCard = ({ provided, snapshot, dish, index }) => {
   const usePortal: boolean = snapshot.isDragging;
-
-  useEffect(() => {
-    const root = document.getElementById("root");
-    root.appendChild(portal);
-  });
 
   const child = (
     <div
