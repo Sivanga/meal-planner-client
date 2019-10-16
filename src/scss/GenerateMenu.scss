@@ -8,6 +8,7 @@ $panel-width-small: 6rem;
   overflow: hidden;
   width: 100vw;
   position: relative;
+  padding-top: 2rem;
 }
 
 // Table
@@ -147,4 +148,22 @@ li {
     width: 97%;
     grid-template-columns: 90px repeat(8, minmax(190px, 1fr));
   }
+}
+
+.burger {
+  position: absolute;
+  right: 1rem;
+  top: -0.5rem;
+  z-index: 2;
+
+  &.open {
+    // right: 100px;
+  }
+}
+
+.burger .burger-lines,
+.burger .burger-lines:after,
+.burger .burger-lines:before {
+  background-color: black;
+  font-size: 8px;
 }

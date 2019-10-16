@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import TableDroppable from "./TableDroppable";
 import PanelDroppable, { PANEL_DROPPABLE_ID } from "./PanelDroppable";
+import Burger from "@animated-burgers/burger-arrow";
+import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
 import "../../scss/GenerateMenu.scss";
 
@@ -199,11 +201,12 @@ const GenerateMenu = props => {
       onDragStart={() => onDragStart()}
     >
       <div id="menuContainer" className="generateMenuContainer">
-        <input
-          id="clicker"
-          type="checkbox"
+        <Burger
+          direction="right"
+          isOpen={showPanel}
           onClick={() => setShowPanel(!showPanel)}
         />
+
         <div className="generateMenuTableContainer">
           <ol className="collection collection-container generateMenuTable">
             <li className="item item-container">
