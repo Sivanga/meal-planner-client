@@ -1,7 +1,8 @@
 @import "./Variables.scss";
 
 $panel-width-large: 11rem;
-$panel-width-small: 7rem;
+$panel-width-medium: 8rem;
+$panel-width-small: 6rem;
 
 .generateMenuContainer {
   overflow: hidden;
@@ -36,6 +37,10 @@ $panel-width-small: 7rem;
   }
 
   @media only screen and (min-width: 768px) {
+    width: $panel-width-medium;
+  }
+
+  @media only screen and (min-width: 1024px) {
     width: $panel-width-large;
   }
 }
