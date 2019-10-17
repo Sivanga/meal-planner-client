@@ -200,13 +200,11 @@ const GenerateMenu = props => {
       onDragEnd={result => onDragEnd(result)}
       onDragStart={() => onDragStart()}
     >
-      <div id="menuContainer" className="generateMenuContainer">
-        <Burger
-          direction="right"
-          isOpen={showPanel}
-          onClick={() => setShowPanel(!showPanel)}
-        />
+      <small>
+        You are running this application in <b>{process.env.NODE_ENV}</b> mode.
+      </small>
 
+      <div id="menuContainer" className="generateMenuContainer">
         <div className="generateMenuTableContainer">
           <ol className="collection collection-container generateMenuTable">
             <li className="item item-container">
@@ -225,6 +223,13 @@ const GenerateMenu = props => {
                   {day.day}
                 </div>
               ))}
+
+              {/* Panl handle at the end of the table head */}
+              <Burger
+                direction="right"
+                isOpen={showPanel}
+                onClick={() => setShowPanel(!showPanel)}
+              />
             </li>
 
             {/* Meals */}
