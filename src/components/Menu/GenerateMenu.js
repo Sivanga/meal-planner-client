@@ -52,9 +52,11 @@ const GenerateMenu = props => {
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-    if (!props.dishes || props.dishes.length === 0)
+    if (!props.dishes || props.dishes.length === 0) {
       props.fetchDishes(auth.authState.user.uid);
-    computeRandomDishes();
+    } else {
+      computeRandomDishes();
+    }
   }, [auth, props.dishes]);
 
   /**
@@ -200,10 +202,6 @@ const GenerateMenu = props => {
       onDragEnd={result => onDragEnd(result)}
       onDragStart={() => onDragStart()}
     >
-      <small>
-        You are running this application in <b>{process.env.NODE_ENV}</b> mode.
-      </small>
-
       <div id="menuContainer" className="generateMenuContainer">
         <div className="generateMenuTableContainer">
           <ol className="collection collection-container generateMenuTable">

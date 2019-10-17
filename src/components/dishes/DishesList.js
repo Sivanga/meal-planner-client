@@ -3,7 +3,7 @@ import { CardColumns, Alert } from "react-bootstrap";
 import DishCard from "./DishCard";
 import PropTypes from "prop-types";
 import { DishListEnum } from "./DishCard";
-import classNames from "classnames";
+import "../../scss/DishesList.scss";
 
 const DishesList = ({
   dishes,
