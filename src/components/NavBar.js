@@ -17,18 +17,18 @@ function NavBar() {
           <Nav fill className="w-100">
             {/* Wrapped Links in items otherwise fill contect doesn't work */}
             <Nav.Item>
+              <Nav.Link as={Link} to="/myFavorites" href="/myFavorites">
+                My Favorites
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={Link} to="/menu" href="/menu">
-                Menu
+                Menus
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
               <Nav.Link as={Link} to="/dishes" href="/dishes">
                 Dishes
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link as={Link} to="/myFavorites" href="/myFavorites">
-                My Favorites
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>

@@ -3,18 +3,13 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import NavBar from "./NavBar";
 import "../scss/Header.scss";
 function Header() {
-  var style = {
-    marginBottom: "0px",
-    height: "270px"
-  };
-
   return (
     <div>
-      <div className="header-wrapper" style={style}>
-        <Jumbotron>
+      <div className="header-wrapper">
+        <div className="jumbotron">
           {" "}
-          <span className="header-small">WEEKLY</span> MENU PLANNER
-        </Jumbotron>
+          <span className="header-small">PURE</span> MEAL PLAN
+        </div>
       </div>
       <hr />
       <NavBar />

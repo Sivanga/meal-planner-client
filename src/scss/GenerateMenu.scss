@@ -109,7 +109,13 @@ li {
   justify-content: center;
 }
 
-// Mobile first
+/* Hide the leftovers cells of the grid */
+.item-container::after {
+  content: "";
+  grid-column: 9;
+  display: none;
+}
+
 .item-container {
   display: grid;
   grid-template-columns: 80px repeat(8, minmax(100px, 1fr));

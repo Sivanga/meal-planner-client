@@ -2,10 +2,17 @@
 
 .header-wrapper {
   position: relative;
+  height: 4.5rem;
+
+  @media (min-width: 769px) {
+    height: 8rem;
+  }
 }
 .jumbotron {
+  margin: auto;
+  margin-bottom: 0.5rem;
   color: $primary;
-  font-size: 3.5rem;
+  font-size: 1.5rem;
   width: 100%;
   letter-spacing: 0.1em;
   background-color: white;
@@ -14,11 +21,19 @@
   bottom: 0;
   text-align: center;
   box-shadow: none;
+
+  @media (min-width: 769px) {
+    font-size: 2rem;
+  }
 }
 
 .header-small {
-  font-size: 2rem;
+  font-size: 1rem;
   display: block;
+
+  @media (min-width: 769px) {
+    font-size: 1.5rem;
+  }
 }
 
 hr {
