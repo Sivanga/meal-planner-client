@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import NewDish from "./NewDish";
-import { Modal } from "react-bootstrap";
+import React, { useEffect } from "react";
 import { addDish, removeDish, fetchDishes } from "../../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -8,6 +6,7 @@ import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
+import NewDishModal from "./NewDishModal";
 
 const mapStateToProps = state => {
   return {
@@ -23,22 +22,11 @@ const mapDispatchToProps = dispatch => ({
   fetchDishes: uid => dispatch(fetchDishes(uid))
 });
 
-function AddDish(props) {
-  return (
-    <i className="fas fa-plus-circle new-dish" onClick={props.handleShow} />
-  );
-}
-
 const MyFavorites = props => {
   /**
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
-
-  /**
-   *  New dish modal state
-   */
-  const [newDishModalShow, setNewDishModalShow] = useState(false);
 
   /**
    * Fetch dishes in first render.
@@ -51,23 +39,11 @@ const MyFavorites = props => {
 
   const onDishAdd = dish => {
     props.addDish({ dish }, auth.authState.user.uid);
-    setNewDishModalShow(false);
   };
 
   const handleDishRemove = id => {
     props.removeDish(id, auth.authState.user.uid);
   };
-
-  const newDishmodal = (
-    <Modal show={newDishModalShow} onHide={() => setNewDishModalShow(false)}>
-      <Modal.Header className="text-center" closeButton>
-        <Modal.Title className="w-100 m-auto">Add new dish</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <NewDish onDishAdded={dish => onDishAdd(dish)} />
-      </Modal.Body>
-    </Modal>
-  );
 
   /**
    * If there's no logged in user, show message
@@ -94,11 +70,9 @@ const MyFavorites = props => {
         <div className="empty-dishes">
           <div>
             Looks like you don't have any favorites yet :(
-            <br /> Want to add your own dish?
-            <AddDish handleShow={() => setNewDishModalShow(true)} />
+            <NewDishModal addDish={dish => onDishAdd(dish)} />
           </div>
         </div>
-        {newDishmodal}
       </>
     );
 
@@ -117,8 +91,7 @@ const MyFavorites = props => {
         currentUid={currentUid}
       />
 
-      <AddDish handleShow={() => setNewDishModalShow(true)} />
-      {newDishmodal}
+      <NewDishModal addDish={dish => onDishAdd(dish)} />
     </>
   );
 };

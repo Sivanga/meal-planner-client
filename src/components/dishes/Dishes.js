@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import {
+  addDish,
   fetchPublicDishes,
   addToFavorites,
   removeDish
@@ -10,6 +11,7 @@ import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
+import NewDishModal from "./NewDishModal";
 
 const mapStateToProps = state => {
   return {
@@ -19,6 +21,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  addDish: (dish, uid) => dispatch(addDish(dish, uid)),
   fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
   addToFavorites: (dish, uid) => dispatch(addToFavorites(dish, uid)),
   removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid))
@@ -42,6 +45,10 @@ const Dishes = props => {
     props.fetchPublicDishes(uid);
   }, [auth]);
 
+  const onDishAdd = dish => {
+    props.addDish({ dish }, auth.authState.user.uid);
+  };
+
   const handleDishFavorite = (dish, uid) => {
     props.addToFavorites(dish, uid);
   };
@@ -64,13 +71,16 @@ const Dishes = props => {
     currentUid = auth.authState.user.uid;
   }
   return (
-    <DishesList
-      dishes={props.publicDishes}
-      dishListEnum={DishListEnum.PUBLIC_LIST}
-      currentUid={currentUid}
-      handleDishFavorite={(dish, uid) => handleDishFavorite(dish, uid)}
-      handleDishRemove={id => handleDishUnfavorite(id)}
-    />
+    <>
+      <DishesList
+        dishes={props.publicDishes}
+        dishListEnum={DishListEnum.PUBLIC_LIST}
+        currentUid={currentUid}
+        handleDishFavorite={(dish, uid) => handleDishFavorite(dish, uid)}
+        handleDishRemove={id => handleDishUnfavorite(id)}
+      />
+      <NewDishModal addDish={dish => onDishAdd(dish)} />
+    </>
   );
 };
 
