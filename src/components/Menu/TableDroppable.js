@@ -1,7 +1,7 @@
 import React from "react";
-import { Droppable, Draggable } from "react-beautiful-dnd";
+import { Droppable } from "react-beautiful-dnd";
 import classNames from "classnames";
-import DishCard, { DishListEnum } from "../dishes/DishCard";
+import TableDraggable from "./TableDraggable";
 
 const TableDroppable = ({ mealIndex, meal, days, randomDishes }) => {
   /**
@@ -32,32 +32,13 @@ const TableDroppable = ({ mealIndex, meal, days, randomDishes }) => {
             {meal}
           </div>
           {days.map((day, dayIndex) => (
-            <Draggable
-              draggableId={matrixToIndex(mealIndex, dayIndex).toString()}
-              index={dayIndex}
-              key={dayIndex}
-            >
-              {(provided, snapshot) => (
-                <div
-                  key={dayIndex}
-                  className={classNames("attribute", {
-                    mealDisabled: !day.enabled,
-                    isDragging: snapshot.isDragging
-                  })}
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  {day.enabled && randomDishes[mealIndex][dayIndex] ? (
-                    <DishCard
-                      dish={randomDishes[mealIndex][dayIndex]}
-                      index={matrixToIndex(mealIndex, dayIndex)}
-                      dishListEnum={DishListEnum.NO_LIST}
-                    />
-                  ) : null}
-                </div>
-              )}
-            </Draggable>
+            <TableDraggable
+              id={matrixToIndex(mealIndex, dayIndex).toString()}
+              dayIndex={dayIndex}
+              dayEnabled={day.enabled}
+              dish={randomDishes[mealIndex][dayIndex]}
+              dishIndex={matrixToIndex(mealIndex, dayIndex)}
+            />
           ))}
           {provided.placeholder}
         </li>
