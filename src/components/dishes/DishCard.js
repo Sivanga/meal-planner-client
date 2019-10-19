@@ -18,6 +18,7 @@ const DishCard = ({
   currentUid,
   handleDishFavorite,
   handleDishUnfavorite,
+  handleDishMinusClick,
   onLoginNeeded
 }) => {
   /**
@@ -53,6 +54,10 @@ const DishCard = ({
   const unfavoriteDish = id => {
     handleDishUnfavorite(id);
     setShowDeletOverlay(false);
+  };
+
+  const onMinusClick = () => {
+    handleDishMinusClick();
   };
 
   return (
@@ -119,6 +124,12 @@ const DishCard = ({
                   )}
               </div>
             </>
+          )}
+
+          {dishListEnum === DishListEnum.NO_LIST && (
+            <span onClick={() => onMinusClick()}>
+              <i className="far fas fa-minus-circle"></i>
+            </span>
           )}
 
           <Collapse in={expandCardsArray[index] === true}>

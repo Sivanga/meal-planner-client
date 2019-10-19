@@ -1,0 +1,11 @@
+.tableDraggabblePlusWrapper > .fa-plus-circle {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 50% 0;
+  visibility: visible;
+
+  &.hide {
+    visibility: hidden;
+  }
+}

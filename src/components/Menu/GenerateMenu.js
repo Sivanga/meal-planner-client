@@ -48,6 +48,11 @@ const GenerateMenu = props => {
   const [showPanel, setShowPanel] = useState(false);
 
   /**
+   * Show dish plus button, We don't show it while dragging is accuring
+   */
+  const [showPlusButton, setShowPlusButton] = useState(true);
+
+  /**
    * Fetch dishes and compute random dishes array
    */
   useEffect(() => {
@@ -100,12 +105,15 @@ const GenerateMenu = props => {
    */
   const onDragStart = () => {
     setShowPanel(false);
+    setShowPlusButton(false);
   };
 
   /**
    * Reorder dishes logic when drag ends
    */
   const onDragEnd = ({ source, destination }) => {
+    setShowPlusButton(true);
+
     // Dropped outside the allowed area
     if (!destination) return;
 
@@ -174,6 +182,19 @@ const GenerateMenu = props => {
     return result;
   };
 
+  const onMinusClick = (mealIndex, dayIndex) => {
+    console.log("onMinusClick. mealIndex ", mealIndex, " dayIndex: ", dayIndex);
+    // const result = [
+    //   ...randomDishes,
+    //   (randomDishes[mealIndex][dayIndex] = null)
+    // ];
+    var result = { ...randomDishes };
+    result[mealIndex][dayIndex] = null;
+    // console.log("result: ", result);
+    setRandomDishes(result);
+    // console.log("random dishes: ", randomDishes);
+  };
+
   /**
    * If there's no logged in user, show login message
    */
@@ -238,6 +259,9 @@ const GenerateMenu = props => {
                 meal={meal}
                 days={days}
                 randomDishes={randomDishes}
+                onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
+                onPlusClick={dayIndex => setShowPanel(true)}
+                showPlusButton={showPlusButton}
               />
             ))}
           </ol>

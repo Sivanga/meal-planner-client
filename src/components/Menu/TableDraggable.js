@@ -2,8 +2,18 @@ import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import classNames from "classnames";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
+import "../../scss/TableDraggable.scss";
 
-const TableDraggable = ({ id, dayIndex, dish, dayEnabled, dishIndex }) => {
+const TableDraggable = ({
+  id,
+  dayIndex,
+  dish,
+  dayEnabled,
+  dishIndex,
+  onMinusClick,
+  onPlusClick,
+  showPlusButton
+}) => {
   return (
     <Draggable draggableId={id} index={dayIndex} key={dayIndex}>
       {(provided, snapshot) => (
@@ -22,8 +32,20 @@ const TableDraggable = ({ id, dayIndex, dish, dayEnabled, dishIndex }) => {
               dish={dish}
               index={dishIndex}
               dishListEnum={DishListEnum.NO_LIST}
+              handleDishMinusClick={() => onMinusClick()}
             />
-          ) : null}
+          ) : (
+            <span
+              className="tableDraggabblePlusWrapper"
+              onClick={() => onPlusClick()}
+            >
+              <i
+                className={classNames("fas fa-plus-circle", {
+                  hide: !showPlusButton
+                })}
+              ></i>
+            </span>
+          )}
         </div>
       )}
     </Draggable>
