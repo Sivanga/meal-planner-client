@@ -2,6 +2,7 @@ import * as firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 import "firebase/storage";
+import "firebase/functions";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -36,5 +37,27 @@ export const storageRef = uid =>
     .storage()
     .ref()
     .child(`/${uid}`);
+
+// SendEmail
+const sendEmail = firebase.functions().httpsCallable("sendEmail");
+export const sendEmailFromForm = ({ values }) => {
+  return sendEmail({ values })
+    .then(function(result) {
+      return result;
+    })
+    .catch(function(error) {
+      var code = error.code;
+      var message = error.message;
+      var details = error.details;
+      console.log(
+        "error. code: ",
+        code,
+        " message: ",
+        message,
+        " detailes: ",
+        details
+      );
+    });
+};
 
 export default firebase;

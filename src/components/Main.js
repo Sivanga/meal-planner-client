@@ -5,6 +5,7 @@ import Notfound from "./NotFound";
 import GenerateMenu from "./Menu/GenerateMenu";
 import MyFavorites from "../components/dishes/MyFavorites";
 import Login from "./Login";
+import Contact from "./Contact";
 
 import { Switch, Route } from "react-router-dom";
 
@@ -17,6 +18,7 @@ function Main(props) {
       <Route path="/dishes" component={Dishes} />
       <Route path="/myFavorites" component={MyFavorites} />
       <Route path="/login" component={Login} />
+      <Route path="/contact" component={Contact}/>
       <Route component={Notfound} />
     </Switch>
   );

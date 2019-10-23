@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "meal-planner-80ef4"
+    "default": "meal-planner-80ef4",
+    "dev": "meal-panner-dev",
+    "prod": "meal-planner-80ef4"
   }
 }

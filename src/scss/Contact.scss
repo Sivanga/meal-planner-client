@@ -1,0 +1,11 @@
+@import "./Variables.scss";
+
+.contactUsButton {
+  border-color: $primary !important;
+  color: $primary !important;
+
+  &:hover &:active {
+    border-color: $primary-dark !important;
+    color: $primary-dark !important;
+  }
+}

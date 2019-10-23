@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Button } from "mdbreact";
 import classNames from "classnames";
-import { fetchDishes } from "../../store/actions/Actions";
+import { fetchDishes, fetchPublicDishes } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
@@ -22,7 +22,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  fetchDishes: uid => dispatch(fetchDishes(uid))
+  fetchDishes: uid => dispatch(fetchDishes(uid)),
+  fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid))
 });
 
 const GenerateMenu = props => {
@@ -57,6 +58,8 @@ const GenerateMenu = props => {
    */
   useEffect(() => {
     if (!auth.authState.user) return;
+
+    // Fetch private dishes
     if (!props.dishes || props.dishes.length === 0) {
       props.fetchDishes(auth.authState.user.uid);
     } else {
@@ -98,6 +101,7 @@ const GenerateMenu = props => {
   // TODO: Implement
   const onDoneClick = () => {
     console.log("randomDishes: ", randomDishes);
+    
   };
 
   /**
