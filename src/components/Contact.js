@@ -62,7 +62,6 @@ const Contact = () => {
               onChange={handleInputChange}
               value={values.name}
             />
-            <br />
             <label htmlFor="defaultFormContactEmailEx" className="grey-text">
               Your email
             </label>
@@ -74,7 +73,6 @@ const Contact = () => {
               onChange={handleInputChange}
               value={values.email}
             />
-            <br />
             <label htmlFor="defaultFormContactSubjectEx" className="grey-text">
               Subject
             </label>
@@ -86,7 +84,6 @@ const Contact = () => {
               onChange={handleInputChange}
               value={values.subject}
             />
-            <br />
             <label htmlFor="defaultFormContactMessageEx" className="grey-text">
               Your message
             </label>
