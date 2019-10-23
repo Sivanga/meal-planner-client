@@ -4,8 +4,26 @@
   border-color: $primary !important;
   color: $primary !important;
 
-  &:hover &:active {
+  &:hover {
     border-color: $primary-dark !important;
     color: $primary-dark !important;
+  }
+
+  &:active {
+    border-color: $primary-dark !important;
+    color: $primary-dark !important;
+  }
+}
+
+.email {
+  font-size: 1rem;
+  text-align: center;
+
+  i {
+    color: $primary;
+  }
+
+  a {
+    color: $dark-text-color;
   }
 }

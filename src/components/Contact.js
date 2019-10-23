@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { sendEmailFromForm } from "../firebase";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBIcon } from "mdbreact";
-import { Alert } from "react-bootstrap";
+import { Alert, Form } from "react-bootstrap";
 import "../scss/Contact.scss";
 
 const Contact = () => {
@@ -18,20 +18,43 @@ const Contact = () => {
   /** Set show succes Alert */
   const [showAlert, setShowAlert] = useState(false);
 
+  /**
+   *Validate form
+   */
+  const [validated, setValidated] = useState(false);
+
   const handleInputChange = e => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
-  const sendForm = e => {
-    e.preventDefault();
-    sendEmailFromForm({ values }).then(res => {
-      console.log("sent res: ", res);
-      if (res.data && res.data.isEmailSend) {
-        setShowAlert(true);
-        setValues({ ...values, name: "", email: "", subject: "", message: "" });
-      }
-    });
+  const handleSubmit = event => {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    setValidated(true);
+  };
+
+  const sendForm = event => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+    }
+
+    setValidated(true);
+    if (form.checkValidity() === true) {
+      sendEmailFromForm({ values }).then(res => {
+        console.log("sent res: ", res);
+        if (res.data && res.data.isEmailSend) {
+          setShowAlert(true);
+        }
+      });
+    }
   };
 
   const successAlert = (
@@ -47,9 +70,14 @@ const Contact = () => {
   return (
     <MDBContainer>
       {successAlert}
+      <p className="email">
+        <i className="fas fa-envelope pr-2"></i>
+        <a href="mailto:pure.meal.plan@gmail.com">pure.meal.plan@gmail.com</a>
+      </p>
       <MDBRow>
         <MDBCol md="4" className="mx-auto">
-          <form>
+          <br />
+          <Form noValidate validated={validated} onSubmit={sendForm}>
             <div className="h4 text-center mb-4">Write to us</div>
             <label htmlFor="defaultFormContactNameEx" className="grey-text">
               Your name
@@ -65,7 +93,9 @@ const Contact = () => {
             <label htmlFor="defaultFormContactEmailEx" className="grey-text">
               Your email
             </label>
+
             <input
+              required
               name="email"
               type="email"
               id="defaultFormContactEmailEx"
@@ -95,19 +125,15 @@ const Contact = () => {
               rows="3"
               onChange={handleInputChange}
               value={values.message}
+              required
             />
             <div className="text-center mt-4">
-              <MDBBtn
-                className="contactUsButton"
-                outline
-                type="submit"
-                onClick={sendForm}
-              >
+              <MDBBtn className="contactUsButton" outline type="submit">
                 Send
                 <MDBIcon far icon="paper-plane" className="ml-2" />
               </MDBBtn>
             </div>
-          </form>
+          </Form>
         </MDBCol>
       </MDBRow>
     </MDBContainer>
