@@ -50,7 +50,7 @@ class DishTags extends Component {
         handleDelete={this.handleTagDelete.bind(this)}
         handleAddition={this.handleTagAddition.bind(this)}
         allowNew={true}
-        placeholder="Tags"
+        placeholder="Add new"
       />
     );
   }

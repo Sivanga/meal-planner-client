@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Form, Button } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Row,
+  Col,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import DragAndDrop from "../abstract/DragAndDrop";
 import DishPlaceholder from "../../images/DishPlaceholder.png";
 import DishTags from "./DishTags";
@@ -18,12 +25,14 @@ class NewDish extends Component {
         imageFile: null,
         recipe: null,
         tags: [],
-        sharePublic: false
+        sharePublic: true
       },
       errors: {
         name: ""
       }
     };
+
+    this.handleSharePublicClick.bind(this);
   }
 
   handleNameChange(event) {
@@ -66,11 +75,11 @@ class NewDish extends Component {
     });
   }
 
-  handleSharePublicToggle() {
+  handleSharePublicClick(share) {
     this.setState({
       dish: {
         ...this.state.dish,
-        sharePublic: !this.state.sharePublic
+        sharePublic: share
       }
     });
   }
@@ -109,60 +118,118 @@ class NewDish extends Component {
     }
 
     return (
-      <Form onSubmit={this.onSubmit.bind(this)}>
-        <Form.Group controlId="dishName">
-          <Form.Label>Name:</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder=""
-            onChange={this.handleNameChange.bind(this)}
-            required
-          />
-          {this.state.errors.name.length > 0 && (
-            <span className="error">{this.state.errors.name}</span>
-          )}
-        </Form.Group>
+      <Form onSubmit={this.onSubmit.bind(this)} id="newDishForm">
         <Form.Group controlId="dishImage">
-          <Form.Label>Drag image or</Form.Label>
+          <div className="newDishImageTitle">
+            <Form.Label>Drag image or</Form.Label>
 
-          {/** File Uploader without input **/}
-          <Form.Label
-            className="file-browser"
-            onClick={this.onFileBrowserClick.bind(this)}
-          >
-            &nbsp;click here:
-            <input
-              style={{ display: "none" }}
-              ref="fileUploader"
-              type="file"
-              accept="image/*"
-              onChange={e => {
-                this.handleDrop([...e.target.files]);
-              }}
-            />
-          </Form.Label>
+            {/** File Uploader without input **/}
+            <Form.Label
+              className="file-browser"
+              onClick={this.onFileBrowserClick.bind(this)}
+            >
+              &nbsp;click here:
+              <input
+                style={{ display: "none" }}
+                ref="fileUploader"
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  this.handleDrop([...e.target.files]);
+                }}
+              />
+            </Form.Label>
+          </div>
           <DragAndDrop handleDrop={this.handleDrop.bind(this)}>
             <div className="dishImage">
               <img src={imageSrc} alt="" />
             </div>
           </DragAndDrop>
         </Form.Group>
-        <Form.Group controlId="dishTags">
-          <DishTags onChange={this.handleTagChange.bind(this)} />
+        <Form.Group as={Row} controlId="dishName">
+          <Form.Label column sm="2">
+            Name
+          </Form.Label>
+          <Col sm="8">
+            <Form.Control
+              type="text"
+              placeholder=""
+              onChange={this.handleNameChange.bind(this)}
+              required
+            />
+            {this.state.errors.name.length > 0 && (
+              <span className="error">{this.state.errors.name}</span>
+            )}
+          </Col>
         </Form.Group>
-        <Form.Group controlId="dishTextArea">
-          <Form.Label>Recipe?</Form.Label>
-          <Form.Control
-            as="textarea"
-            onChange={this.handleRecipeChange.bind(this)}
-          />
+        <Form.Group as={Row} controlId="dishTags">
+          <Form.Label column sm="2">
+            Tags
+          </Form.Label>
+          <Col sm="8">
+            <DishTags onChange={this.handleTagChange.bind(this)} />
+          </Col>
         </Form.Group>
-        <Form.Group controlId="sharePublic">
-          <Form.Check
-            type="checkbox"
-            label="Share public?"
-            onClick={this.handleSharePublicToggle.bind(this)}
-          />
+        <Form.Group as={Row} controlId="dishTextArea">
+          <Form.Label column sm="2">
+            Recipe
+          </Form.Label>
+          <Col sm="8">
+            <Form.Control
+              as="textarea"
+              onChange={this.handleRecipeChange.bind(this)}
+            />
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row} controlId="sharePublic">
+          <Form.Label column sm="2">
+            Share public
+          </Form.Label>
+          <Col sm="8">
+            <div className="custom-control custom-radio custom-control-inline">
+              <input
+                type="radio"
+                className="custom-control-input"
+                id="shareYes"
+                name="share"
+                defaultChecked
+              />
+              <label
+                className="custom-control-label"
+                htmlFor="shareYes"
+                onClick={() => this.handleSharePublicClick(true)}
+              >
+                Yes
+              </label>
+            </div>
+
+            <div className="custom-control custom-radio custom-control-inline">
+              <input
+                type="radio"
+                className="custom-control-input"
+                id="shareNo"
+                name="share"
+              />
+              <label
+                className="custom-control-label"
+                htmlFor="shareNo"
+                onClick={() => this.handleSharePublicClick(false)}
+              >
+                No
+              </label>
+              <OverlayTrigger
+                placement={"top"}
+                overlay={
+                  <Tooltip>
+                    Share your dish anonymously with our community and get
+                    others inspired!
+                  </Tooltip>
+                }
+              >
+                <i className="fas fa-question-circle fa-sm"></i>
+              </OverlayTrigger>
+            </div>
+          </Col>
         </Form.Group>
         <Button variant="outline" type="submit" className="btn-new-dish">
           Add
