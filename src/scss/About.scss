@@ -1,0 +1,43 @@
+@import "./Variables.scss";
+
+#about {
+  h4 {
+    letter-spacing: 0.04rem;
+    color: $primary;
+  }
+  p,
+  h5 {
+    color: #605e5e;
+    font-size: 0.8em;
+
+    @media screen and (min-width: 370px) {
+      font-size: 0.9em;
+    }
+  }
+
+  h5 {
+    font-weight: 600;
+  }
+
+  .main-text {
+    margin-bottom: 1rem;
+    padding: 0;
+  }
+
+  .social {
+    margin-bottom: 1rem;
+    a {
+      color: $dark-text-color;
+    }
+  }
+}
+
+.card-cascade {
+  width: 80%;
+  margin: auto;
+  margin-top: 1rem;
+
+  @media screen and (min-width: 426px) {
+    width: 30%;
+  }
+}
