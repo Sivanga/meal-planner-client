@@ -41,7 +41,7 @@ const TableDraggable = ({
             >
               <i
                 className={classNames("fas fa-plus-circle", {
-                  hide: !showPlusButton
+                  hide: !showPlusButton || !dayEnabled
                 })}
               ></i>
             </span>
