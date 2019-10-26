@@ -1,3 +1,5 @@
+@import "./Variables.scss";
+
 .react-tags {
   position: relative;
   padding: 6px 0 0 6px;
@@ -20,10 +22,12 @@
   display: inline-block;
   box-sizing: border-box;
   margin: 0 4px 4px 0;
-  padding: 3px 12px 3px 3px;
+  padding: 4px 12px 4px 4px;
   border: 1px solid #d1d1d1;
-  border-radius: 2px;
-  background: #f1f1f1;
+  border-radius: 10px;
+  background: $primary;
+  color: white;
+  font-weight: 700;
 
   /* match the font styles */
   font-size: inherit;
@@ -33,7 +37,7 @@
 
 .react-tags__selected-tag:after {
   content: "\2715";
-  color: rgb(80, 79, 79);
+  color: white;
   margin-left: 1px;
   margin-right: 3px;
   font-size: 0.5rem;

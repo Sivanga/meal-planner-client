@@ -36,7 +36,6 @@ const TableDroppable = ({
           {...provided.droppableProps}
           {...provided.droppablePlaceholder}
         >
-          {console.log("snapshot: ", snapshot)}
           <div key={mealIndex} className="attribute meal-name">
             {meal}
           </div>

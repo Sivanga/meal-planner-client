@@ -13,7 +13,6 @@ function dishes(state = [], action) {
       var newDish = Object.assign({}, action.payload, {
         isLocal: true
       });
-      // newDish.isLocal = true;
       return [newDish, ...state];
     case FETCH_DISHES:
       // // Create new state for updated dishes array

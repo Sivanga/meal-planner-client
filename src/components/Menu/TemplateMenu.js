@@ -12,8 +12,29 @@ import classNames from "classnames/bind";
 import PropTypes from "prop-types";
 import GenerateMenu from "./GenerateMenu";
 import { disableNewlines } from "../Menu/SharedContentEdible";
+import { connect } from "react-redux";
+import { setMeals, fetchMeals } from "../../store/actions/Actions";
+import { useAuth } from "../auth/UseAuth";
+
+const mapStateToProps = state => {
+  console.log("state: ", state);
+  return {
+    backendMeals: state.meals.meals,
+    dataReceived: state.meals.dataReceived
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  setMealsBackend: (payload, uid) => dispatch(setMeals(payload, uid)),
+  fetchMeals: uid => dispatch(fetchMeals(uid))
+});
 
 const TemplateMenu = props => {
+  /**
+   * Auth hook to get update for changes from auth provider
+   */
+  const auth = useAuth();
+
   /**
    * day: Name of the day
    * enabled: if enabled by the user it will be editable
@@ -31,7 +52,7 @@ const TemplateMenu = props => {
   /**
    * Maels of the day
    */
-  const [meals, setMeals] = useState(["Breakfast", "Lunch", "Dinner"]);
+  const [meals, setMealsState] = useState(["Breakfast", "Lunch", "Dinner"]);
 
   /**
    * Determine if a new value is being added.
@@ -57,7 +78,7 @@ const TemplateMenu = props => {
   const removeMeal = index => {
     var newMeals = [...meals];
     newMeals.splice(index, 1);
-    setMeals(newMeals);
+    setMealsState(newMeals);
   };
 
   /**
@@ -65,7 +86,7 @@ const TemplateMenu = props => {
    */
   const addMeal = () => {
     setAddingNewValue(true);
-    setMeals([...meals].concat(""));
+    setMealsState([...meals].concat(""));
   };
 
   /**
@@ -114,6 +135,30 @@ const TemplateMenu = props => {
   }, [days, meals]);
 
   /**
+   * Fetch once the user's saved meals
+   */
+  useEffect(() => {
+    if (!auth.authState.user) return;
+    props.fetchMeals(auth.authState.user.uid);
+  }, []);
+
+  /**
+   * After the saved meals are fetched, set the result into local meals
+   */
+  useEffect(() => {
+    if (!auth.authState.user) return;
+
+    // If data already recieved set it to state
+    if (
+      props.dataReceived &&
+      props.backendMeals &&
+      props.backendMeals.length > 0
+    ) {
+      setMealsState(props.backendMeals);
+    }
+  }, [props.backendMeals]);
+
+  /**
    * Set addingNewValue to false when edit is done (Tab key)
    */
   const onKeyDown = event => {
@@ -131,7 +176,7 @@ const TemplateMenu = props => {
     const newMeal = event.currentTarget.textContent;
     var newMeals = [...meals];
     newMeals[index] = newMeal;
-    setMeals(newMeals);
+    setMealsState(newMeals);
   };
 
   const chooseDaysAlert = (
@@ -147,6 +192,16 @@ const TemplateMenu = props => {
       </div>
     </Alert>
   );
+
+  const handleGenerateMenu = () => {
+    if (auth.authState.user)
+      props.setMealsBackend(meals, auth.authState.user.uid);
+    props.handleGenerateMenu(days, meals);
+  };
+
+  if (!props.dataReceived) {
+    return <div>Loading... </div>;
+  }
 
   return (
     <>
@@ -240,7 +295,7 @@ const TemplateMenu = props => {
         className={classNames("generate-btn", {
           disabled: menuErrors.length > 0
         })}
-        onClick={() => props.handleGenerateMenu(days, meals)}
+        onClick={() => handleGenerateMenu(days, meals)}
       >
         Generate Menu
       </Button>
@@ -252,4 +307,8 @@ GenerateMenu.propTypes = {
   handleGenerateMenu: PropTypes.func
 };
 
-export default TemplateMenu;
+const TemplateMenuComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TemplateMenu);
+export default TemplateMenuComponent;
