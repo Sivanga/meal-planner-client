@@ -11,7 +11,6 @@ import { Alert } from "react-bootstrap";
 import classNames from "classnames/bind";
 import PropTypes from "prop-types";
 import GenerateMenu from "./GenerateMenu";
-import { disableNewlines } from "../Menu/SharedContentEdible";
 import { connect } from "react-redux";
 import { setMeals, fetchMeals } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
@@ -161,9 +160,17 @@ const TemplateMenu = props => {
   /**
    * Set addingNewValue to false when edit is done (Tab key)
    */
-  const onKeyDown = event => {
-    if (event.keyCode === 9) {
+  const onKeyDown = (event, index) => {
+    // When Tab or Enter are pressed, not new value is being added, this helps to focus on the next value at Render
+    if (event.keyCode === 9 || event.keyCode === 13) {
       setAddingNewValue(false);
+    }
+
+    // Loose focus on Enter key
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.target.blur();
     }
   };
 
@@ -259,8 +266,7 @@ const TemplateMenu = props => {
               <th
                 contentEditable="true"
                 suppressContentEditableWarning={true}
-                onKeyPress={disableNewlines}
-                onKeyDown={onKeyDown}
+                onKeyDown={event => onKeyDown(event, index)}
                 ref={newlyAddedCell}
                 onBlur={e => onMealChange(e, index)}
                 className="meal"
