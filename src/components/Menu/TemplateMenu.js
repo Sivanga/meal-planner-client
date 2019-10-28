@@ -51,7 +51,12 @@ const TemplateMenu = props => {
   /**
    * Maels of the day
    */
-  const [meals, setMealsState] = useState(["Breakfast", "Lunch", "Dinner"]);
+  const [meals, setMealsState] = useState([
+    { name: "Breakfast", id: 300 },
+    { name: "Lunch", id: 301 },
+    { name: "Snack", id: 302 },
+    { name: "Dinner", id: 303 }
+  ]);
 
   /**
    * Determine if a new value is being added.
@@ -85,7 +90,8 @@ const TemplateMenu = props => {
    */
   const addMeal = () => {
     setAddingNewValue(true);
-    setMealsState([...meals].concat(""));
+    var nextId = meals[meals.length - 1].id;
+    setMealsState([...meals].concat({ name: "", id: nextId++ }));
   };
 
   /**
@@ -155,7 +161,7 @@ const TemplateMenu = props => {
     ) {
       setMealsState(props.backendMeals);
     }
-  }, [props.backendMeals]);
+  }, [props.dataReceived]);
 
   /**
    * Set addingNewValue to false when edit is done (Tab key)
@@ -201,9 +207,10 @@ const TemplateMenu = props => {
   );
 
   const handleGenerateMenu = () => {
-    if (auth.authState.user)
+    if (auth.authState.user) {
       props.setMealsBackend(meals, auth.authState.user.uid);
-    props.handleGenerateMenu(days, meals);
+      props.handleGenerateMenu(days, meals);
+    }
   };
 
   if (!props.dataReceived) {
@@ -271,7 +278,7 @@ const TemplateMenu = props => {
                 onBlur={e => onMealChange(e, index)}
                 className="meal"
               >
-                {meal}
+                {meal.name}
               </th>
               {days.map((day, index) => (
                 <td

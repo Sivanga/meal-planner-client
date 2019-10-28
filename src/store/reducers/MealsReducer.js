@@ -17,9 +17,7 @@ function meals(state = [], action) {
 function dataReceived(state = false, action) {
   switch (action.type) {
     case FETCH_MEALS_DATA_RECIEVED:
-      return Object.assign({}, state, {
-        dataReceived: action.payload
-      });
+      return action.payload;
 
     default:
       return state;

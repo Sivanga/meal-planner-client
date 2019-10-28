@@ -37,7 +37,7 @@ const TableDroppable = ({
           {...provided.droppablePlaceholder}
         >
           <div key={mealIndex} className="attribute meal-name">
-            {meal}
+            {meal.name}
           </div>
           {days.map((day, dayIndex) => (
             <TableDraggable

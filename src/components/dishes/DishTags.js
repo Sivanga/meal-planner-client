@@ -7,9 +7,12 @@ import "../../scss/DishTags.scss";
 class DishTags extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      tags: [{ id: 1, name: "Lunch" }, { id: 2, name: "Chicken" }],
+      tags: [],
       suggestions: [
+        { id: 1, name: "Lunch" },
+        { id: 2, name: "Chicken" },
         { id: 3, name: "Breakfast" },
         { id: 4, name: "Dinner" },
         { id: 5, name: "Meat" },

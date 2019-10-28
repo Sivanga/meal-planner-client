@@ -83,6 +83,18 @@ const DishCard = ({
           <Card.Title>{dish.name}</Card.Title>
           {dishListEnum !== DishListEnum.NO_LIST && (
             <>
+              {dish.meals && (
+                <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
+                  {dish.meals.map(meal => (
+                    <li
+                      key={meal.id}
+                      className="badge badge-pill badge-primary"
+                    >
+                      {meal.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
               {dish.tags && (
                 <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
                   {dish.tags.map(tag => (
@@ -108,6 +120,7 @@ const DishCard = ({
                 {/** Show unfavorite icon for my favorite or public dishes that were favorite by current user */}
                 {(dishListEnum === DishListEnum.MY_FAVORITES_LIST ||
                   (dishListEnum === DishListEnum.PUBLIC_LIST &&
+                    dish.favoriteUsers &&
                     dish.favoriteUsers.indexOf(currentUid) !== -1)) && (
                   <span onClick={() => setShowDeletOverlay(true)}>
                     <i className="fas fa-heart fa-sm"></i>
@@ -117,6 +130,7 @@ const DishCard = ({
                 {/** Show favorite icon for public dishes that aren't already favorite by the user
                  */}
                 {dishListEnum === DishListEnum.PUBLIC_LIST &&
+                  dish.favoriteUsers &&
                   dish.favoriteUsers.indexOf(currentUid) === -1 && (
                     <span onClick={() => favoriteDish(dish)}>
                       <i className="far fa-heart fa-sm"></i>

@@ -66,3 +66,13 @@ img {
 .form-check-label {
   font-size: 1rem;
 }
+
+.meal-pill {
+  background-color: white !important;
+  color: $dark-text-color !important;
+
+  &.active {
+    background-color: $primary !important;
+    color: white !important;
+  }
+}
