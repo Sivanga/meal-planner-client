@@ -18,8 +18,8 @@ import { useAuth } from "../auth/UseAuth";
 import "../../scss/NewDish.scss";
 import classNames from "classnames";
 
-const DISH_NAME_ERROR = "Name must be at least 3 characters";
-const DISH_MEAL_ERROR = "Select at least one meal";
+const DISH_MEAL_ERROR = "Please select at least one meal";
+const DISH_MEAL_VALID = "valid";
 
 const mapStateToProps = state => {
   return {
@@ -51,10 +51,11 @@ const NewDish = props => {
     link: props.dish && props.dish.link ? props.dish.link : ""
   });
 
+  const [validated, setValidated] = useState(false);
+
   /** Errors state */
   const [errors, setErrors] = useState({
-    name: DISH_NAME_ERROR,
-    meals: DISH_MEAL_ERROR
+    meals: null
   });
 
   /** Meals state */
@@ -102,17 +103,6 @@ const NewDish = props => {
     });
   };
 
-  const handleDishNameChange = event => {
-    var nameError = event.target.value.length < 3 ? DISH_NAME_ERROR : "";
-
-    setErrors({ ...errors, name: nameError });
-
-    setDish({
-      ...dish,
-      name: event.target.value
-    });
-  };
-
   /** Add or Remove item from selectedMeals  */
   const toggleMealSelection = meal => {
     var isSelected = selectedMeals.includes(meal);
@@ -127,16 +117,28 @@ const NewDish = props => {
       selectedMealsCopy = [...selectedMeals, meal];
       setSelectedMeals(selectedMealsCopy);
     }
+    setSelectedMealsErrors(selectedMealsCopy);
+  };
 
-    var mealsError = selectedMealsCopy.length < 1 ? DISH_MEAL_ERROR : "";
+  const setSelectedMealsErrors = (selectedMealsCopy = selectedMeals) => {
+    var mealsError =
+      selectedMealsCopy.length < 1 ? DISH_MEAL_ERROR : DISH_MEAL_VALID;
     setErrors({ ...errors, meals: mealsError });
   };
 
   /** Validate the form and add the dish */
-  const onSubmit = e => {
-    e.preventDefault();
+  const onSubmit = event => {
+    event.preventDefault();
+    event.stopPropagation();
 
-    if (errors.name.length === 0 && errors.meals.length === 0) {
+    setSelectedMealsErrors();
+
+    const form = event.currentTarget;
+    var isValid = form.checkValidity() && errors.meals === DISH_MEAL_VALID;
+
+    setValidated(true);
+
+    if (isValid) {
       dish.meals = selectedMeals;
       props.onDishAdded(dish);
     }
@@ -154,7 +156,7 @@ const NewDish = props => {
   }
 
   return (
-    <Form onSubmit={onSubmit} id="newDishForm">
+    <Form onSubmit={onSubmit} id="newDishForm" noValidate validated={validated}>
       <Form.Group controlId="dishImage">
         <div className="newDishImageTitle">
           <Form.Label>Drag image or</Form.Label>
@@ -188,35 +190,48 @@ const NewDish = props => {
             type="text"
             value={dish.name}
             placeholder=""
-            onChange={event => handleDishNameChange(event)}
+            onChange={event =>
+              setDish({
+                ...dish,
+                name: event.target.value
+              })
+            }
             required
           />
-          {errors.name.length > 0 && (
+          {/* {errors.name.length > 0 && (
             <span className="error">{errors.name}</span>
-          )}
+          )} */}
         </Col>
       </Form.Group>
       <Form.Group as={Row} controlId="meals">
         <Form.Label column sm="2">
           Meals
         </Form.Label>
+
         <Col sm="8">
-          {meals.map((meal, index) => {
-            return (
-              <MDBBadge
-                key={index}
-                pill
-                color="primary"
-                className={classNames("meal-pill", {
-                  active: selectedMeals.includes(meal)
-                })}
-                onClick={() => toggleMealSelection(meal)}
-              >
-                {meal.name}
-              </MDBBadge>
-            );
-          })}
-          {errors.meals.length > 0 && (
+          <div
+            className={classNames("meals-control", {
+              invalid: errors.meals && errors.meals.length > 0,
+              valid: errors.meals && errors.meals === "valid"
+            })}
+          >
+            {meals.map((meal, index) => {
+              return (
+                <MDBBadge
+                  key={index}
+                  pill
+                  color="primary"
+                  className={classNames("meal-pill", {
+                    active: selectedMeals.includes(meal)
+                  })}
+                  onClick={() => toggleMealSelection(meal)}
+                >
+                  {meal.name}
+                </MDBBadge>
+              );
+            })}
+          </div>
+          {errors.meals && errors.meals !== DISH_MEAL_VALID && (
             <span className="error">{errors.meals}</span>
           )}
         </Col>
