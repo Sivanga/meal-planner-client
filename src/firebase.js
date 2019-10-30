@@ -61,4 +61,9 @@ export const sendEmailFromForm = ({ values }) => {
     });
 };
 
+const getUrlMetaData = firebase.functions().httpsCallable("getUrlMetadata");
+export const getDishFromUrl = url => {
+  return getUrlMetaData(url);
+};
+
 export default firebase;

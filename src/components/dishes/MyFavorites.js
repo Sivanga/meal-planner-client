@@ -6,7 +6,7 @@ import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
-import NewDishModal from "./NewDishModal";
+import ImportDish from "./ImportDish";
 
 const mapStateToProps = state => {
   return {
@@ -70,7 +70,7 @@ const MyFavorites = props => {
         <div className="empty-dishes">
           <div>
             Looks like you don't have any favorites yet :(
-            <NewDishModal addDish={dish => onDishAdd(dish)} />
+            <ImportDish addDish={dish => onDishAdd(dish)} />
           </div>
         </div>
       </>
@@ -91,7 +91,7 @@ const MyFavorites = props => {
         currentUid={currentUid}
       />
 
-      <NewDishModal addDish={dish => onDishAdd(dish)} />
+      <ImportDish addDish={dish => onDishAdd(dish)} />
     </>
   );
 };

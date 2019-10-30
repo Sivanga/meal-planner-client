@@ -11,7 +11,7 @@ import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
-import NewDishModal from "./NewDishModal";
+import ImportDish from "./ImportDish";
 
 const mapStateToProps = state => {
   return {
@@ -79,7 +79,7 @@ const Dishes = props => {
         handleDishFavorite={(dish, uid) => handleDishFavorite(dish, uid)}
         handleDishRemove={id => handleDishUnfavorite(id)}
       />
-      <NewDishModal addDish={dish => onDishAdd(dish)} />
+      <ImportDish addDish={dish => onDishAdd(dish)} />
     </>
   );
 };

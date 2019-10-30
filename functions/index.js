@@ -2,6 +2,8 @@ const functions = require("firebase-functions");
 const nodemailer = require("nodemailer");
 var smtpTransport = require("nodemailer-smtp-transport");
 
+const urlMetadata = require("url-metadata");
+
 const gmailEmail = functions.config().gmail.email;
 const gmailPassword = functions.config().gmail.password;
 const mailTransport = nodemailer.createTransport(
@@ -26,4 +28,27 @@ exports.sendEmail = functions.https.onCall((data, context) => {
   return mailTransport.sendMail(mailOptions).then(() => {
     return { isEmailSend: true };
   });
+});
+
+exports.getUrlMetadata = functions.https.onCall((data, context) => {
+  return urlMetadata(data)
+    .then(metadata => {
+      // success handler
+      console.log("metadata: ", metadata);
+      var result = {
+        name: metadata.title,
+        image: metadata.image,
+        description: metadata.description
+      };
+      return result;
+    })
+    .then(error => {
+      // failure handler
+      console.log(error);
+      return error;
+    })
+    .catch(error => {
+      console.error(error);
+      return error;
+    });
 });

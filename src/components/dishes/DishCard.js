@@ -104,6 +104,16 @@ const DishCard = ({
                   ))}
                 </ul>
               )}
+              {dish.link && (
+                <a
+                  href={dish.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dishLink"
+                >
+                  {dish.link}
+                </a>
+              )}
               <div className="card-footer-container">
                 <span
                   className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more bc-white"

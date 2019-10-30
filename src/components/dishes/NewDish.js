@@ -40,8 +40,8 @@ const NewDish = props => {
 
   /** Dish state */
   const [dish, setDish] = useState({
-    name: null,
-    localImageUrl: null,
+    name: props.dish && props.dish.name ? props.dish.name : null,
+    localImageUrl: props.dish && props.dish.image ? props.dish.image : null,
     imageFile: null,
     recipe: null,
     meals: [],
@@ -184,6 +184,7 @@ const NewDish = props => {
         <Col sm="8">
           <Form.Control
             type="text"
+            value={dish.name}
             placeholder=""
             onChange={event => handleDishNameChange(event)}
             required
@@ -230,6 +231,22 @@ const NewDish = props => {
                 tags: event
               });
             }}
+          />
+        </Col>
+      </Form.Group>
+      <Form.Group as={Row} controlId="dishLink">
+        <Form.Label column sm="2">
+          Link
+        </Form.Label>
+        <Col sm="8">
+          <Form.Control
+            type="text"
+            onChange={event =>
+              setDish({
+                ...dish,
+                link: event.target.value
+              })
+            }
           />
         </Col>
       </Form.Group>
