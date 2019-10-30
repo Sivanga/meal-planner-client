@@ -194,7 +194,7 @@ const TemplateMenu = props => {
 
   const chooseDaysAlert = (
     <Alert show={showDaysAlert} variant="success">
-      <p>First choose your days</p>
+      <p>Choose your wanted days by clicking the headers</p>
       <div className="d-flex justify-content-end">
         <Button
           onClick={() => setShowDaysAlert(false)}
@@ -230,71 +230,81 @@ const TemplateMenu = props => {
           ))}
         </div>
       )}
-      <MDBTable>
-        <MDBTableHead>
-          <tr>
-            {/*Empty cells for table left top corner*/}
-            <th />
-            <th>Days/Meals</th>
+      <div id="template-menu-table">
+        <MDBTable>
+          <MDBTableHead>
+            <tr>
+              {/*Empty cells for table left top corner*/}
+              <th />
+              <th>Days/Meals</th>
 
-            {/*Days headers*/}
-            {days.map((day, index) => (
-              <th
-                key={index}
-                className={classNames("day-column", {
-                  dayEnabled: day.enabled
-                })}
-              >
-                <MDBInput
-                  checked={day.enabled}
-                  type="radio"
-                  onClick={() => toggleEnableDay(index)}
-                  className="tampleateMenuDayInput"
-                />
-                {day.day}
-              </th>
-            ))}
-          </tr>
-        </MDBTableHead>
-        <MDBTableBody>
-          {meals.map((meal, index) => (
-            <tr key={index} className="meal-row">
-              {/* First cell is a button to remove meal row */}
-              <td className="remove-row-wrapper">
-                <i
-                  className="fa fa-minus-square-o"
-                  id="remove-row"
-                  aria-hidden="false"
-                  onClick={() => removeMeal(index)}
-                ></i>
-              </td>
-
-              {/* Row for each meal */}
-              <th
-                contentEditable="true"
-                suppressContentEditableWarning={true}
-                onKeyDown={event => onKeyDown(event, index)}
-                ref={newlyAddedCell}
-                onBlur={e => onMealChange(e, index)}
-                className="meal"
-              >
-                {meal.name}
-              </th>
+              {/*Days headers*/}
               {days.map((day, index) => (
-                <td
+                <th
                   key={index}
-                  className={classNames({
-                    mealEnabled: day.enabled
+                  className={classNames("day-column", {
+                    dayEnabled: day.enabled
                   })}
                 >
-                  {/* Empty cell for meal. 
-                  This will be auto generated in the next step!*/}
-                </td>
+                  <MDBInput
+                    checked={day.enabled}
+                    type="radio"
+                    onClick={() => toggleEnableDay(index)}
+                    className="tampleateMenuDayInput"
+                  />
+                  {day.day}
+                </th>
               ))}
             </tr>
-          ))}
-        </MDBTableBody>
-      </MDBTable>
+          </MDBTableHead>
+          <MDBTableBody>
+            {meals.map((meal, index) => (
+              <tr key={index} className="meal-row">
+                {/* First cell is a button to remove meal row */}
+                <td className="remove-row-wrapper">
+                  <i
+                    className="fa fa-minus-square-o"
+                    id="remove-row"
+                    aria-hidden="false"
+                    onClick={() => removeMeal(index)}
+                  ></i>
+                </td>
+
+                {/* Row for each meal */}
+                <th
+                  contentEditable="true"
+                  suppressContentEditableWarning={true}
+                  onKeyDown={event => onKeyDown(event, index)}
+                  ref={newlyAddedCell}
+                  onBlur={e => onMealChange(e, index)}
+                  className="meal"
+                >
+                  {meal.name}
+                </th>
+                {days.map((day, index) => (
+                  <td
+                    key={index}
+                    className={classNames({
+                      mealEnabled: day.enabled
+                    })}
+                  >
+                    {/* Empty cell for meal. 
+                  This will be auto generated in the next step!*/}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </MDBTableBody>
+        </MDBTable>
+        <Button
+          className={classNames("generate-btn", {
+            disabled: menuErrors.length > 0
+          })}
+          onClick={() => handleGenerateMenu(days, meals)}
+        >
+          Generate Menu
+        </Button>
+      </div>
       <span>
         <i
           className="fa fa-plus-square-o fa-xs"
@@ -303,15 +313,6 @@ const TemplateMenu = props => {
           onClick={() => addMeal()}
         />
       </span>
-
-      <Button
-        className={classNames("generate-btn", {
-          disabled: menuErrors.length > 0
-        })}
-        onClick={() => handleGenerateMenu(days, meals)}
-      >
-        Generate Menu
-      </Button>
     </>
   );
 };

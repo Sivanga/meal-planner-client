@@ -1,7 +1,27 @@
 @import "./Variables.scss";
 
+#template-menu-table {
+  .day-column {
+    cursor: pointer;
+    text-align: center;
+    .form-check {
+      padding: 0;
+    }
+  }
+}
+
+.alert {
+  margin: auto;
+  margin-bottom: 1rem;
+  @media screen and (min-width: 769px) {
+    width: 50%;
+  }
+}
+
 .table {
   border: 1px solid rgb(221, 225, 229);
+  width: auto;
+  margin: auto;
 }
 
 .table thead th {
@@ -29,11 +49,6 @@
   font-size: 1.3rem;
 }
 
-.day-column {
-  cursor: pointer;
-  text-align: center;
-}
-
 .dayEnabled,
 .mealEnabled {
   // background: rgb(211, 237, 218);
@@ -52,7 +67,7 @@
 .generate-btn {
   display: flex;
   margin: auto;
-  margin-top: 5rem;
+  margin-top: 1rem;
   background-color: $primary !important;
   color: white;
 
@@ -77,11 +92,5 @@
 
   &:focus {
     box-shadow: none;
-  }
-}
-
-.day-column {
-  .form-check {
-    padding: 0;
   }
 }
