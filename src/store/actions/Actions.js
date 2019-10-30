@@ -71,19 +71,27 @@ export const removeDish = (payload, uid) => async dispatch => {
     .child(payload)
     .remove();
 
-  // Mark this user as a favorite under this public dish
   var ref = publicDishesDbRef();
+
   return ref
     .child(`${payload}/dish`)
     .once("value")
     .then(function(snapshot) {
       var dishToUpdate = (snapshot.val() && snapshot.val()) || {};
-      var favoriteUsers = dishToUpdate.favoriteUsers;
-      if (!favoriteUsers) return;
-      favoriteUsers = favoriteUsers.filter(function(id) {
-        return id !== uid;
-      });
-      ref.child(`${payload}/dish/`).update({ favoriteUsers: favoriteUsers });
+
+      // If this user is the owner of the dish, remove it from public
+      if (dishToUpdate.ownerUid === uid) {
+        ref.child(payload).remove();
+      }
+      // Else remove the user from favoriteUsers array
+      else {
+        var favoriteUsers = dishToUpdate.favoriteUsers;
+        if (!favoriteUsers) return;
+        favoriteUsers = favoriteUsers.filter(function(id) {
+          return id !== uid;
+        });
+        ref.child(`${payload}/dish/`).update({ favoriteUsers: favoriteUsers });
+      }
     });
 };
 
