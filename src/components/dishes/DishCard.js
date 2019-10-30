@@ -71,10 +71,10 @@ const DishCard = ({
           "local-dish": dish.isLocal
         })}
       >
-        {dish.imageFile && (
+        {(dish.imageUrl || dish.localImageUrl) && (
           <Card.Img
             variant="top"
-            src={dish.isLocal ? dish.localImageUrl : dish.imageFile}
+            src={dish.isLocal ? dish.localImageUrl : dish.imageUrl}
             alt={dish.name}
           />
         )}

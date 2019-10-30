@@ -38,7 +38,7 @@ export const addDish = (payload, uid) => async dispatch => {
   );
   storageRefChild.put(payload.dish.imageFile).then(function(snapshot) {
     storageRefChild.getDownloadURL().then(url => {
-      payload.dish.imageFile = url;
+      payload.dish.imageUrl = url;
       pushToDb(payload.dish, uid);
     });
   });

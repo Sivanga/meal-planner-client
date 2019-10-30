@@ -40,13 +40,15 @@ const NewDish = props => {
 
   /** Dish state */
   const [dish, setDish] = useState({
-    name: props.dish && props.dish.name ? props.dish.name : null,
-    localImageUrl: props.dish && props.dish.image ? props.dish.image : null,
-    imageFile: null,
-    recipe: null,
+    name: props.dish && props.dish.name ? props.dish.name : "",
+    localImageUrl: props.dish && props.dish.image ? props.dish.image : "",
+    imageUrl: props.dish && props.dish.image ? props.dish.image : "",
+    imageFile: "",
+    recipe: "",
     meals: [],
     tags: [],
-    sharePublic: true
+    sharePublic: true,
+    link: props.dish && props.dish.link ? props.dish.link : ""
   });
 
   /** Errors state */
@@ -241,6 +243,7 @@ const NewDish = props => {
         <Col sm="8">
           <Form.Control
             type="text"
+            value={dish.link}
             onChange={event =>
               setDish({
                 ...dish,

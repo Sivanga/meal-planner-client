@@ -37,9 +37,18 @@ const ImportDish = ({ addDish }) => {
 
       // Move to new dish dialog and send the data
       console.log("result: ", result);
-      setDishFromUrl({ name: result.data.name, image: result.data.image });
+      setDishFromUrl({
+        name: result.data.name,
+        image: result.data.image,
+        link: urlState.content
+      });
       setModalsShowState({ import: false, new: true });
     });
+  };
+
+  const handleCreateYourOwnDish = () => {
+    setDishFromUrl(null);
+    setModalsShowState({ import: false, new: true });
   };
 
   const onDishAdd = dish => {
@@ -95,11 +104,7 @@ const ImportDish = ({ addDish }) => {
             </Form.Group>
             <Form.Group as={Row} controlId="manual">
               <Col sm="7" className="create-your-own-button offset-sm-3">
-                <span
-                  onClick={() =>
-                    setModalsShowState({ import: false, new: true })
-                  }
-                >
+                <span onClick={() => handleCreateYourOwnDish()}>
                   Or click here to create your own
                 </span>
               </Col>
