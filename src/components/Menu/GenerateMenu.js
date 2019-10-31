@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import TableDroppable from "./TableDroppable";
 import PanelDroppable, { PANEL_DROPPABLE_ID } from "./PanelDroppable";
+import { getContainerStyle } from "./Helpers";
 import Burger from "@animated-burgers/burger-arrow";
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
@@ -101,7 +102,6 @@ const GenerateMenu = props => {
   // TODO: Implement
   const onDoneClick = () => {
     console.log("randomDishes: ", randomDishes);
-    
   };
 
   /**
@@ -230,7 +230,7 @@ const GenerateMenu = props => {
       <div id="menuContainer" className="generateMenuContainer">
         <div className="generateMenuTableContainer">
           <ol className="collection collection-container generateMenuTable">
-            <li className="item item-container">
+            <li className="item item-container" style={getContainerStyle(days)}>
               <div key="day/meal" className="attribute">
                 Day/Meal
               </div>
@@ -240,7 +240,7 @@ const GenerateMenu = props => {
                   id="generated-day"
                   key={index}
                   className={classNames("day-column", "attribute", {
-                    dayEnabled: "day.enabled"
+                    dayDisabled: !day.enabled
                   })}
                 >
                   {day.day}

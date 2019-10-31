@@ -1,8 +1,12 @@
 @import "./Variables.scss";
 
-$panel-width-large: 11rem;
-$panel-width-medium: 8rem;
-$panel-width-small: 6rem;
+$panel-width-large: 14rem;
+$panel-width-medium: 10rem;
+$panel-width-small: 8rem;
+
+.mealDisabled {
+  background: rgba($primary-dark, 0.5);
+}
 
 .generateMenuContainer {
   overflow: hidden;
@@ -46,16 +50,11 @@ $panel-width-small: 6rem;
   }
 }
 
-.mealDisabled {
-  background: rgba($primary-dark, 0.5);
-}
-
 .isDraggingOver {
   background: lightblue;
 }
 
 #generated-day {
-  min-width: 100px;
   text-align: center;
 }
 
@@ -100,7 +99,6 @@ li {
 
 /* Meal Header */
 .collection-container > .item-container > div:first-child {
-  // border-left: 1px solid gray;
   background-color: $primary;
   color: white;
   font-size: 1rem;
@@ -109,24 +107,10 @@ li {
   justify-content: center;
 }
 
-/* Hide the leftovers cells of the grid */
-.item-container::after {
-  content: "";
-  grid-column: 9;
-  display: none;
-}
-
 .item-container {
   display: grid;
-  grid-template-columns: 80px repeat(8, minmax(100px, 1fr));
   width: 250%;
   font-size: 0.5rem;
-}
-
-@media screen and (min-width: 370px) {
-  .item-container {
-    width: 220%;
-  }
 }
 
 @media screen and (min-width: 425px) {
@@ -138,21 +122,6 @@ li {
 @media screen and (min-width: 768px) {
   .item-container {
     width: 100%;
-    grid-template-columns: 60px repeat(8, minmax(100px, 1fr));
-  }
-}
-
-@media screen and (min-width: 1024px) {
-  .item-container {
-    width: 98%;
-    grid-template-columns: 70px repeat(8, minmax(135px, 1fr));
-  }
-}
-
-@media screen and (min-width: 1440px) {
-  .item-container {
-    width: 97%;
-    grid-template-columns: 90px repeat(8, minmax(190px, 1fr));
   }
 }
 

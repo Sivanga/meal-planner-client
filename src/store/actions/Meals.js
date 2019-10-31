@@ -8,7 +8,6 @@ import { mealsDbRef } from "../../firebase";
  * Set meals to backend
  */
 export const setMeals = (payload, uid) => async dispatch => {
-  console.log("setMeals: ", payload);
   mealsDbRef(uid).set(payload);
 };
 

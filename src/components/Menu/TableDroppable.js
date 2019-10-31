@@ -2,6 +2,7 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import classNames from "classnames";
 import TableDraggable from "./TableDraggable";
+import { getContainerStyle } from "./Helpers";
 
 const TableDroppable = ({
   mealIndex,
@@ -35,6 +36,7 @@ const TableDroppable = ({
           ref={provided.innerRef}
           {...provided.droppableProps}
           {...provided.droppablePlaceholder}
+          style={getContainerStyle(days)}
         >
           <div key={mealIndex} className="attribute meal-name">
             {meal.name}

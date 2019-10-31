@@ -16,7 +16,6 @@ import { setMeals, fetchMeals } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
 
 const mapStateToProps = state => {
-  console.log("state: ", state);
   return {
     backendMeals: state.meals.meals,
     dataReceived: state.meals.dataReceived
@@ -212,10 +211,6 @@ const TemplateMenu = props => {
       props.handleGenerateMenu(days, meals);
     }
   };
-
-  if (!props.dataReceived) {
-    return <div>Loading... </div>;
-  }
 
   return (
     <>
