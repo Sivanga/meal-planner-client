@@ -9,6 +9,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import TableDroppable from "./TableDroppable";
 import PanelDroppable, { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { getContainerStyle } from "./Helpers";
+import { Redirect } from "react-router-dom";
 import Burger from "@animated-burgers/burger-arrow";
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
@@ -16,9 +17,12 @@ import "../../scss/GenerateMenu.scss";
 
 const mapStateToProps = state => {
   return {
-    dishes: state.dishes.dishes,
-    dataReceived:
-      state.dishes.privateDishesDataReceived.privateDishesDataReceived
+    favoriteDishes: state.dishes.dishes,
+    favoriteDataReceived:
+      state.dishes.privateDishesDataReceived.privateDishesDataReceived,
+    publicDishes: state.dishes.publicDishes,
+    publicDataReceived:
+      state.dishes.publicDishesDataReceived.publicDishesDataReceived
   };
 };
 
@@ -32,12 +36,6 @@ const GenerateMenu = props => {
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
-
-  /**
-   * Get days and meals from previous page (menu template)
-   */
-  const days = props.location.state.menuData.days;
-  const meals = props.location.state.menuData.meals;
 
   /**
   Random dishes array
@@ -55,48 +53,94 @@ const GenerateMenu = props => {
   const [showPlusButton, setShowPlusButton] = useState(true);
 
   /**
-   * Fetch dishes and compute random dishes array
+   * Fetch private and public dishes. Compute random dishes after all data is received
    */
   useEffect(() => {
     if (!auth.authState.user) return;
 
-    // Fetch private dishes
-    if (!props.dishes || props.dishes.length === 0) {
+    // Fetch private and public dishes
+    if (!props.favoriteDataReceived) {
       props.fetchDishes(auth.authState.user.uid);
-    } else {
+    }
+
+    if (!props.publicDataReceived) {
+      props.fetchPublicDishes(auth.authState.user.uid);
+    }
+
+    if (props.favoriteDataReceived && props.publicDataReceived) {
       computeRandomDishes();
     }
-  }, [auth, props.dishes]);
+  }, [auth, props.favoriteDataReceived, props.publicDataReceived]);
+
+  /**
+   * Get days and meals from previous page (menu template)
+   If theres no days and meals data, go back main menu page
+   */
+
+  if (
+    !props.location ||
+    !props.location.state ||
+    !props.location.state.menuData
+  ) {
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/menu"
+        }}
+      />
+    );
+  }
+  const days = props.location.state.menuData.days;
+  const meals = props.location.state.menuData.meals;
 
   /**
    * Create random dishes array of the length of days and meals.
    Assign dishes randomally
    */
   var computeRandomDishes = () => {
-    // Notohing to assign
-    if (props.dishes.length === 0) {
-      return;
-    }
-
     // Create matrix
     var randomDishes = [];
     meals.map((meal, mealIndex) => {
+      console.log("meal:", meal.name);
+
       // Create array
       randomDishes[mealIndex] = [];
 
       days.map((day, dayIndex) => {
         // Don't assign a dish for a disabled day
-        if (!day.enabled) return false;
+        if (!day.enabled) return (randomDishes[mealIndex][dayIndex] = null);
 
-        // Assign a random dish
-        var random =
-          props.dishes[Math.floor(Math.random() * props.dishes.length)];
-        return (randomDishes[mealIndex][dayIndex] = random);
+        // First find a random dish from favorites that matches this meal
+        const mealsFavoriteDishes = findDishesForMeal(
+          props.favoriteDishes,
+          meal
+        );
+        var mergedDishes = mealsFavoriteDishes;
+        console.log("mealsFavoriteDishes.length: ", mealsFavoriteDishes.length);
+
+        // If mealsFavoriteDishes length is less then days length, use public dishes as well
+        if (mealsFavoriteDishes.length < days.length) {
+          const mealsPublicDishes = findDishesForMeal(props.publicDishes, meal);
+          console.log("mealsPublicDishes.length: ", mealsPublicDishes.length);
+          mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
+          console.log("merged.length: ", mergedDishes.length);
+        }
+
+        var randomDish =
+          mergedDishes[Math.floor(Math.random() * mergedDishes.length)];
+        return (randomDishes[mealIndex][dayIndex] = randomDish);
       });
     });
 
     // Set result
     setRandomDishes(randomDishes);
+  };
+
+  const findDishesForMeal = (dishes, meal) => {
+    return dishes.filter(dish =>
+      dish.meals.some(currMeal => currMeal.id === meal.id)
+    );
   };
 
   // TODO: Implement
@@ -127,7 +171,7 @@ const GenerateMenu = props => {
     // Dropped from panel dishes
     if (source.droppableId === PANEL_DROPPABLE_ID) {
       // Get the wanted dish
-      const dish = props.dishes[source.index];
+      const dish = props.favoriteDishes[source.index];
       // Replcae with current table dish
       const destinationArray = [...randomDishes[destination.droppableId]];
       destinationArray.splice(destination.index, 1, dish);
@@ -214,15 +258,12 @@ const GenerateMenu = props => {
   /**
    * If dishes data is still loading, show loading message
    */
-  if (!props.dataReceived || !randomDishes) {
+  if (
+    !props.favoriteDataReceived ||
+    !props.publicDataReceived ||
+    !randomDishes
+  ) {
     return <div className="center-text">Loading...</div>;
-  }
-
-  /**
-   * If there's no saved dishes, show appropriate message
-   */
-  if (props.dishes.length === 0) {
-    return <div className="center-text">No Dishes</div>;
   }
 
   return (
@@ -275,7 +316,7 @@ const GenerateMenu = props => {
           <div
             className={classNames("panel-wrap", showPanel ? "show" : "hide")}
           >
-            <PanelDroppable dishes={props.dishes} />
+            <PanelDroppable dishes={props.favoriteDishes} />
           </div>
         </div>
       </div>
