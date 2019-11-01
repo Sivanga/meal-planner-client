@@ -111,17 +111,21 @@ li {
   display: grid;
   width: 250%;
   font-size: 0.5rem;
-}
 
-@media screen and (min-width: 425px) {
-  .item-container {
+  @media screen and (min-width: 425px) {
     width: 190%;
   }
-}
 
-@media screen and (min-width: 768px) {
-  .item-container {
+  @media screen and (min-width: 425px) {
+    width: 190%;
+  }
+  @media screen and (min-width: 768px) {
     width: 100%;
+  }
+
+  @media screen and (min-width: 1024px) {
+    padding-right: 70px;
+    padding-left: 70px;
   }
 }
 
@@ -131,11 +135,12 @@ li {
   top: -0.5rem;
   z-index: 2;
 
-  @media screen and (min-width: 426px) {
-    right: 2rem;
+  @media screen and (min-width: 425px) {
+    right: 1.5rem;
   }
-  @media screen and (min-width: 769px) {
-    right: 3rem;
+
+  @media screen and (min-width: 1024px) {
+    right: 4.5rem;
   }
 }
 
