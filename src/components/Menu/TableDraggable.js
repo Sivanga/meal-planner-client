@@ -15,7 +15,12 @@ const TableDraggable = ({
   showPlusButton
 }) => {
   return (
-    <Draggable draggableId={id} index={dayIndex} key={dayIndex}>
+    <Draggable
+      draggableId={id}
+      index={dayIndex}
+      key={dayIndex}
+      isDragDisabled={!dayEnabled}
+    >
       {(provided, snapshot) => (
         <div
           key={dayIndex}

@@ -12,7 +12,6 @@ export const getContainerStyle = days => {
   // This is a dummy column = when dragging an item to this row this will
   // make space to the placeholder to be added without overflowing to the next row
   gridColumns += ` 1px`;
-  console.log("gridColumns: ", gridColumns);
 
   var containerStyle = {
     gridTemplateColumns: gridColumns

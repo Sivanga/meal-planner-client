@@ -121,6 +121,9 @@ const GenerateMenu = props => {
     // Dropped outside the allowed area
     if (!destination) return;
 
+    // Can't drop to a disabled day
+    if (!days[destination.index].enabled) return;
+
     // Dropped from panel dishes
     if (source.droppableId === PANEL_DROPPABLE_ID) {
       // Get the wanted dish
