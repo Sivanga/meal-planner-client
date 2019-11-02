@@ -1,6 +1,13 @@
 @import "./Variables.scss";
 
+.wrapper {
+  padding-top: 3rem;
+}
+
 #template-menu-table {
+  position: relative;
+
+  overflow-x: scroll;
   .day-column {
     cursor: pointer;
     text-align: center;
@@ -11,17 +18,30 @@
 }
 
 .alert {
-  margin: auto;
-  margin-bottom: 1rem;
-  @media screen and (min-width: 769px) {
-    width: 50%;
-  }
+  margin-bottom: 0.5rem;
 }
 
 .table {
   border: 1px solid rgb(221, 225, 229);
   width: auto;
-  margin: auto;
+
+  @media screen and (min-width: 768px) {
+    margin: auto;
+  }
+}
+
+.save-template-btn {
+  position: absolute;
+  top: -3rem;
+  margin: 0;
+  margin-bottom: 0.5rem;
+  background-color: $primary !important;
+  color: white;
+
+  &:hover {
+    background-color: $primary-dark !important;
+    color: white;
+  }
 }
 
 .table thead th {
@@ -64,18 +84,18 @@
   justify-content: center;
 }
 
-.generate-btn {
-  display: flex;
-  margin: auto;
-  margin-top: 1rem;
-  background-color: $primary !important;
-  color: white;
+// .generate-btn {
+//   display: flex;
+//   margin: auto;
+//   margin-top: 1rem;
+//   background-color: $primary !important;
+//   color: white;
 
-  &:hover {
-    background-color: $primary-dark !important;
-    color: white;
-  }
-}
+//   &:hover {
+//     background-color: $primary-dark !important;
+//     color: white;
+//   }
+// }
 
 .menu-error {
   font-size: 1rem;

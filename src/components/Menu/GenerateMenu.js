@@ -271,6 +271,9 @@ const GenerateMenu = props => {
       onDragEnd={result => onDragEnd(result)}
       onDragStart={() => onDragStart()}
     >
+      <Button className="generate-btn" onClick={() => onDoneClick()}>
+        SAVE
+      </Button>
       <div id="menuContainer" className="generateMenuContainer">
         <div className="generateMenuTableContainer">
           <ol className="collection collection-container generateMenuTable">
@@ -320,10 +323,6 @@ const GenerateMenu = props => {
           </div>
         </div>
       </div>
-
-      <Button className="generate-btn" onClick={() => onDoneClick()}>
-        Save
-      </Button>
     </DragDropContext>
   );
 };
