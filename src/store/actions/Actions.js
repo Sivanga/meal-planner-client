@@ -12,6 +12,7 @@ import {
   publicDishesDbRef
 } from "../../firebase";
 export * from "./Meals";
+export * from "./Menus";
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
