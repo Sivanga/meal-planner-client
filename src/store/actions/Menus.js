@@ -24,7 +24,7 @@ export const setMenu = (payload, uid) => async dispatch => {
  * Fetch meals
  */
 export const fetchMenus = uid => async dispatch => {
-  menusDbRef(uid).once("value", snapshot => {
+  menusDbRef(uid).on("value", snapshot => {
     dispatch({ type: FETCH_MENUS_DATA_RECIEVED, payload: true });
     dispatch({ type: FETCH_MENUS, payload: snapshot.val() || {} });
   });

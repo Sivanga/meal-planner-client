@@ -45,7 +45,16 @@ const GenerateMenu = props => {
   /**
   Random dishes array
    */
-  const [randomDishes, setRandomDishes] = useState(null);
+  var initialRandomDishes = null;
+  if (
+    props.location &&
+    props.location.state &&
+    props.location.state.menuData &&
+    props.location.state.menuData.dishes
+  ) {
+    initialRandomDishes = props.location.state.menuData.dishes;
+  }
+  const [randomDishes, setRandomDishes] = useState(initialRandomDishes);
 
   /**
    * Show dishes panel
@@ -72,7 +81,11 @@ const GenerateMenu = props => {
       props.fetchPublicDishes(auth.authState.user.uid);
     }
 
-    if (props.favoriteDataReceived && props.publicDataReceived) {
+    // Compute random dishes if there's no dishes in props and favorite and public dishes received
+    if (
+      !randomDishes &&
+      (props.favoriteDataReceived && props.publicDataReceived)
+    ) {
       computeRandomDishes();
     }
   }, [auth, props.favoriteDataReceived, props.publicDataReceived]);
@@ -248,15 +261,9 @@ const GenerateMenu = props => {
 
   const onMinusClick = (mealIndex, dayIndex) => {
     console.log("onMinusClick. mealIndex ", mealIndex, " dayIndex: ", dayIndex);
-    // const result = [
-    //   ...randomDishes,
-    //   (randomDishes[mealIndex][dayIndex] = null)
-    // ];
     var result = { ...randomDishes };
     result[mealIndex][dayIndex] = null;
-    // console.log("result: ", result);
     setRandomDishes(result);
-    // console.log("random dishes: ", randomDishes);
   };
 
   /**

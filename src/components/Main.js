@@ -14,8 +14,12 @@ function Main(props) {
   return (
     <Switch>
       <Route exact path="/" component={Dishes} />
-      <Route path="/menu" component={Menu} />
-      <Route path="/generate" render={props => <GenerateMenu {...props} />} />
+
+      <Route
+        path="/menu/generate"
+        render={props => <GenerateMenu {...props} />}
+      />
+        <Route path="/menu" component={Menu} />
       <Route path="/dishes" component={Dishes} />
       <Route path="/myFavorites" component={MyFavorites} />
       <Route path="/login" component={Login} />

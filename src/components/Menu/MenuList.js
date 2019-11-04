@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useAuth } from "../auth/UseAuth";
 import { fetchMenus } from "../../store/actions/Actions";
+import { useHistory } from "react-router-dom";
 
 const mapStateToProps = state => {
   return {
@@ -20,6 +21,8 @@ const MenuList = ({ menus, dataReceived, fetchMenus }) => {
    */
   const auth = useAuth();
 
+  let history = useHistory();
+
   useEffect(() => {
     if (!auth.authState.user) return;
 
@@ -34,7 +37,7 @@ const MenuList = ({ menus, dataReceived, fetchMenus }) => {
 
   const prettyDate = time => {
     var date = new Date(time);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString("en-GB", {
       hour: "2-digit",
       minute: "2-digit"
     });
@@ -44,8 +47,10 @@ const MenuList = ({ menus, dataReceived, fetchMenus }) => {
     <div>
       {menus.map(menu => {
         return (
-          <div key={menu._id}>
-            {console.log(new Date(menu.date).toLocaleDateString("en-US"))}
+          <div
+            key={menu._id}
+            onClick={() => history.push("/menu/generate", { menuData: menu })}
+          >
             {prettyDate(menu.date)}
           </div>
         );

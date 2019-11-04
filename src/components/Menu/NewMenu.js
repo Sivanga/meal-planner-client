@@ -27,7 +27,7 @@ const NewMenu = props => {
         <Redirect
           push
           to={{
-            pathname: "/generate",
+            pathname: "/menu/generate",
             state: {
               menuData: menuData
             }

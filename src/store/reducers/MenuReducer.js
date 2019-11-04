@@ -15,7 +15,7 @@ function menus(state = [], action) {
       Object.keys(action.payload).map(key => {
         action.payload[key]._id = key;
 
-        return newMenus.push(action.payload[key]);
+        return newMenus.unshift(action.payload[key]);
       });
       return newMenus;
     default:
