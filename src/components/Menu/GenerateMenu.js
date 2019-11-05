@@ -162,17 +162,46 @@ const GenerateMenu = props => {
   };
 
   const onDoneClick = () => {
-    console.log("randomDishes: ", randomDishes);
+    // Generate menu preview
+    var images = [];
+    for (var i = 0; i < days.length; i++) {
+      for (var j = 0; j < days.length; j++) {
+        // Add this image only if it's not already exist
+        if (
+          randomDishes[i] &&
+          randomDishes[i][j] &&
+          randomDishes[i][j].imageUrl &&
+          !images.includes(randomDishes[i][j].imageUrl)
+        ) {
+          images.push(randomDishes[i][j].imageUrl);
+        }
+      }
+    }
+
+    // Shuffle the array and save
+    var previewImages = shuffle(images);
+
     // Send generated menu to backend
     const menu = {
       date: Date.now(),
       days: days,
       meals: meals,
-      dishes: randomDishes
+      dishes: randomDishes,
+      previewImages: previewImages
     };
 
     props.setMenu(menu, auth.authState.user.uid);
   };
+
+  /** Shuffle array for randomized menu preview */
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
 
   /**
    * Close the panel when drag starts
@@ -261,9 +290,10 @@ const GenerateMenu = props => {
 
   const onMinusClick = (mealIndex, dayIndex) => {
     console.log("onMinusClick. mealIndex ", mealIndex, " dayIndex: ", dayIndex);
-    var result = { ...randomDishes };
-    result[mealIndex][dayIndex] = null;
-    setRandomDishes(result);
+    var mealResult = { ...randomDishes };
+    mealResult[mealIndex][dayIndex] = null;
+
+    setRandomDishes(mealResult);
   };
 
   /**

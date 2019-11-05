@@ -3,6 +3,7 @@ import { Droppable } from "react-beautiful-dnd";
 import classNames from "classnames";
 import TableDraggable from "./TableDraggable";
 import { getContainerStyle } from "./Helpers";
+import "../../scss/TableDraggable.scss";
 
 const TableDroppable = ({
   mealIndex,
@@ -47,7 +48,11 @@ const TableDroppable = ({
               id={matrixToIndex(mealIndex, dayIndex).toString()}
               dayIndex={dayIndex}
               dayEnabled={day.enabled}
-              dish={randomDishes[mealIndex][dayIndex]}
+              dish={
+                randomDishes[mealIndex]
+                  ? randomDishes[mealIndex][dayIndex]
+                  : null
+              }
               dishIndex={matrixToIndex(mealIndex, dayIndex)}
               onMinusClick={() => onMinusClick(dayIndex)}
               onPlusClick={() => onPlusClick(dayIndex)}

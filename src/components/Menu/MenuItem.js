@@ -5,46 +5,24 @@ import "../../scss/MenuItem.scss";
 const MenuItem = ({ menu }) => {
   let history = useHistory();
 
-  const [menuPreview, setMenuPreview] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
 
-  /**
- For the first time, create random array of images from meals array to create menu preview
-  */
+  // Set preview Images if exist
   useEffect(() => {
     var images = [];
-    for (var i = 0; i < menu.dishes.length; i++) {
-      for (var j = 0; j < menu.dishes[i].length; j++) {
-        // Add this image only if it's not already exist
-        if (
-          menu.dishes[i][j].imageUrl &&
-          !images.includes(menu.dishes[i][j].imageUrl)
-        ) {
-          images.push(menu.dishes[i][j].imageUrl);
-        }
-      }
+    if (menu.previewImages) {
+      menu.previewImages.map(image => {
+        return images.push(image);
+      });
     }
-
-    // Shuffle the array and save
-    var final = shuffle(images);
-    setMenuPreview(final);
-  }, [menu.dishes]);
+    setPreviewImages(images);
+  }, [menu]);
 
   /** Timestamp to Human date */
-
   const prettyDate = time => {
     var date = new Date(time);
     return date.toLocaleDateString("en-EN");
   };
-
-  /** Shuffle array for randomized menu preview */
-
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
 
   return (
     <div
@@ -53,22 +31,22 @@ const MenuItem = ({ menu }) => {
     >
       <div className="menu-preview-container">
         <div>
-          <img src={menuPreview[0]} className="menu-preview-img" alt="" />
+          <img src={previewImages[0]} className="menu-preview-img" alt="" />
         </div>
         <div>
-          <img src={menuPreview[1]} className="menu-preview-img" alt="" />
+          <img src={previewImages[1]} className="menu-preview-img" alt="" />
         </div>
         <div>
-          <img src={menuPreview[2]} className="menu-preview-img" alt="" />
+          <img src={previewImages[2]} className="menu-preview-img" alt="" />
         </div>
         <div>
-          <img src={menuPreview[3]} className="menu-preview-img" alt="" />
+          <img src={previewImages[3]} className="menu-preview-img" alt="" />
         </div>
         <div>
-          <img src={menuPreview[4]} className="menu-preview-img" alt="" />
+          <img src={previewImages[4]} className="menu-preview-img" alt="" />
         </div>
         <div>
-          <img src={menuPreview[5]} className="menu-preview-img" alt="" />
+          <img src={previewImages[5]} className="menu-preview-img" alt="" />
         </div>
       </div>
       <div className="menu-preview-date">{prettyDate(menu.date)}</div>
