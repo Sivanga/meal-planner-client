@@ -1,0 +1,32 @@
+@import "./Variables.scss";
+
+#menu-preview-wrapper {
+  margin-bottom: 2rem;
+
+  .menu-preview-container {
+    width: 300px;
+    height: 200px;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-gap: 0.1rem;
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius: 10px;
+    -webkit-background-clip: padding-box; /* for Safari */
+    background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+    overflow: hidden;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+      background-color: $light-gray;
+    }
+  }
+
+  .menu-preview-date {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}

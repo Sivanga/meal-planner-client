@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useAuth } from "../auth/UseAuth";
 import { fetchMenus } from "../../store/actions/Actions";
-import { useHistory } from "react-router-dom";
+import MenuItem from "./MenuItem";
+import "../../scss/MenuList.scss";
 
 const mapStateToProps = state => {
   return {
@@ -21,8 +22,6 @@ const MenuList = ({ menus, dataReceived, fetchMenus }) => {
    */
   const auth = useAuth();
 
-  let history = useHistory();
-
   useEffect(() => {
     if (!auth.authState.user) return;
 
@@ -35,25 +34,10 @@ const MenuList = ({ menus, dataReceived, fetchMenus }) => {
     return <div>Loading...</div>;
   }
 
-  const prettyDate = time => {
-    var date = new Date(time);
-    return date.toLocaleDateString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  };
-
   return (
-    <div>
+    <div className="menu-list-container">
       {menus.map(menu => {
-        return (
-          <div
-            key={menu._id}
-            onClick={() => history.push("/menu/generate", { menuData: menu })}
-          >
-            {prettyDate(menu.date)}
-          </div>
-        );
+        return <MenuItem menu={menu} key={menu._id} />;
       })}
     </div>
   );
