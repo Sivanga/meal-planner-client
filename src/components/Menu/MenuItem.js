@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "../../scss/MenuItem.scss";
+import { Card } from "react-bootstrap";
 
 const MenuItem = ({ menu }) => {
   let history = useHistory();
@@ -25,7 +26,7 @@ const MenuItem = ({ menu }) => {
   };
 
   return (
-    <div
+    <Card
       onClick={() => history.push("/menu/generate", { menuData: menu })}
       id="menu-preview-wrapper"
     >
@@ -49,8 +50,13 @@ const MenuItem = ({ menu }) => {
           <img src={previewImages[5]} className="menu-preview-img" alt="" />
         </div>
       </div>
-      <div className="menu-preview-date">{prettyDate(menu.date)}</div>
-    </div>
+      <Card.Body>
+        <Card.Title>
+          <div>{menu.name}</div>
+          <div className="menu-preview-date">{prettyDate(menu.date)}</div>
+        </Card.Title>
+      </Card.Body>
+    </Card>
   );
 };
 

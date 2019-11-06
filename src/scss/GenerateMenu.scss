@@ -155,12 +155,15 @@ li {
   background-color: $primary !important;
   color: white;
 
-  &:hover {
+  &:hover,
+  &:not(.disabled):active:active {
     background-color: $primary-dark !important;
     color: white;
   }
 
-  @media screen and (min-width: 1024px) {
-    margin-left: 100px;
+  &.meal-plan-btn {
+    @media screen and (min-width: 1024px) {
+      margin-left: 100px;
+    }
   }
 }

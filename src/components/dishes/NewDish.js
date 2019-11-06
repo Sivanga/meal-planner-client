@@ -198,9 +198,6 @@ const NewDish = props => {
             }
             required
           />
-          {/* {errors.name.length > 0 && (
-            <span className="error">{errors.name}</span>
-          )} */}
         </Col>
       </Form.Group>
       <Form.Group as={Row} controlId="meals">

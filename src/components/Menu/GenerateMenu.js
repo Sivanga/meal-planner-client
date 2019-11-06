@@ -15,6 +15,16 @@ import PanelDroppable, { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { getContainerStyle } from "./Helpers";
 import { Redirect } from "react-router-dom";
 import Burger from "@animated-burgers/burger-arrow";
+import {
+  MDBBtn,
+  MDBModal,
+  MDBModalBody,
+  MDBModalHeader,
+  MDBModalFooter
+} from "mdbreact";
+import { Form, Row, Col } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
+
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
 import "../../scss/GenerateMenu.scss";
@@ -37,6 +47,9 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const GenerateMenu = props => {
+  /** Used to redirect to menus list after saving the menu */
+  let history = useHistory();
+
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -65,6 +78,9 @@ const GenerateMenu = props => {
    * Show dish plus button, We don't show it while dragging is accuring
    */
   const [showPlusButton, setShowPlusButton] = useState(true);
+
+  /** Save modal is shown */
+  const [saveModalShow, setSaveModalShow] = useState(false);
 
   /**
    * Fetch private and public dishes. Compute random dishes after all data is received
@@ -120,8 +136,6 @@ const GenerateMenu = props => {
     // Create matrix
     var randomDishes = [];
     meals.map((meal, mealIndex) => {
-      console.log("meal:", meal.name);
-
       // Create array
       randomDishes[mealIndex] = [];
 
@@ -135,14 +149,11 @@ const GenerateMenu = props => {
           meal
         );
         var mergedDishes = mealsFavoriteDishes;
-        console.log("mealsFavoriteDishes.length: ", mealsFavoriteDishes.length);
 
         // If mealsFavoriteDishes length is less then days length, use public dishes as well
         if (mealsFavoriteDishes.length < days.length) {
           const mealsPublicDishes = findDishesForMeal(props.publicDishes, meal);
-          console.log("mealsPublicDishes.length: ", mealsPublicDishes.length);
           mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
-          console.log("merged.length: ", mergedDishes.length);
         }
 
         var randomDish =
@@ -160,48 +171,6 @@ const GenerateMenu = props => {
       dish.meals.some(currMeal => currMeal.id === meal.id)
     );
   };
-
-  const onDoneClick = () => {
-    // Generate menu preview
-    var images = [];
-    for (var i = 0; i < days.length; i++) {
-      for (var j = 0; j < days.length; j++) {
-        // Add this image only if it's not already exist
-        if (
-          randomDishes[i] &&
-          randomDishes[i][j] &&
-          randomDishes[i][j].imageUrl &&
-          !images.includes(randomDishes[i][j].imageUrl)
-        ) {
-          images.push(randomDishes[i][j].imageUrl);
-        }
-      }
-    }
-
-    // Shuffle the array and save
-    var previewImages = shuffle(images);
-
-    // Send generated menu to backend
-    const menu = {
-      date: Date.now(),
-      days: days,
-      meals: meals,
-      dishes: randomDishes,
-      previewImages: previewImages
-    };
-
-    props.setMenu(menu, auth.authState.user.uid);
-  };
-
-  /** Shuffle array for randomized menu preview */
-
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
 
   /**
    * Close the panel when drag starts
@@ -289,12 +258,59 @@ const GenerateMenu = props => {
   };
 
   const onMinusClick = (mealIndex, dayIndex) => {
-    console.log("onMinusClick. mealIndex ", mealIndex, " dayIndex: ", dayIndex);
     var mealResult = { ...randomDishes };
     mealResult[mealIndex][dayIndex] = null;
 
     setRandomDishes(mealResult);
   };
+
+  const onDoneClick = (menuShareState, menuNameState) => {
+    // Generate menu preview
+    var images = [];
+    for (var i = 0; i < days.length; i++) {
+      for (var j = 0; j < days.length; j++) {
+        // Add this image only if it's not already exist
+        if (
+          randomDishes[i] &&
+          randomDishes[i][j] &&
+          randomDishes[i][j].imageUrl &&
+          !images.includes(randomDishes[i][j].imageUrl)
+        ) {
+          images.push(randomDishes[i][j].imageUrl);
+        }
+      }
+    }
+
+    // Shuffle the array and save
+    var previewImages = shuffle(images);
+
+    // Send generated menu to backend
+    const menu = {
+      date: Date.now(),
+      days: days,
+      meals: meals,
+      dishes: randomDishes,
+      previewImages: previewImages,
+      share: menuShareState,
+      name: menuNameState
+    };
+
+    props.setMenu(menu, auth.authState.user.uid);
+
+    setSaveModalShow(false);
+
+    history.push("/menu");
+  };
+
+  /** Shuffle array for randomized menu preview */
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
 
   /**
    * If there's no logged in user, show login message
@@ -316,64 +332,128 @@ const GenerateMenu = props => {
     return <div className="center-text">Loading...</div>;
   }
 
-  return (
-    <DragDropContext
-      onDragEnd={result => onDragEnd(result)}
-      onDragStart={() => onDragStart()}
-    >
-      <Button className="generate-btn" onClick={() => onDoneClick()}>
-        SAVE
-      </Button>
-      <div id="menuContainer" className="generateMenuContainer">
-        <div className="generateMenuTableContainer">
-          <ol className="collection collection-container generateMenuTable">
-            <li className="item item-container" style={getContainerStyle(days)}>
-              <div key="day/meal" className="attribute">
-                Day/Meal
-              </div>
-              {/* Days headers */}
-              {days.map((day, index) => (
-                <div
-                  id="generated-day"
-                  key={index}
-                  className={classNames("day-column", "attribute", {
-                    dayDisabled: !day.enabled
-                  })}
-                >
-                  {day.day}
-                </div>
-              ))}
+  const SaveModal = () => {
+    /** Share menu value */
+    const [menuShareState, setMenuShareState] = useState(true);
 
-              {/* Panl handle at the end of the table head */}
-              <Burger
-                direction="right"
-                isOpen={showPanel}
-                onClick={() => setShowPanel(!showPanel)}
-              />
-            </li>
+    const [menuNameState, setMenuNameState] = useState("");
 
-            {/* Meals */}
-            {meals.map((meal, mealIndex) => (
-              <TableDroppable
-                key={mealIndex}
-                mealIndex={mealIndex}
-                meal={meal}
-                days={days}
-                randomDishes={randomDishes}
-                onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
-                onPlusClick={dayIndex => setShowPanel(true)}
-                showPlusButton={showPlusButton}
+    return (
+      <MDBModal
+        isOpen={saveModalShow}
+        toggle={() => setSaveModalShow(!saveModalShow)}
+      >
+        <MDBModalHeader toggle={() => setSaveModalShow(!saveModalShow)}>
+          One Last Step!
+        </MDBModalHeader>
+        <MDBModalBody>
+          <Form.Group controlId="menuName" as={Row}>
+            <Form.Label column sm="2">
+              Name
+            </Form.Label>
+            <Col sm="8">
+              <Form.Control
+                type="text"
+                placeholder={menuNameState}
+                onChange={event => setMenuNameState(event.target.value)}
               />
-            ))}
-          </ol>
-          <div
-            className={classNames("panel-wrap", showPanel ? "show" : "hide")}
+            </Col>
+          </Form.Group>
+
+          <Form.Group controlId="menuShare" as={Row}>
+            <Form.Label column sm="2">
+              Visibility
+            </Form.Label>
+            <Col sm="8">
+              <Form.Check
+                type="checkbox"
+                label=" Share with our community and get others
+                inspired!"
+                checked={menuShareState}
+                onChange={() => setMenuShareState(!menuShareState)}
+              />
+            </Col>
+          </Form.Group>
+        </MDBModalBody>
+        <MDBModalFooter>
+          <MDBBtn
+            onClick={() => onDoneClick(menuShareState, menuNameState)}
+            className="generate-btn"
           >
-            <PanelDroppable dishes={props.favoriteDishes} />
+            SAVE
+          </MDBBtn>
+        </MDBModalFooter>
+      </MDBModal>
+    );
+  };
+
+  return (
+    <>
+      <SaveModal />
+      <DragDropContext
+        onDragEnd={result => onDragEnd(result)}
+        onDragStart={() => onDragStart()}
+      >
+        <Button
+          className="meal-plan-btn generate-btn "
+          onClick={() => setSaveModalShow(true)}
+        >
+          DONE
+        </Button>
+        <div id="menuContainer" className="generateMenuContainer">
+          <div className="generateMenuTableContainer">
+            <ol className="collection collection-container generateMenuTable">
+              <li
+                className="item item-container"
+                style={getContainerStyle(days)}
+              >
+                <div key="day/meal" className="attribute">
+                  Day/Meal
+                </div>
+                {/* Days headers */}
+                {days.map((day, index) => (
+                  <div
+                    id="generated-day"
+                    key={index}
+                    className={classNames("day-column", "attribute", {
+                      dayDisabled: !day.enabled
+                    })}
+                  >
+                    {day.day}
+                  </div>
+                ))}
+
+                {/* Panl handle at the end of the table head */}
+                <Burger
+                  direction="right"
+                  isOpen={showPanel}
+                  onClick={() => setShowPanel(!showPanel)}
+                />
+              </li>
+
+              {/* Meals */}
+              {meals.map((meal, mealIndex) => (
+                <TableDroppable
+                  key={mealIndex}
+                  mealIndex={mealIndex}
+                  meal={meal}
+                  days={days}
+                  randomDishes={randomDishes}
+                  onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
+                  onPlusClick={dayIndex => setShowPanel(true)}
+                  showPlusButton={showPlusButton}
+                />
+              ))}
+            </ol>
+            <div
+              className={classNames("panel-wrap", showPanel ? "show" : "hide")}
+            >
+              <PanelDroppable dishes={props.favoriteDishes} />
+            </div>
           </div>
         </div>
-      </div>
-    </DragDropContext>
+      </DragDropContext>
+    </>
   );
 };
 
