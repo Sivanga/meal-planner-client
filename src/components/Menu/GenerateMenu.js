@@ -299,7 +299,7 @@ const GenerateMenu = props => {
 
     setSaveModalShow(false);
 
-    history.push("/menu");
+    history.push("/myFavorites", { activeView: "ACTIVE_VIEW_MENUS" });
   };
 
   /** Shuffle array for randomized menu preview */

@@ -25,7 +25,24 @@ function menus(state = [], action) {
   }
 }
 
-function dataReceived(state = false, action) {
+function publicMenus(state = [], action) {
+  switch (action.type) {
+    case FETCH_PUBLIC_MENUS:
+      var publicMenus = [];
+      Object.keys(action.payload.publicMenus).map(key => {
+        action.payload.publicMenus[key]._id = key;
+        // Return only public dishes that aren't the current user's
+        if (action.payload.publicMenus[key].ownerUid !== action.payload.uid) {
+          publicMenus.push(action.payload.publicMenus[key]);
+        }
+      });
+      return publicMenus;
+    default:
+      return state;
+  }
+}
+
+function privateMenusDataReceived(state = false, action) {
   switch (action.type) {
     case PRIVATE_MENUS_DATA_RECIEVED:
       return action.payload;
@@ -34,9 +51,20 @@ function dataReceived(state = false, action) {
   }
 }
 
+function publicMenusDataReceived(state = false, action) {
+  switch (action.type) {
+    case PUBLIC_MENUS_DATA_RECIEVED:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
 const MealsReducer = combineReducers({
   menus,
-  dataReceived
+  publicMenus,
+  privateMenusDataReceived,
+  publicMenusDataReceived
 });
 
 export default MealsReducer;
