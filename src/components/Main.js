@@ -3,7 +3,7 @@ import Dishes from "../components/dishes/Dishes";
 import Menu from "./Menu/Menu";
 import Notfound from "./NotFound";
 import GenerateMenu from "./Menu/GenerateMenu";
-import MyFavorites from "../components/dishes/MyFavorites";
+import MyFavorites from "../components/favorites/MyFavorites";
 import Login from "./Login";
 import Contact from "./Contact";
 import About from "./About";
@@ -19,7 +19,7 @@ function Main(props) {
         path="/menu/generate"
         render={props => <GenerateMenu {...props} />}
       />
-        <Route path="/menu" component={Menu} />
+      <Route path="/menu" component={Menu} />
       <Route path="/dishes" component={Dishes} />
       <Route path="/myFavorites" component={MyFavorites} />
       <Route path="/login" component={Login} />

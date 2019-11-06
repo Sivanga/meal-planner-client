@@ -291,7 +291,7 @@ const GenerateMenu = props => {
       meals: meals,
       dishes: randomDishes,
       previewImages: previewImages,
-      share: menuShareState,
+      sharePublic: menuShareState,
       name: menuNameState
     };
 

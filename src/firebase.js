@@ -29,9 +29,11 @@ export const authRef = firebase.auth();
 export const databaseRef = firebase.database().ref();
 export const dishesDbRef = uid => databaseRef.child(`dishes/${uid}`);
 export const publicDishesDbRef = () => databaseRef.child(`publicDishes/`);
+export const menusDbRef = uid => databaseRef.child(`menus/${uid}`);
+export const publicMenusDbRef = () => databaseRef.child(`publicMenus/`);
 export const userDbRef = uid => databaseRef.child(`users/${uid}`);
 export const mealsDbRef = uid => databaseRef.child(`meals/${uid}`);
-export const menusDbRef = uid => databaseRef.child(`menus/${uid}`);
+
 
 // Storage
 export const storageRef = uid =>

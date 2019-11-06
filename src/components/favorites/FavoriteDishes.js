@@ -2,11 +2,10 @@ import React, { useEffect } from "react";
 import { addDish, removeDish, fetchDishes } from "../../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
-import DishesList from "./DishesList";
-import { DishListEnum } from "./DishCard";
-import ImportDish from "./ImportDish";
+import DishesList from "../dishes/DishesList";
+import { DishListEnum } from "../dishes/DishCard";
+import ImportDish from "../dishes/ImportDish";
 
 const mapStateToProps = state => {
   return {
@@ -22,27 +21,29 @@ const mapDispatchToProps = dispatch => ({
   fetchDishes: uid => dispatch(fetchDishes(uid))
 });
 
-const MyFavorites = props => {
-  /**
-   * Auth hook to get update for changes from auth provider
-   */
-  const auth = useAuth();
-
+const FavoriteDishes = ({
+  auth,
+  fetchDishes,
+  addDish,
+  removeDish,
+  dishes,
+  dataReceived
+}) => {
   /**
    * Fetch dishes in first render.
    * FETCH_DISHES Action creator will have an observable to notify for further changes
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-    props.fetchDishes(auth.authState.user.uid);
-  }, [auth]);
+    fetchDishes(auth.authState.user.uid);
+  }, [auth, fetchDishes]);
 
   const onDishAdd = dish => {
-    props.addDish({ dish }, auth.authState.user.uid);
+    addDish({ dish }, auth.authState.user.uid);
   };
 
   const handleDishRemove = id => {
-    props.removeDish(id, auth.authState.user.uid);
+    removeDish(id, auth.authState.user.uid);
   };
 
   /**
@@ -57,14 +58,14 @@ const MyFavorites = props => {
   /**
    * If dishes data is still loading, show message
    */
-  if (!props.dataReceived) {
+  if (!dataReceived) {
     return <div className="center-text">Loading...</div>;
   }
 
   /**
    * No dishes saved for user
    */
-  if (props.dishes.length === 0)
+  if (dishes.length === 0)
     return (
       <>
         <div className="empty-dishes">
@@ -85,7 +86,7 @@ const MyFavorites = props => {
   return (
     <>
       <DishesList
-        dishes={props.dishes}
+        dishes={dishes}
         handleDishRemove={id => handleDishRemove(id)}
         dishListEnum={DishListEnum.MY_FAVORITES_LIST}
         currentUid={currentUid}
@@ -96,13 +97,13 @@ const MyFavorites = props => {
   );
 };
 
-MyFavorites.propTypes = {
+FavoriteDishes.propTypes = {
   dishes: PropTypes.arrayOf(PropTypes.object),
   dataReceived: PropTypes.bool
 };
 
-const MyFavoritesList = connect(
+const FavoriteDishesList = connect(
   mapStateToProps,
   mapDispatchToProps
-)(MyFavorites);
-export default MyFavoritesList;
+)(FavoriteDishes);
+export default FavoriteDishesList;
