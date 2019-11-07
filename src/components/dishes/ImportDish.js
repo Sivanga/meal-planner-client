@@ -4,6 +4,7 @@ import { getDishFromUrl } from "../../firebase";
 import NewDish from "./NewDish";
 import classNames from "classnames";
 import "../../scss/ImportDIsh.scss";
+import "../../scss/PlusItem.scss";
 
 const ImportDish = ({ addDish }) => {
   /**
@@ -124,7 +125,7 @@ const ImportDish = ({ addDish }) => {
         </Modal.Body>
       </Modal>
       <i
-        className="fas fa-plus-circle new-dish"
+        className="fas fa-plus-circle plus-item"
         onClick={() => setModalsShowState({ import: true, new: false })}
       />
     </>

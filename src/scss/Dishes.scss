@@ -40,21 +40,6 @@
   color: antiquewhite;
 }
 
-.new-dish {
-  color: $primary;
-  display: block;
-  position: fixed;
-  bottom: 1rem;
-  right: 50%;
-  transform: translate(50%);
-  font-size: 4rem;
-  z-index: 99;
-}
-
-.new-dish:hover {
-  color: $primary-dark;
-}
-
 .badge-primary {
   background-color: $primary !important;
   margin-right: 0.5em;

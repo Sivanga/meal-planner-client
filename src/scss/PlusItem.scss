@@ -1,0 +1,23 @@
+@import "./Variables.scss";
+
+.plus-item {
+  color: $primary;
+  display: block;
+  position: fixed;
+  bottom: 1rem;
+  right: 50%;
+  transform: translate(50%);
+  font-size: 4rem;
+  z-index: 99;
+
+  &::after {
+    position: absolute;
+    z-index: -1;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    content: "";
+    background-color: white;
+  }
+}

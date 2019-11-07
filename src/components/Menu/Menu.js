@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import MenuList from "./MenuList";
 import { MenuListEnum } from "./MenuItem";
 import CreateNewMenu from "./CreateNewMenu";
-import "../..//scss/Menu.scss";
 import { connect } from "react-redux";
 import {
   removeMenu,
