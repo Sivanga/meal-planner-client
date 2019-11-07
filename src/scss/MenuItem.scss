@@ -1,32 +1,40 @@
 @import "./Variables.scss";
 
-#menu-preview-wrapper {
-  width: 280px;
+#menu-item {
+  position: relative;
 
-  justify-self: center;
+  .menu-preview-wrapper {
+    width: 280px;
 
-  .menu-preview-container {
-    height: 200px;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    grid-gap: 0.1rem;
-    border-radius: 10px;
-    -webkit-background-clip: padding-box; /* for Safari */
-    background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+    justify-self: center;
 
-    img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: cover;
-      background-color: $light-gray;
+    .menu-preview-container {
+      height: 200px;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      grid-gap: 0.1rem;
+      border-radius: 10px;
+      -webkit-background-clip: padding-box; /* for Safari */
+      background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+        background-color: $light-gray;
+      }
+    }
+
+    .menu-preview-date {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
     }
   }
 
-  .menu-preview-date {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-top: 0.5rem;
+  .deleteOverlay {
+    height: 100%;
   }
 }
