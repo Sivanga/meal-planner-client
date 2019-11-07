@@ -46,11 +46,16 @@ const FavoriteDishes = ({
   }, [auth, fetchDishes]);
 
   const onDishAdd = dish => {
-    addDish({ dish }, auth.authState.user.uid);
+    addDish(dish, auth.authState.user.uid);
   };
 
   const handleDishRemove = id => {
     removeDish(id, auth.authState.user.uid);
+  };
+
+  const onSearch = query => {
+    console.log("onSearch: ", query);
+    searchPrivateDishes(auth.authState.user.uid, query);
   };
 
   /**
@@ -97,7 +102,7 @@ const FavoriteDishes = ({
         handleDishRemove={id => handleDishRemove(id)}
         dishListEnum={DishListEnum.MY_FAVORITES_LIST}
         currentUid={currentUid}
-        onSearch={query => searchPrivateDishes(currentUid, query)}
+        onSearch={query => onSearch(query)}
       />
 
       <ImportDish addDish={dish => onDishAdd(dish)} />

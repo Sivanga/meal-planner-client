@@ -46,7 +46,7 @@ const Dishes = props => {
   }, [auth]);
 
   const onDishAdd = dish => {
-    props.addDish({ dish }, auth.authState.user.uid);
+    props.addDish(dish, auth.authState.user.uid);
   };
 
   const handleDishFavorite = (dish, uid) => {

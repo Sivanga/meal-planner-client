@@ -19,7 +19,7 @@ export * from "./Menus";
  */
 export const addDish = (payload, uid) => async dispatch => {
   // Add the dish locally
-  dispatch({ type: ADD_DISH, payload: payload.dish });
+  dispatch({ type: ADD_DISH, payload: payload });
 
   // Add to backend if there's authenticated user
   if (!uid) {
@@ -35,12 +35,12 @@ export const addDish = (payload, uid) => async dispatch => {
   // First upload dish image to storage
   // Then update the image url of the dish and push to db
   const storageRefChild = storageRef(uid).child(
-    "images/" + payload.dish.imageFile.name
+    "images/" + payload.imageFile.name
   );
   storageRefChild.put(payload.dish.imageFile).then(function(snapshot) {
     storageRefChild.getDownloadURL().then(url => {
-      payload.dish.imageUrl = url;
-      pushToDb(payload.dish, uid);
+      payload.imageUrl = url;
+      pushToDb(payload, uid);
     });
   });
 };
@@ -51,13 +51,13 @@ const pushToDb = (dish, uid) => {
   var updates = {};
 
   // Push the dish under current user
-  updates["/dishes/" + uid + "/" + newDishKey] = { dish: dish };
+  updates["/dishes/" + uid + "/" + newDishKey] = dish;
 
   // If dish is public, push to public dishes table
   if (dish.sharePublic) {
     dish.ownerUid = uid;
     dish.favoriteUsers = [uid];
-    updates["/publicDishes/" + newDishKey] = { dish: dish };
+    updates["/publicDishes/" + newDishKey] = dish;
   }
 
   databaseRef.update(updates);
@@ -75,7 +75,7 @@ export const removeDish = (payload, uid) => async dispatch => {
   var ref = publicDishesDbRef();
 
   return ref
-    .child(`${payload}/dish`)
+    .child(`${payload}`)
     .once("value")
     .then(function(snapshot) {
       var dishToUpdate = (snapshot.val() && snapshot.val()) || {};
@@ -91,7 +91,7 @@ export const removeDish = (payload, uid) => async dispatch => {
         favoriteUsers = favoriteUsers.filter(function(id) {
           return id !== uid;
         });
-        ref.child(`${payload}/dish/`).update({ favoriteUsers: favoriteUsers });
+        ref.child(`${payload}/`).update({ favoriteUsers: favoriteUsers });
       }
     });
 };
@@ -112,9 +112,14 @@ export const fetchDishes = uid => async dispatch => {
 };
 
 export const searchPrivateDishes = (uid, query) => async dispatch => {
-  var ref = dishesDbRef(uid);
-  ref.orderByChild("dish/name/").on("value", snapshot => {
-    console.log(snapshot.val());
+  var ref = dishesDbRef(uid)
+    .orderByChild(`name`)
+    .startAt(query)
+    .equalTo(query + "\uf8ff"); // end at the highest known unicode character
+  ref.once("value", snapshot => {
+    snapshot.forEach(child => {
+      console.log(child.key, child.val());
+    });
   });
 };
 
@@ -124,7 +129,7 @@ export const searchPrivateDishes = (uid, query) => async dispatch => {
  */
 export const fetchPublicDishes = uid => async dispatch => {
   var ref = publicDishesDbRef();
-  ref.orderByChild("dish/ownerUid").on("value", snapshot => {
+  ref.orderByChild("ownerUid").on("value", snapshot => {
     var payload = {
       publicDishes: snapshot.val() || {},
       uid: uid
@@ -138,20 +143,18 @@ export const addToFavorites = (dish, uid) => async dispatch => {
   // Set the dish under current user
   dishesDbRef(uid)
     .child("/" + dish._id)
-    .set({
-      dish: dish
-    });
+    .set(dish);
 
   // Mark this user as a favorite under this public dish
   var ref = publicDishesDbRef();
   return ref
-    .child(`${dish._id}/dish`)
+    .child(`${dish._id}`)
     .once("value")
     .then(function(snapshot) {
       var dishToUpdate = (snapshot.val() && snapshot.val()) || {};
       var favoriteUsers = dishToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
-      ref.child(`${dish._id}/dish/`).update({ favoriteUsers: favoriteUsers });
+      ref.child(`${dish._id}`).update({ favoriteUsers: favoriteUsers });
     });
 };
 

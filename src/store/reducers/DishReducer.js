@@ -19,8 +19,8 @@ function dishes(state = [], action) {
       // // Give each dish it's backend generated id for future reference
       var newDishes = [];
       Object.keys(action.payload).map(key => {
-        action.payload[key].dish._id = key;
-        return newDishes.unshift(action.payload[key].dish);
+        action.payload[key]._id = key;
+        return newDishes.unshift(action.payload[key]);
       });
       return newDishes;
 
@@ -34,12 +34,10 @@ function publicDishes(state = [], action) {
     case FETCH_PUBLIC_DISHES:
       var publicDishes = [];
       Object.keys(action.payload.publicDishes).map(key => {
-        action.payload.publicDishes[key].dish._id = key;
+        action.payload.publicDishes[key]._id = key;
         // Return only public dishes that aren't the current user's
-        if (
-          action.payload.publicDishes[key].dish.ownerUid !== action.payload.uid
-        ) {
-          publicDishes.push(action.payload.publicDishes[key].dish);
+        if (action.payload.publicDishes[key].ownerUid !== action.payload.uid) {
+          publicDishes.push(action.payload.publicDishes[key]);
         }
       });
       return publicDishes;
