@@ -3,26 +3,40 @@ import { useHistory } from "react-router-dom";
 import "../../scss/MenuItem.scss";
 import { Card } from "react-bootstrap";
 
-const MenuItem = ({ menu }) => {
+export const MenuListEnum = {
+  MY_FAVORITES_LIST: 1,
+  PUBLIC_LIST: 2
+};
+
+const MenuItem = ({
+  menu,
+  handleMenuRemove,
+  handleMenuAdd,
+  menuListEnum,
+  currentUid
+}) => {
   let history = useHistory();
 
-  const [previewImages, setPreviewImages] = useState([]);
-
-  // Set preview Images if exist
-  useEffect(() => {
-    var images = [];
-    if (menu.previewImages) {
-      menu.previewImages.map(image => {
-        return images.push(image);
-      });
-    }
-    setPreviewImages(images);
-  }, [menu]);
+  const previewImages = menu.previewImages ? menu.previewImages : [];
+  /**
+   * Show delete overlay on top of the dish
+   */
+  const [showDeleteOverlay, setShowDeletOverlay] = useState(false);
 
   /** Timestamp to Human date */
   const prettyDate = time => {
     var date = new Date(time);
     return date.toLocaleDateString("en-EN");
+  };
+
+  const favoriteClicked = event => {
+    event.stopPropagation();
+    handleMenuAdd(menu);
+  };
+
+  const unfavoriteClicked = event => {
+    event.stopPropagation();
+    handleMenuRemove(menu._id);
   };
 
   return (
@@ -55,6 +69,25 @@ const MenuItem = ({ menu }) => {
           <div>{menu.name}</div>
           <div className="menu-preview-date">{prettyDate(menu.date)}</div>
         </Card.Title>
+        {/** Show unfavorite icon for my favorite or public menus that were favorite by current user */}
+        {(menuListEnum === MenuListEnum.MY_FAVORITES_LIST ||
+          (menuListEnum === MenuListEnum.PUBLIC_LIST &&
+            menu.favoriteUsers &&
+            menu.favoriteUsers.indexOf(currentUid) !== -1)) && (
+          <span onClick={e => unfavoriteClicked(e)}>
+            <i className="fas fa-heart fa-sm"></i>
+          </span>
+        )}
+
+        {/** Show favorite icon for public menus that aren't already favorite by the user
+         */}
+        {menuListEnum === MenuListEnum.PUBLIC_LIST &&
+          menu.favoriteUsers &&
+          menu.favoriteUsers.indexOf(currentUid) === -1 && (
+            <span onClick={e => favoriteClicked(e)}>
+              <i className="far fa-heart fa-sm"></i>
+            </span>
+          )}
       </Card.Body>
     </Card>
   );

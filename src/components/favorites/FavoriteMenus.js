@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
-import { setMenu, removeMenu, fetchMenus } from "../../store/actions/Actions";
+import {
+  removeMenu,
+  fetchMenus,
+  addMenuToFavorites
+} from "../../store/actions/Actions";
+import { MenuListEnum } from "../Menu/MenuItem";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import MenuList from "../Menu/MenuList";
 import CreateNewMenu from "../Menu/CreateNewMenu";
 
@@ -13,15 +17,15 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  setMenu: (menu, uid) => dispatch(setMenu(menu, uid)),
   removeMenu: (id, uid) => dispatch(removeMenu(id, uid)),
-  fetchMenus: uid => dispatch(fetchMenus(uid))
+  fetchMenus: uid => dispatch(fetchMenus(uid)),
+  addToFavorites: (menu, uid) => dispatch(addMenuToFavorites(menu, uid))
 });
 
 const FavoriteMenus = ({
   auth,
   fetchMenus,
-  setMenu,
+  addToFavorites,
   removeMenu,
   menus,
   dataReceived
@@ -34,15 +38,6 @@ const FavoriteMenus = ({
     if (!auth.authState.user) return;
     fetchMenus(auth.authState.user.uid);
   }, [auth, fetchMenus]);
-
-  const onMenuSet = menu => {
-    setMenu(
-      {
-        menu
-      },
-      auth.authState.user.uid
-    );
-  };
 
   const handleMenuRemove = id => {
     removeMenu(id, auth.authState.user.uid);
@@ -75,6 +70,8 @@ const FavoriteMenus = ({
       <MenuList
         menus={menus}
         handleMenuRemove={id => handleMenuRemove(id)}
+        handleMenuAdd={menu => addToFavorites(menu, currentUid)}
+        menuListEnum={MenuListEnum.MY_FAVORITES_LIST}
         currentUid={currentUid}
       />
       <CreateNewMenu />

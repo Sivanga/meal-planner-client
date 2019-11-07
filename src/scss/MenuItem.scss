@@ -1,7 +1,9 @@
 @import "./Variables.scss";
 
 #menu-preview-wrapper {
-  width: 300px;
+  width: 280px;
+
+  justify-self: center;
 
   .menu-preview-container {
     height: 200px;

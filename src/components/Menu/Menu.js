@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import MenuList from "./MenuList";
+import { MenuListEnum } from "./MenuItem";
 import CreateNewMenu from "./CreateNewMenu";
 import "../..//scss/Menu.scss";
 import { connect } from "react-redux";
 import {
-  setMenu,
   removeMenu,
   fetchPublicMenus,
-  addToFavorites
+  addMenuToFavorites
 } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
 
@@ -19,9 +19,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  setMenu: (menu, uid) => dispatch(setMenu(menu, uid)),
   removeFromFavorites: (id, uid) => dispatch(removeMenu(id, uid)),
-  addToFavorites: (menu, uid) => dispatch(addToFavorites(menu, uid)),
+  addToFavorites: (menu, uid) => dispatch(addMenuToFavorites(menu, uid)),
   fetchPublicMenus: uid => dispatch(fetchPublicMenus(uid))
 });
 
@@ -71,7 +70,13 @@ function Menu({
 
   return (
     <>
-      <MenuList menus={publicMenus} />
+      <MenuList
+        menus={publicMenus}
+        handleMenuAdd={menu => handleMenuFavorite(menu, currentUid)}
+        handleMenuRemove={menuId => handleMenuUnfavorite(menuId, currentUid)}
+        menuListEnum={MenuListEnum.PUBLIC_LIST}
+        currentUid={currentUid}
+      />
       <CreateNewMenu />
     </>
   );

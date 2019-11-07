@@ -46,7 +46,7 @@ export const removeMenu = (payload, uid) => async dispatch => {
   var ref = publicMenusDbRef();
 
   return ref
-    .child(`${payload}/menu`)
+    .child(`${payload}`)
     .once("value")
     .then(function(snapshot) {
       var menuToUpdate = (snapshot.val() && snapshot.val()) || {};
@@ -62,7 +62,7 @@ export const removeMenu = (payload, uid) => async dispatch => {
         favoriteUsers = favoriteUsers.filter(function(id) {
           return id !== uid;
         });
-        ref.child(`${payload}/menu/`).update({ favoriteUsers: favoriteUsers });
+        ref.child(`${payload}/`).update({ favoriteUsers: favoriteUsers });
       }
     });
 };
@@ -83,7 +83,7 @@ export const fetchMenus = uid => async dispatch => {
  */
 export const fetchPublicMenus = uid => async dispatch => {
   var ref = publicMenusDbRef();
-  ref.orderByChild("menu/ownerUid").on("value", snapshot => {
+  ref.orderByChild("ownerUid").on("value", snapshot => {
     var payload = {
       publicMenus: snapshot.val() || {},
       uid: uid
@@ -93,23 +93,21 @@ export const fetchPublicMenus = uid => async dispatch => {
   });
 };
 
-export const addToFavorites = (menu, uid) => async dispatch => {
+export const addMenuToFavorites = (menu, uid) => async dispatch => {
   // Set the menu under current user
   menusDbRef(uid)
     .child("/" + menu._id)
-    .set({
-      menu
-    });
+    .set(menu);
 
   // Mark this user as a favorite under this public menu
   var ref = publicMenusDbRef();
   return ref
-    .child(`${menu._id}/menu`)
+    .child(`${menu._id}`)
     .once("value")
     .then(function(snapshot) {
       var menuToUpdate = (snapshot.val() && snapshot.val()) || {};
       var favoriteUsers = menuToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
-      ref.child(`${menu._id}/menu/`).update({ favoriteUsers: favoriteUsers });
+      ref.child(`${menu._id}/`).update({ favoriteUsers: favoriteUsers });
     });
 };
