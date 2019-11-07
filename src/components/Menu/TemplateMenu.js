@@ -206,6 +206,7 @@ const TemplateMenu = props => {
           ))}
         </div>
       )}
+
       <MDBTable id="template-menu-table">
         <Button
           className={classNames("save-template-btn", {

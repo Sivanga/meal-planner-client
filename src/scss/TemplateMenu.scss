@@ -5,8 +5,6 @@
 }
 
 #template-menu-table {
-  position: relative;
-
   overflow-x: scroll;
   .day-column {
     cursor: pointer;
@@ -22,6 +20,7 @@
 }
 
 .table {
+  position: relative;
   border: 1px solid rgb(221, 225, 229);
   width: auto;
 
@@ -31,7 +30,7 @@
 }
 
 .save-template-btn {
-  position: absolute;
+  position: absolute !important;
   top: -3rem;
   margin: 0;
   margin-bottom: 0.5rem;

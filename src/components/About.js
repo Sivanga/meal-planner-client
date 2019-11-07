@@ -16,16 +16,17 @@ const About = () => {
             <h5>Eating healthy requires planning</h5>
             <p>
               <strong>Pure Meal Plan</strong> was born from a need to plan ahead
-              for my family. Choosing different dishes and building a nutritious
-              menu became a chore that took me too much precious time. I needed
-              a simple way to build weekly menus using my favorite dishes and
-              get inspired to try some new recipes as well.
+              for my family. Choosing dishes from endless posibilities and
+              building a nutritious menu became a chore that took too much of my
+              precious time.
             </p>
             <p>
-              That's when I've decided to build <strong>Pure Meal Plan</strong>.
-              This is a platform where you can add your favorite dishes and
-              generate weekly menus in a split second! You can also choose to
-              try our community favorites dishes and menus.
+              Lucky me - I'm a software developer and I can build my own tools
+              :) So I created <strong>Pure Meal Plan</strong> - a platform to
+              add your favorite dishes and generate weekly menus in a split
+              second. You can also choose to browse our community favorites
+              dishes and menus and get inspired to try new healthy and yummy
+              recipes.
             </p>
           </div>
           <div className="col-12">
