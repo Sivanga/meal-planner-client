@@ -129,11 +129,12 @@ li {
   }
 }
 
-.burger {
+.burger-wrapper {
   position: absolute;
   right: 1rem;
   top: -0.5rem;
   z-index: 2;
+  display: flex;
 
   @media screen and (min-width: 425px) {
     right: 1.5rem;
@@ -142,13 +143,21 @@ li {
   @media screen and (min-width: 1024px) {
     right: 8rem;
   }
-}
 
-.burger .burger-lines,
-.burger .burger-lines:after,
-.burger .burger-lines:before {
-  background-color: black;
-  font-size: 8px;
+  .burger .burger-lines,
+  .burger .burger-lines:after,
+  .burger .burger-lines:before {
+    background-color: black;
+    font-size: 8px;
+  }
+
+  &::before {
+    content: "More dishes: ";
+    // justify-self: center;
+    font-size: 1.3rem;
+    padding-top: 0.1rem;
+    margin-right: 0.6rem;
+  }
 }
 
 .generate-btn {

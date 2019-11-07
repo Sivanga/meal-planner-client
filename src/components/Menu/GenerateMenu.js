@@ -424,11 +424,13 @@ const GenerateMenu = props => {
                 ))}
 
                 {/* Panl handle at the end of the table head */}
+                <div className="burger-wrapper">
                 <Burger
                   direction="right"
                   isOpen={showPanel}
                   onClick={() => setShowPanel(!showPanel)}
                 />
+                </div>
               </li>
 
               {/* Meals */}

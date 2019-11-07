@@ -30,7 +30,7 @@
 }
 
 .save-template-btn {
-  position: absolute !important;
+  position: absolute !important; // Added important is this was overriden by ParenRipple in production only builds
   top: -3rem;
   margin: 0;
   margin-bottom: 0.5rem;
