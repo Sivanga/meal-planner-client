@@ -37,7 +37,6 @@ const ImportDish = ({ addDish }) => {
       setUrlState({ ...urlState, loading: false });
 
       // Move to new dish dialog and send the data
-      console.log("result: ", result);
       setDishFromUrl({
         name: result.data.name,
         image: result.data.image,

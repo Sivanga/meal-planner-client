@@ -28,8 +28,8 @@ export const addDish = (payload, uid) => async dispatch => {
   }
 
   // Dishes without images can be push in db as is
-  if (!payload.dish.imageFile) {
-    return pushToDb(payload.dish, uid);
+  if (!payload.imageFile) {
+    return pushToDb(payload, uid);
   }
 
   // First upload dish image to storage
@@ -37,7 +37,7 @@ export const addDish = (payload, uid) => async dispatch => {
   const storageRefChild = storageRef(uid).child(
     "images/" + payload.imageFile.name
   );
-  storageRefChild.put(payload.dish.imageFile).then(function(snapshot) {
+  storageRefChild.put(payload.imageFile).then(function(snapshot) {
     storageRefChild.getDownloadURL().then(url => {
       payload.imageUrl = url;
       pushToDb(payload, uid);
