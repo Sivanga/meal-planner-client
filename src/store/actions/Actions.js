@@ -111,6 +111,13 @@ export const fetchDishes = uid => async dispatch => {
   });
 };
 
+export const searchPrivateDishes = (uid, query) => async dispatch => {
+  var ref = dishesDbRef(uid);
+  ref.orderByChild("dish/name/").on("value", snapshot => {
+    console.log(snapshot.val());
+  });
+};
+
 /**
  * Fetch all public dishes
  * @param {current user id} uid

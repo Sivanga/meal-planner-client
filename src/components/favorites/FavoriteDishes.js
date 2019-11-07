@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import { addDish, removeDish, fetchDishes } from "../../store/actions/Actions";
+import {
+  addDish,
+  removeDish,
+  fetchDishes,
+  searchPrivateDishes
+} from "../../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import "../../scss/Dishes.scss";
@@ -18,12 +23,14 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
   removeDish: (id, uid) => dispatch(removeDish(id, uid)),
-  fetchDishes: uid => dispatch(fetchDishes(uid))
+  fetchDishes: uid => dispatch(fetchDishes(uid)),
+  searchPrivateDishes: (uid, query) => dispatch(searchPrivateDishes(uid, query))
 });
 
 const FavoriteDishes = ({
   auth,
   fetchDishes,
+  searchPrivateDishes,
   addDish,
   removeDish,
   dishes,
@@ -90,6 +97,7 @@ const FavoriteDishes = ({
         handleDishRemove={id => handleDishRemove(id)}
         dishListEnum={DishListEnum.MY_FAVORITES_LIST}
         currentUid={currentUid}
+        onSearch={query => searchPrivateDishes(currentUid, query)}
       />
 
       <ImportDish addDish={dish => onDishAdd(dish)} />
