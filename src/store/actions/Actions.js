@@ -11,6 +11,8 @@ import {
   storageRef,
   publicDishesDbRef
 } from "../../firebase";
+import * as firebase from "firebase/app";
+
 export * from "./Meals";
 export * from "./Menus";
 
@@ -112,14 +114,9 @@ export const fetchDishes = uid => async dispatch => {
 };
 
 export const searchPrivateDishes = (uid, query) => async dispatch => {
-  var ref = dishesDbRef(uid)
-    .orderByChild(`name`)
-    .startAt(query)
-    .equalTo(query + "\uf8ff"); // end at the highest known unicode character
-  ref.once("value", snapshot => {
-    snapshot.forEach(child => {
-      console.log(child.key, child.val());
-    });
+  const search = firebase.functions().httpsCallable("search");
+  search(query).then(result => {
+    console.log("result: ", result);
   });
 };
 

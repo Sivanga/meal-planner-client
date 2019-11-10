@@ -1,6 +1,11 @@
 const functions = require("firebase-functions");
 const nodemailer = require("nodemailer");
 var smtpTransport = require("nodemailer-smtp-transport");
+const _ = require("lodash");
+const request = require("request-promise");
+const firebase = require("firebase");
+const { Client } = require("@elastic/elasticsearch");
+const elasticSearchConfig = functions.config().elasticsearch;
 
 const urlMetadata = require("url-metadata");
 
@@ -17,6 +22,7 @@ const mailTransport = nodemailer.createTransport(
   })
 );
 
+/** Contact us page */
 exports.sendEmail = functions.https.onCall((data, context) => {
   const mailOptions = {
     from: data.values.email,
@@ -30,11 +36,11 @@ exports.sendEmail = functions.https.onCall((data, context) => {
   });
 });
 
+/** Import dish form url */
 exports.getUrlMetadata = functions.https.onCall((data, context) => {
   return urlMetadata(data)
     .then(metadata => {
       // success handler
-      console.log("metadata: ", metadata);
       var result = {
         name: metadata.title,
         image: metadata.image,
@@ -51,4 +57,65 @@ exports.getUrlMetadata = functions.https.onCall((data, context) => {
       console.error(error);
       return error;
     });
+});
+
+/** elastic search - map index */
+exports.indexDishesToElastic = functions.database
+  .ref("/dishes/{uid}/{dishId}")
+  .onWrite((change, context) => {
+    let dishData = change.after.val();
+    let dishId = context.params.dishId;
+    let uid = context.params.uid;
+
+    let elasticsearchFields = ["name", "tags", "recipe", "link"];
+    let elasticSearchUrl =
+      elasticSearchConfig.url + "dishes/" + uid + "/" + dishId;
+    let elasticSearchMethod = dishData ? "POST" : "DELETE";
+
+    let elasticsearchRequest = {
+      method: elasticSearchMethod,
+      uri: elasticSearchUrl,
+      auth: {
+        username: elasticSearchConfig.user,
+        password: elasticSearchConfig.password
+      },
+      body: _.pick(dishData, elasticsearchFields),
+      json: true
+    };
+
+    return request(elasticsearchRequest).then(response => {
+      return console.log("Elasticsearch response", response);
+    });
+  });
+
+exports.search = functions.https.onCall((data, context) => {
+  const esClient = new Client({
+    cloud: {
+      id: elasticSearchConfig.cloud_id
+    },
+    auth: {
+      username: elasticSearchConfig.user,
+      password: elasticSearchConfig.password
+    }
+  });
+
+  // callback API
+  return new Promise((resolve, reject) => {
+    esClient.search(
+      {
+        index: "dishes",
+        body: {
+          query: {
+            match: { name: data }
+          }
+        }
+      },
+      { ignore: [404] },
+
+      (err, result) => {
+        if (err) console.log("err: ", err);
+        if (result) resolve(result.body.hits.hits);
+      }
+    );
+  });
 });
