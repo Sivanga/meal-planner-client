@@ -2,10 +2,13 @@ import {
   FETCH_DISHES,
   ADD_DISH,
   PRIVATE_DISHES_DATA_RECEIVED,
+  SEARCH_FAVORITE_DATA_RECEIVED,
+  SEARCH_FAVORITE_DATA,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
 import {
+  database,
   databaseRef,
   dishesDbRef,
   storageRef,
@@ -114,9 +117,17 @@ export const fetchDishes = uid => async dispatch => {
 };
 
 export const searchPrivateDishes = (uid, query) => async dispatch => {
+  // Search in elasticSearch
   const search = firebase.functions().httpsCallable("search");
   search(query).then(result => {
-    console.log("result: ", result);
+    dispatch({
+      type: SEARCH_FAVORITE_DATA_RECEIVED,
+      payload: true
+    });
+    dispatch({
+      type: SEARCH_FAVORITE_DATA,
+      payload: result.data
+    });
   });
 };
 

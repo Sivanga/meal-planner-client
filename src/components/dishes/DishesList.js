@@ -3,7 +3,6 @@ import { CardColumns, Alert } from "react-bootstrap";
 import DishCard from "./DishCard";
 import PropTypes from "prop-types";
 import { DishListEnum } from "./DishCard";
-import SearchComponent from "../SearchComponent";
 import "../../scss/DishesList.scss";
 
 const DishesList = ({
@@ -11,8 +10,7 @@ const DishesList = ({
   handleDishRemove,
   handleDishFavorite,
   dishListEnum,
-  currentUid,
-  onSearch
+  currentUid
 }) => {
   /**
    * Show/ hide login alert
@@ -37,7 +35,6 @@ const DishesList = ({
   return (
     <>
       {loginAlert}
-      <SearchComponent onSearch={value => onSearch(value)} />
       <CardColumns>
         {dishes.map((dish, index) => (
           <DishCard

@@ -67,7 +67,6 @@ exports.indexDishesToElastic = functions.database
     let dishId = context.params.dishId;
     let uid = context.params.uid;
 
-    let elasticsearchFields = ["name", "tags", "recipe", "link"];
     let elasticSearchUrl =
       elasticSearchConfig.url + "dishes/" + uid + "/" + dishId;
     let elasticSearchMethod = dishData ? "POST" : "DELETE";
@@ -79,7 +78,7 @@ exports.indexDishesToElastic = functions.database
         username: elasticSearchConfig.user,
         password: elasticSearchConfig.password
       },
-      body: _.pick(dishData, elasticsearchFields),
+      body: dishData,
       json: true
     };
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   addDish,
   removeDish,
@@ -11,12 +11,17 @@ import "../../scss/Dishes.scss";
 import DishesList from "../dishes/DishesList";
 import { DishListEnum } from "../dishes/DishCard";
 import ImportDish from "../dishes/ImportDish";
+import SearchComponent from "../SearchComponent";
 
 const mapStateToProps = state => {
   return {
     dishes: state.dishes.dishes,
     dataReceived:
-      state.dishes.privateDishesDataReceived.privateDishesDataReceived
+      state.dishes.privateDishesDataReceived.privateDishesDataReceived,
+    searchReceived:
+      state.dishes.privateDishesSearchDataReceived
+        .privateDishesSearchDataReceived,
+    searchResult: state.dishes.searchResult
   };
 };
 
@@ -34,8 +39,12 @@ const FavoriteDishes = ({
   addDish,
   removeDish,
   dishes,
-  dataReceived
+  dataReceived,
+  searchReceived,
+  searchResult
 }) => {
+  const [isSearchMode, setIsSearchMode] = useState(false);
+
   /**
    * Fetch dishes in first render.
    * FETCH_DISHES Action creator will have an observable to notify for further changes
@@ -54,8 +63,13 @@ const FavoriteDishes = ({
   };
 
   const onSearch = query => {
-    console.log("onSearch: ", query);
+    setIsSearchMode(true);
     searchPrivateDishes(auth.authState.user.uid, query);
+  };
+
+  const onSearchClear = () => {
+    console.log("onSearchClear");
+    setIsSearchMode(false);
   };
 
   /**
@@ -97,14 +111,26 @@ const FavoriteDishes = ({
   }
   return (
     <>
+      <SearchComponent
+        onSearch={value => onSearch(value)}
+        onSearchClear={onSearchClear}
+      />
+      {/* No search result to show */}
+      {isSearchMode && searchReceived && searchResult.length === 0 && (
+        <div className="center-text">
+          Couldn't find what you've search for...
+        </div>
+      )}
+      {/* Show the list if we aren't in searchMode or we are in search mode with valid results */}
+      {console.log("isSearchMode: ", isSearchMode)}
       <DishesList
-        dishes={dishes}
+        dishes={isSearchMode ? searchResult : dishes}
         handleDishRemove={id => handleDishRemove(id)}
         dishListEnum={DishListEnum.MY_FAVORITES_LIST}
         currentUid={currentUid}
         onSearch={query => onSearch(query)}
+        onSearchClear={() => onSearchClear()}
       />
-
       <ImportDish addDish={dish => onDishAdd(dish)} />
     </>
   );

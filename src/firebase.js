@@ -34,7 +34,6 @@ export const publicMenusDbRef = () => databaseRef.child(`publicMenus/`);
 export const userDbRef = uid => databaseRef.child(`users/${uid}`);
 export const mealsDbRef = uid => databaseRef.child(`meals/${uid}`);
 
-
 // Storage
 export const storageRef = uid =>
   firebase

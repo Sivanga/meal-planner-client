@@ -2,6 +2,8 @@ import {
   FETCH_DISHES,
   ADD_DISH,
   PRIVATE_DISHES_DATA_RECEIVED,
+  SEARCH_FAVORITE_DATA_RECEIVED,
+  SEARCH_FAVORITE_DATA,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
@@ -23,12 +25,23 @@ function dishes(state = [], action) {
         return newDishes.unshift(action.payload[key]);
       });
       return newDishes;
-
     default:
       return state;
   }
 }
 
+function searchDishes(state = [], action) {
+  switch (action.type) {
+    case SEARCH_FAVORITE_DATA:
+      var searchResult = [];
+      action.payload.map(result => {
+        return searchResult.push(result._source);
+      });
+      return searchResult;
+    default:
+      return state;
+  }
+}
 function publicDishes(state = [], action) {
   switch (action.type) {
     case FETCH_PUBLIC_DISHES:
@@ -70,6 +83,18 @@ function privateDishesDataReceived(state = {}, action) {
   }
 }
 
+function privateDishesSearchDataReceived(state = {}, action) {
+  switch (action.type) {
+    case SEARCH_FAVORITE_DATA_RECEIVED:
+      return Object.assign({}, state, {
+        privateDishesSearchDataReceived: action.payload
+      });
+
+    default:
+      return state;
+  }
+}
+
 export default function DishReducer(state = {}, action) {
   return {
     dishes: dishes(state.dishes, action),
@@ -81,6 +106,11 @@ export default function DishReducer(state = {}, action) {
     privateDishesDataReceived: privateDishesDataReceived(
       state.privateDishesDataReceived,
       action
-    )
+    ),
+    privateDishesSearchDataReceived: privateDishesSearchDataReceived(
+      state.privateDishesSearchDataReceived,
+      action
+    ),
+    searchResult: searchDishes(state.searchResult, action)
   };
 }

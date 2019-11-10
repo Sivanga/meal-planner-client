@@ -1,11 +1,12 @@
 import React from "react";
 import { MDBCol, MDBIcon } from "mdbreact";
 
-const SearcComponent = ({ onSearch }) => {
+const SearcComponent = ({ onSearch, onSearchClear }) => {
   const formInput = React.createRef();
 
   const onSearchClick = value => {
-    if (value && onSearch) onSearch(value);
+    if (!value) onSearchClear();
+    if (value) onSearch(value);
   };
 
   return (
@@ -21,11 +22,9 @@ const SearcComponent = ({ onSearch }) => {
           type="text"
           placeholder="Search"
           aria-label="Search"
-          onKeyPress={e => {
-            if (e.charCode === 13) {
-              e.preventDefault();
-              onSearchClick(e.target.value);
-            }
+          onChange={e => {
+            e.preventDefault();
+            onSearchClick(e.target.value);
           }}
         />
       </form>
