@@ -68,7 +68,6 @@ const FavoriteDishes = ({
   };
 
   const onSearchClear = () => {
-    console.log("onSearchClear");
     setIsSearchMode(false);
   };
 
@@ -121,8 +120,6 @@ const FavoriteDishes = ({
           Couldn't find what you've search for...
         </div>
       )}
-      {/* Show the list if we aren't in searchMode or we are in search mode with valid results */}
-      {console.log("isSearchMode: ", isSearchMode)}
       <DishesList
         dishes={isSearchMode ? searchResult : dishes}
         handleDishRemove={id => handleDishRemove(id)}

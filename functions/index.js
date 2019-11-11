@@ -5,6 +5,7 @@ const _ = require("lodash");
 const request = require("request-promise");
 const firebase = require("firebase");
 const { Client } = require("@elastic/elasticsearch");
+
 const elasticSearchConfig = functions.config().elasticsearch;
 
 const urlMetadata = require("url-metadata");
@@ -105,15 +106,26 @@ exports.search = functions.https.onCall((data, context) => {
         index: "dishes",
         body: {
           query: {
-            match: { name: data }
+            query_string: {
+              default_field: "name",
+              query: `${data}*`
+            }
           }
         }
       },
       { ignore: [404] },
 
       (err, result) => {
-        if (err) console.log("err: ", err);
-        if (result) resolve(result.body.hits.hits);
+        if (err) {
+          console.log("err: ", err);
+        }
+        if (result.body.error) {
+          console.log("result.body.error: ", result.body.error);
+          reject(result.body.error);
+        }
+        if (result.body.hits) {
+          resolve(result.body.hits.hits);
+        }
       }
     );
   });

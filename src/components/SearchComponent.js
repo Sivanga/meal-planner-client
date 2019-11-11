@@ -6,7 +6,9 @@ const SearcComponent = ({ onSearch, onSearchClear }) => {
 
   const onSearchClick = value => {
     if (!value) onSearchClear();
-    if (value) onSearch(value);
+
+    // Start search in the second char
+    if (value && value.length > 1) onSearch(value);
   };
 
   return (

@@ -117,7 +117,6 @@ export const fetchDishes = uid => async dispatch => {
 };
 
 export const searchPrivateDishes = (uid, query) => async dispatch => {
-  // Search in elasticSearch
   const search = firebase.functions().httpsCallable("search");
   search(query).then(result => {
     dispatch({
