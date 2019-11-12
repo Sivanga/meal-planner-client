@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { CardColumns, Alert } from "react-bootstrap";
+import { CardColumns } from "react-bootstrap";
 import DishCard from "./DishCard";
 import PropTypes from "prop-types";
 import { DishListEnum } from "./DishCard";
+import LoginAlert from "../auth/LoginAlert";
 import "../../scss/DishesList.scss";
 
 const DishesList = ({
@@ -12,29 +13,21 @@ const DishesList = ({
   dishListEnum,
   currentUid
 }) => {
+  const onDishRemove = id => {
+    handleDishRemove(id);
+  };
+
   /**
    * Show/ hide login alert
    */
   const [showLoginAlert, setShowLoginAlert] = useState(false);
 
-  const onDishRemove = id => {
-    handleDishRemove(id);
-  };
-
-  const loginAlert = (
-    <Alert
-      show={showLoginAlert}
-      variant="danger"
-      onClose={() => setShowLoginAlert(false)}
-      dismissible
-    >
-      <Alert.Heading>Please log in first!</Alert.Heading>
-    </Alert>
-  );
-
   return (
     <>
-      {loginAlert}
+      <LoginAlert
+        showLoginAlert={showLoginAlert}
+        onClose={() => setShowLoginAlert(false)}
+      />
       <CardColumns>
         {dishes.map((dish, index) => (
           <DishCard

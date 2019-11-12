@@ -5,14 +5,22 @@ import NewDish from "./NewDish";
 import classNames from "classnames";
 import "../../scss/ImportDIsh.scss";
 import "../../scss/PlusItem.scss";
+import { useAuth } from "../auth/UseAuth";
+import LoginAlert from "../auth/LoginAlert";
 
 const ImportDish = ({ addDish }) => {
+  /**
+   * Auth hook to get update for changes from auth provider
+   */
+  const auth = useAuth();
+
   /**
    *  2 Modals state
    */
   const [modalsShowState, setModalsShowState] = useState({
     import: false,
-    new: false
+    new: false,
+    login: false
   });
 
   /** Import urlState */
@@ -27,14 +35,23 @@ const ImportDish = ({ addDish }) => {
 
   const fetchDishFromUrl = () => {
     if (!urlState.content || urlState.content.length < 1) {
-      setUrlState({ ...urlState, error: "Invalid Url" });
+      setUrlState({
+        ...urlState,
+        error: "Invalid Url"
+      });
       return;
     }
 
-    setUrlState({ ...urlState, loading: true });
+    setUrlState({
+      ...urlState,
+      loading: true
+    });
 
     getDishFromUrl(urlState.content).then(result => {
-      setUrlState({ ...urlState, loading: false });
+      setUrlState({
+        ...urlState,
+        loading: false
+      });
 
       // Move to new dish dialog and send the data
       setDishFromUrl({
@@ -42,25 +59,49 @@ const ImportDish = ({ addDish }) => {
         image: result.data.image,
         link: urlState.content
       });
-      setModalsShowState({ import: false, new: true });
+      setModalsShowState({ ...modalsShowState, import: false, new: true });
     });
   };
 
   const handleCreateYourOwnDish = () => {
     setDishFromUrl(null);
-    setModalsShowState({ import: false, new: true });
+    setModalsShowState({
+      ...modalsShowState,
+      import: false,
+      new: true
+    });
   };
 
   const onDishAdd = dish => {
     addDish(dish);
-    setModalsShowState({ new: false });
+    setModalsShowState({ ...modalsShowState, new: false });
+  };
+
+  const onPlusClicked = () => {
+    // Login if needed
+    if (!auth.authState.user || !auth.authState.user.uid) {
+      setModalsShowState({ ...modalsShowState, login: true });
+    } else {
+      setModalsShowState({
+        import: true,
+        new: false
+      });
+    }
   };
 
   return (
     <>
+      <LoginAlert
+        showLoginAlert={modalsShowState.login}
+        onClose={() => setModalsShowState({ ...modalsShowState, login: false })}
+      />
       <Modal
         show={modalsShowState.import}
-        onHide={() => setModalsShowState({ import: false })}
+        onHide={() =>
+          setModalsShowState({
+            import: false
+          })
+        }
       >
         <Modal.Header className="text-center" closeButton>
           <Modal.Title className="w-100 m-auto">
@@ -77,7 +118,10 @@ const ImportDish = ({ addDish }) => {
                 <Form.Control
                   type="text"
                   onChange={event =>
-                    setUrlState({ ...urlState, content: event.target.value })
+                    setUrlState({
+                      ...urlState,
+                      content: event.target.value
+                    })
                   }
                 />
               </Col>
@@ -114,7 +158,7 @@ const ImportDish = ({ addDish }) => {
       </Modal>
       <Modal
         show={modalsShowState.new}
-        onHide={() => setModalsShowState({ new: false })}
+        onHide={() => setModalsShowState({ ...modalsShowState, new: false })}
       >
         <Modal.Header className="text-center" closeButton>
           <Modal.Title className="w-100 m-auto">Add new dish</Modal.Title>
@@ -125,7 +169,7 @@ const ImportDish = ({ addDish }) => {
       </Modal>
       <i
         className="fas fa-plus-circle plus-item"
-        onClick={() => setModalsShowState({ import: true, new: false })}
+        onClick={() => onPlusClicked()}
       />
     </>
   );
