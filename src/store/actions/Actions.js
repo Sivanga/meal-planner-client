@@ -56,6 +56,7 @@ const pushToDb = (dish, uid) => {
   var updates = {};
 
   // Push the dish under current user
+  dish._id = newDishKey;
   updates["/dishes/" + uid + "/" + newDishKey] = dish;
 
   // If dish is public, push to public dishes table

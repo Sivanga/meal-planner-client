@@ -117,10 +117,10 @@ const createDishesEnryForUser = (uid, dish, resolve, reject) => {
 };
 
 const updateDishForUser = (uid, change, resolve, reject) => {
-  console.log("UID: ", uid, " found, update new dish for user");
-
   // Add dish
   if (change.after.val()) {
+    console.log("UID: ", uid, " found, update new dish for user");
+
     esClient.update(
       {
         id: uid,
@@ -146,12 +146,16 @@ const updateDishForUser = (uid, change, resolve, reject) => {
   }
   // Delete dish
   else {
-    esClient.delete(
+    console.log("UID: ", uid, " found, delete dish for user");
+
+    esClient.update(
       {
-        index: "dishes/_doc/" + uid,
+        index: "dishes",
+        type: "_doc",
+        id: uid,
         body: {
           script: {
-            source: `ctx._source.dishes.removeIf(dish -> dish._id == params.dish._id)`,
+            source: `ctx._source.dishes.removeIf(dish -> dish._id == params.dish_id)`,
             params: {
               dish_id: change.before.val()._id
             }
