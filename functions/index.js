@@ -4,9 +4,19 @@ var smtpTransport = require("nodemailer-smtp-transport");
 const _ = require("lodash");
 const request = require("request-promise");
 const firebase = require("firebase");
-const { Client } = require("@elastic/elasticsearch");
-
 const elasticSearchConfig = functions.config().elasticsearch;
+
+const { Client } = require("@elastic/elasticsearch");
+const esClient = new Client({
+  cloud: {
+    id: elasticSearchConfig.cloud_id
+  },
+  auth: {
+    username: elasticSearchConfig.user,
+    password: elasticSearchConfig.password
+  },
+  log: "trace"
+});
 
 const urlMetadata = require("url-metadata");
 
@@ -60,73 +70,140 @@ exports.getUrlMetadata = functions.https.onCall((data, context) => {
     });
 });
 
-/** elastic search - map index */
-exports.indexDishesToElastic = functions.database
-  .ref("/dishes/{uid}/{dishId}")
-  .onWrite((change, context) => {
-    let dishData = change.after.val();
-    let dishId = context.params.dishId;
-    let uid = context.params.uid;
-
-    let elasticSearchUrl =
-      elasticSearchConfig.url + "dishes/" + uid + "/" + dishId;
-    let elasticSearchMethod = dishData ? "POST" : "DELETE";
-
-    let elasticsearchRequest = {
-      method: elasticSearchMethod,
-      uri: elasticSearchUrl,
-      auth: {
-        username: elasticSearchConfig.user,
-        password: elasticSearchConfig.password
-      },
-      body: dishData,
-      json: true
-    };
-
-    return request(elasticsearchRequest).then(response => {
-      return console.log("Elasticsearch response", response);
-    });
-  });
-
-exports.search = functions.https.onCall((data, context) => {
-  const esClient = new Client({
-    cloud: {
-      id: elasticSearchConfig.cloud_id
+const createDishesMapping = uid => {
+  esClient.index(
+    {
+      index: "dishes",
+      type: "_doc",
+      body: {
+        mappings: {
+          uid: {
+            properties: {
+              dishes: {
+                type: "nested"
+              }
+            }
+          }
+        }
+      }
     },
-    auth: {
-      username: elasticSearchConfig.user,
-      password: elasticSearchConfig.password
+    (err, result) => {
+      if (err) console.log(err);
+      console.log(result);
     }
-  });
+  );
+};
 
-  // callback API
-  return new Promise((resolve, reject) => {
-    esClient.search(
+const createDishesEnryForUser = (uid, dish, resolve, reject) => {
+  console.log("createDishesEnryForUser: ", uid, " dish: ", dish);
+  return esClient.index(
+    {
+      id: uid,
+      index: "dishes",
+      type: "_doc",
+      body: {
+        dishes: [dish]
+      }
+    },
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
+      console.log(result);
+      resolve(result);
+    }
+  );
+};
+
+const updateDishForUser = (uid, change, resolve, reject) => {
+  console.log("UID: ", uid, " found, update new dish for user");
+
+  // Add dish
+  if (change.after.val()) {
+    esClient.update(
       {
+        id: uid,
+        type: "_doc",
         index: "dishes",
         body: {
-          query: {
-            query_string: {
-              default_field: "name",
-              query: `${data}*`
+          script: {
+            source: `ctx._source.dishes.add(params.dish)`,
+            params: {
+              dish: change.after.val()
             }
           }
         }
       },
-      { ignore: [404] },
-
+      { ignore: 404 },
       (err, result) => {
         if (err) {
-          console.log("err: ", err);
+          reject(err);
         }
-        if (result.body.error) {
-          console.log("result.body.error: ", result.body.error);
-          reject(result.body.error);
-        }
-        if (result.body.hits) {
-          resolve(result.body.hits.hits);
-        }
+        resolve(result);
       }
     );
+  }
+  // Delete dish
+  else {
+    esClient.delete(
+      {
+        index: "dishes/_doc/" + uid,
+        body: {
+          script: {
+            source: `ctx._source.dishes.removeIf(dish -> dish._id == params.dish._id)`,
+            params: {
+              dish_id: change.before.val()._id
+            }
+          }
+        }
+      },
+      { ignore: 404 },
+      (err, result) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(result);
+      }
+    );
+  }
+};
+
+/** elastic - Listen onWrite dishes index */
+exports.indexDishesToElastic = functions.database
+  .ref("/dishes/{uid}/{dishId}")
+  .onWrite((change, context) => {
+    // Check if this uid exist in /dishes/ index
+    return new Promise((resolve, reject) => {
+      esClient.exists(
+        {
+          index: "dishes",
+          type: "_doc",
+          id: context.params.uid
+        },
+        (err, result, statusCode) => {
+          if (err) console.log("err: ", err);
+          if (result) console.log("result: ", result);
+
+          // User not found under /dishes/, creat new index
+          if (result.body === false && change.after.val()) {
+            return createDishesEnryForUser(
+              context.params.uid,
+              change.after.val(),
+              resolve,
+              reject
+            );
+          } else if (result.body === true) {
+            // User already had an entry in /dishes/ - update this dish under dishes array
+            return updateDishForUser(
+              context.params.uid,
+              change,
+              resolve,
+              reject
+            );
+          }
+          return null;
+        }
+      );
+    });
   });
-});
