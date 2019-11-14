@@ -4,6 +4,8 @@ import {
   PRIVATE_DISHES_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA,
+  SEARCH_PUBLIC_DISHES,
+  SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
@@ -21,7 +23,7 @@ function dishes(state = [], action) {
       // // Give each dish it's backend generated id for future reference
       var newDishes = [];
       Object.keys(action.payload).map(key => {
-        action.payload[key]._id = key;
+        action.payload[key].id = key;
         return newDishes.unshift(action.payload[key]);
       });
       return newDishes;
@@ -33,11 +35,17 @@ function dishes(state = [], action) {
 function searchDishes(state = [], action) {
   switch (action.type) {
     case SEARCH_FAVORITE_DATA:
-      var searchResult = [];
+      var privateDishesSearchResult = [];
       action.payload.map(result => {
-        return searchResult.push(result._source);
+        return privateDishesSearchResult.push(result._source);
       });
-      return searchResult;
+      return privateDishesSearchResult;
+    case SEARCH_PUBLIC_DISHES:
+      var publicDishesSearchResult = [];
+      action.payload.map(result => {
+        return publicDishesSearchResult.push(result._source);
+      });
+      return publicDishesSearchResult;
     default:
       return state;
   }
@@ -47,7 +55,7 @@ function publicDishes(state = [], action) {
     case FETCH_PUBLIC_DISHES:
       var publicDishes = [];
       Object.keys(action.payload.publicDishes).map(key => {
-        action.payload.publicDishes[key]._id = key;
+        action.payload.publicDishes[key].id = key;
         // Return only public dishes that aren't the current user's
         if (action.payload.publicDishes[key].ownerUid !== action.payload.uid) {
           publicDishes.push(action.payload.publicDishes[key]);
@@ -95,6 +103,18 @@ function privateDishesSearchDataReceived(state = {}, action) {
   }
 }
 
+function publicDishesSearchDataReceived(state = {}, action) {
+  switch (action.type) {
+    case SEARCH_FAVORITE_DATA_RECEIVED:
+      return Object.assign({}, state, {
+        publicDishesSearchDataReceived: action.payload
+      });
+
+    default:
+      return state;
+  }
+}
+
 export default function DishReducer(state = {}, action) {
   return {
     dishes: dishes(state.dishes, action),
@@ -111,6 +131,17 @@ export default function DishReducer(state = {}, action) {
       state.privateDishesSearchDataReceived,
       action
     ),
-    searchResult: searchDishes(state.searchResult, action)
+    privateDishesSearchResult: searchDishes(
+      state.privateDishesSearchResult,
+      action
+    ),
+    publicDishesSearchDataReceived: publicDishesSearchDataReceived(
+      state.publicDishesSearchDataReceived,
+      action
+    ),
+    publicDishesSearchResult: searchDishes(
+      state.publicDishesSearchResult,
+      action
+    )
   };
 }

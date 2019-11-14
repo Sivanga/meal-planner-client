@@ -155,9 +155,9 @@ const updateDishForUser = (uid, change, resolve, reject) => {
         id: uid,
         body: {
           script: {
-            source: `ctx._source.dishes.removeIf(dish -> dish._id == params.dish_id)`,
+            source: `ctx._source.dishes.removeIf(dish -> dish.id == params.dish_id)`,
             params: {
-              dish_id: change.before.val()._id
+              dish_id: change.before.val().id
             }
           }
         }
@@ -209,5 +209,51 @@ exports.indexDishesToElastic = functions.database
           return null;
         }
       );
+    });
+  });
+
+/** elastic - Listen onWrite public dishes index */
+exports.indexPublicDishesToElastic = functions.database
+  .ref("/publicDishes/{dishId}")
+  .onWrite((change, context) => {
+    return new Promise((resolve, reject) => {
+      if (change.after.val()) {
+        console.log("Adding dish: ", context.params.dishId, " to public");
+        esClient.index(
+          {
+            id: context.params.dishId,
+            type: "_doc",
+            index: "public_dishes",
+            body: change.after.val()
+          },
+          { ignore: 404 },
+          (err, result) => {
+            if (err) {
+              console.log(err);
+              reject(err);
+            }
+            console.log(result);
+            resolve(result);
+          }
+        );
+      } else {
+        console.log("Deleting dish: ", context.params.dishId, " from public");
+        esClient.delete(
+          {
+            id: context.params.dishId,
+            type: "_doc",
+            index: "public_dishes"
+          },
+          { ignore: 404 },
+          (err, result) => {
+            if (err) {
+              console.log(err);
+              reject(err);
+            }
+            console.log(result);
+            resolve(result);
+          }
+        );
+      }
     });
   });

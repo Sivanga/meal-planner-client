@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   addDish,
   fetchPublicDishes,
   addToFavorites,
-  removeDish
+  removeDish,
+  searchPublicDishes
 } from "../../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -12,11 +13,16 @@ import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
 import ImportDish from "./ImportDish";
+import SearchComponent from "../SearchComponent";
 
 const mapStateToProps = state => {
   return {
     publicDishes: state.dishes.publicDishes,
-    dataReceived: state.dishes.publicDishesDataReceived.publicDishesDataReceived
+    dataReceived:
+      state.dishes.publicDishesDataReceived.publicDishesDataReceived,
+    searchReceived:
+      state.dishes.publicDishesDataReceived.publicDishesDataReceived,
+    searchResult: state.dishes.publicDishesSearchResult
   };
 };
 
@@ -24,14 +30,27 @@ const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
   fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
   addToFavorites: (dish, uid) => dispatch(addToFavorites(dish, uid)),
-  removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid))
+  removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid)),
+  searchPublicDishes: (uid, query) => dispatch(searchPublicDishes(uid, query))
 });
 
-const Dishes = props => {
+const Dishes = ({
+  publicDishes,
+  dataReceived,
+  searchReceived,
+  searchResult,
+  fetchPublicDishes,
+  addDish,
+  addToFavorites,
+  removeFromFavorites,
+  searchPublicDishes
+}) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
+
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   /**
    * Fetch dishes in first render.
@@ -42,25 +61,34 @@ const Dishes = props => {
     if (auth.authState.user && auth.authState.user.uid) {
       uid = auth.authState.user.uid;
     }
-    props.fetchPublicDishes(uid);
-  }, [auth]);
+    fetchPublicDishes(uid);
+  }, [auth, fetchPublicDishes]);
 
   const onDishAdd = dish => {
-    props.addDish(dish, auth.authState.user.uid);
+    addDish(dish, auth.authState.user.uid);
   };
 
   const handleDishFavorite = (dish, uid) => {
-    props.addToFavorites(dish, uid);
+    addToFavorites(dish, uid);
   };
 
   const handleDishUnfavorite = id => {
-    props.removeFromFavorites(id, auth.authState.user.uid);
+    removeFromFavorites(id, auth.authState.user.uid);
+  };
+
+  const onSearch = query => {
+    setIsSearchMode(true);
+    searchPublicDishes(auth.authState.user.uid, query);
+  };
+
+  const onSearchClear = () => {
+    setIsSearchMode(false);
   };
 
   /**
    * If dishes data is still loading, show message
    */
-  if (!props.dataReceived) {
+  if (!dataReceived) {
     return <div className="center-text">Loading...</div>;
   }
 
@@ -72,8 +100,18 @@ const Dishes = props => {
   }
   return (
     <>
+      <SearchComponent
+        onSearch={value => onSearch(value)}
+        onSearchClear={onSearchClear}
+      />
+      {/* No search result to show */}
+      {isSearchMode && searchReceived && searchResult.length === 0 && (
+        <div className="center-text">
+          Couldn't find what you've search for...
+        </div>
+      )}
       <DishesList
-        dishes={props.publicDishes}
+        dishes={isSearchMode ? searchResult : publicDishes}
         dishListEnum={DishListEnum.PUBLIC_LIST}
         currentUid={currentUid}
         handleDishFavorite={(dish, uid) => handleDishFavorite(dish, uid)}

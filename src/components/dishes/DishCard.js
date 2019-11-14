@@ -175,7 +175,7 @@ const DishCard = ({
             <Button
               size="sm"
               className="btn-modal"
-              onClick={() => unfavoriteDish(dish._id)}
+              onClick={() => unfavoriteDish(dish.id)}
             >
               YES
             </Button>

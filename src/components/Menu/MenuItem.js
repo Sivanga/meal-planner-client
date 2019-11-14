@@ -35,7 +35,7 @@ const MenuItem = ({
   };
 
   const unfavoriteClicked = () => {
-    handleMenuRemove(menu._id);
+    handleMenuRemove(menu.id);
     setShowDeletOverlay(false);
   };
 

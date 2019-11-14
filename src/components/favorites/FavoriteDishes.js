@@ -21,7 +21,7 @@ const mapStateToProps = state => {
     searchReceived:
       state.dishes.privateDishesSearchDataReceived
         .privateDishesSearchDataReceived,
-    searchResult: state.dishes.searchResult
+    searchResult: state.dishes.privateDishesSearchResult
   };
 };
 

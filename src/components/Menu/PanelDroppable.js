@@ -15,7 +15,7 @@ const PanelDroppable = ({ dishes }) => {
           {...droppableProvided.droppablePlaceholder}
         >
           {dishes.map((dish, index) => (
-            <Draggable draggableId={dish._id} index={index} key={index}>
+            <Draggable draggableId={dish.id} index={index} key={index}>
               {(draggebleProvided, draggebleSnapshot) => (
                 <PortalDishCard
                   dish={dish}

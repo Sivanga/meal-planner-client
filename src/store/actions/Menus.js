@@ -96,18 +96,18 @@ export const fetchPublicMenus = uid => async dispatch => {
 export const addMenuToFavorites = (menu, uid) => async dispatch => {
   // Set the menu under current user
   menusDbRef(uid)
-    .child("/" + menu._id)
+    .child("/" + menu.id)
     .set(menu);
 
   // Mark this user as a favorite under this public menu
   var ref = publicMenusDbRef();
   return ref
-    .child(`${menu._id}`)
+    .child(`${menu.id}`)
     .once("value")
     .then(function(snapshot) {
       var menuToUpdate = (snapshot.val() && snapshot.val()) || {};
       var favoriteUsers = menuToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
-      ref.child(`${menu._id}/`).update({ favoriteUsers: favoriteUsers });
+      ref.child(`${menu.id}/`).update({ favoriteUsers: favoriteUsers });
     });
 };

@@ -15,7 +15,7 @@ function menus(state = [], action) {
       // Give each menu it's backend generated id for future reference
       var newMenus = [];
       Object.keys(action.payload).map(key => {
-        action.payload[key]._id = key;
+        action.payload[key].id = key;
 
         return newMenus.unshift(action.payload[key]);
       });
@@ -30,7 +30,7 @@ function publicMenus(state = [], action) {
     case FETCH_PUBLIC_MENUS:
       var publicMenus = [];
       Object.keys(action.payload.publicMenus).map(key => {
-        action.payload.publicMenus[key]._id = key;
+        action.payload.publicMenus[key].id = key;
         // Return only public dishes that aren't the current user's
         if (action.payload.publicMenus[key].ownerUid !== action.payload.uid) {
           publicMenus.push(action.payload.publicMenus[key]);

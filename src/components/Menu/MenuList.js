@@ -15,7 +15,7 @@ const MenuList = ({
         return (
           <MenuItem
             menu={menu}
-            key={menu._id}
+            key={menu.id}
             handleMenuRemove={handleMenuRemove}
             handleMenuAdd={handleMenuAdd}
             menuListEnum={menuListEnum}

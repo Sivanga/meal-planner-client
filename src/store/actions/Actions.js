@@ -4,11 +4,12 @@ import {
   PRIVATE_DISHES_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA,
+  SEARCH_PUBLIC_DISHES,
+  SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES
 } from "../constants/Action-types";
 import {
-  database,
   databaseRef,
   dishesDbRef,
   storageRef,
@@ -51,17 +52,18 @@ export const addDish = (payload, uid) => async dispatch => {
 };
 
 const pushToDb = (dish, uid) => {
+  dish.ownerUid = uid;
+
   // Get a ref for a new dish
   var newDishKey = dishesDbRef(uid).push().key;
   var updates = {};
 
   // Push the dish under current user
-  dish._id = newDishKey;
+  dish.id = newDishKey;
   updates["/dishes/" + uid + "/" + newDishKey] = dish;
 
   // If dish is public, push to public dishes table
   if (dish.sharePublic) {
-    dish.ownerUid = uid;
     dish.favoriteUsers = [uid];
     updates["/publicDishes/" + newDishKey] = dish;
   }
@@ -79,7 +81,6 @@ export const removeDish = (payload, uid) => async dispatch => {
     .remove();
 
   var ref = publicDishesDbRef();
-
   return ref
     .child(`${payload}`)
     .once("value")
@@ -118,14 +119,28 @@ export const fetchDishes = uid => async dispatch => {
 };
 
 export const searchPrivateDishes = (uid, query) => async dispatch => {
-  const search = firebase.functions().httpsCallable("search");
-  search(query).then(result => {
+  const search = firebase.functions().httpsCallable("searchPrivateDishes");
+  search({ query: query, uid: uid }).then(result => {
     dispatch({
       type: SEARCH_FAVORITE_DATA_RECEIVED,
       payload: true
     });
     dispatch({
       type: SEARCH_FAVORITE_DATA,
+      payload: result.data
+    });
+  });
+};
+
+export const searchPublicDishes = (uid, query) => async dispatch => {
+  const search = firebase.functions().httpsCallable("searchPublicDishes");
+  search({ query: query, uid: uid }).then(result => {
+    dispatch({
+      type: SEARCH_PUBLIC_DATA_RECEIVED,
+      payload: true
+    });
+    dispatch({
+      type: SEARCH_PUBLIC_DISHES,
       payload: result.data
     });
   });
@@ -150,19 +165,19 @@ export const fetchPublicDishes = uid => async dispatch => {
 export const addToFavorites = (dish, uid) => async dispatch => {
   // Set the dish under current user
   dishesDbRef(uid)
-    .child("/" + dish._id)
+    .child("/" + dish.id)
     .set(dish);
 
   // Mark this user as a favorite under this public dish
   var ref = publicDishesDbRef();
   return ref
-    .child(`${dish._id}`)
+    .child(`${dish.id}`)
     .once("value")
     .then(function(snapshot) {
       var dishToUpdate = (snapshot.val() && snapshot.val()) || {};
       var favoriteUsers = dishToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
-      ref.child(`${dish._id}`).update({ favoriteUsers: favoriteUsers });
+      ref.child(`${dish.id}`).update({ favoriteUsers: favoriteUsers });
     });
 };
 
