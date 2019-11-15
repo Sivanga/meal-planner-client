@@ -239,10 +239,11 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <DishTags
-            onChange={event => {
+            onChange={tags => {
+              console.log("Tags on change: ", tags);
               setDish({
                 ...dish,
-                tags: event
+                tags: tags
               });
             }}
           />

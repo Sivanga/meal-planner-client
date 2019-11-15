@@ -73,39 +73,6 @@ const TemplateMenu = props => {
   const newlyAddedCell = React.createRef();
 
   /**
-   * Remove a meal from state
-   */
-  const removeMeal = index => {
-    var newMeals = [...meals];
-    newMeals.splice(index, 1);
-    setMealsState(newMeals);
-  };
-
-  /**
-   * Add a new meal to state
-   */
-  const addMeal = () => {
-    setAddingNewValue(true);
-    var nextId = meals[meals.length - 1].id;
-    setMealsState([...meals].concat({ name: "", id: nextId++ }));
-  };
-
-  /**
-   * Toggle disable/enable day and update state
-   */
-  const toggleEnableDay = index => {
-    var newDays = [...days];
-    newDays.map((day, i) => {
-      if (index === i) {
-        return (day.enabled = !day.enabled);
-      } else {
-        return day;
-      }
-    });
-    setDays(newDays);
-  };
-
-  /**
    * Focus the newlyAddedCell after render is done
    * Validate the menu after render
    */
@@ -129,13 +96,13 @@ const TemplateMenu = props => {
       newMenuErros.push("Please enable at least one day");
     }
     if (meals.length < 1) {
-      newMenuErros.push("Please add at least one meal");
+      newMenuErros.push("Please have at least one meal");
     }
     setMenuErrors(newMenuErros);
   }, [days, meals]);
 
   /**
-   * Fetch once the user's saved meals
+   * Fetch only once the user's saved meals
    */
   useEffect(() => {
     if (!auth.authState.user) return;
@@ -156,17 +123,60 @@ const TemplateMenu = props => {
     ) {
       setMealsState(props.backendMeals);
     }
-  }, [props.dataReceived]);
+  }, [props.dataReceived, props.backendMeals, auth]);
+
+  /**
+   * Remove a meal from state
+   */
+  const removeMeal = index => {
+    // Make sure there's at least one meal
+    if (meals.length === 1) {
+      return;
+    }
+
+    var newMeals = [...meals];
+    newMeals.splice(index, 1);
+    setMealsState(newMeals);
+  };
+
+  /**
+   * Add a new meal to state
+   */
+  const addMeal = index => {
+    // Generate new meal id
+    var nextId = meals[meals.length - 1].id;
+    const mealsCopy = [...meals];
+    mealsCopy.splice(index, 0, {
+      name: "",
+      id: nextId++
+    });
+    setMealsState(mealsCopy);
+  };
+
+  /**
+   * Toggle disable/enable day and update state
+   */
+  const toggleEnableDay = index => {
+    var newDays = [...days];
+    newDays.map((day, i) => {
+      if (index === i) {
+        return (day.enabled = !day.enabled);
+      } else {
+        return day;
+      }
+    });
+    setDays(newDays);
+  };
 
   /**
    * Set addingNewValue to false when edit is done (Tab key)
    */
   const onKeyDown = (event, index) => {
+    // console.log("onKeyDown: ", event.keyCode);
     // When Tab or Enter are pressed, not new value is being added, this helps to focus on the next value at Render
     if (event.keyCode === 9 || event.keyCode === 13) {
       setAddingNewValue(false);
     }
-
     // Loose focus on Enter key
     if (event.keyCode === 13) {
       event.preventDefault();
@@ -181,10 +191,16 @@ const TemplateMenu = props => {
    * @param {onBlur} event
    */
   const onMealChange = (event, index) => {
-    const newMeal = event.currentTarget.textContent;
-    var newMeals = [...meals];
-    newMeals[index] = newMeal;
-    setMealsState(newMeals);
+    console.log(
+      "onMealChange. event.currentTarget.textContent: ",
+      event.currentTarget.textContent
+    );
+    const newMealText = event.currentTarget.textContent;
+    const newMeal = { ...meals[index] };
+    newMeal.name = newMealText;
+    const mealsCopy = [...meals];
+    mealsCopy[index] = newMeal;
+    setMealsState(mealsCopy);
   };
 
   const handleGenerateMenu = () => {
@@ -245,15 +261,16 @@ const TemplateMenu = props => {
           {meals.map((meal, index) => (
             <tr key={index} className="meal-row">
               {/* First cell is a button to remove meal row */}
-              <td className="remove-row-wrapper">
+              <th className="add-remove-meals">
                 <i
-                  className="fa fa-minus-square-o"
-                  id="remove-row"
-                  aria-hidden="false"
+                  className="fa fa-plus-square fa-xs "
+                  onClick={() => addMeal(index)}
+                />
+                <i
+                  className="fa fa-minus-square fa-xs"
                   onClick={() => removeMeal(index)}
-                ></i>
-              </td>
-
+                />
+              </th>
               {/* Row for each meal */}
               <th
                 contentEditable="true"
@@ -280,14 +297,6 @@ const TemplateMenu = props => {
           ))}
         </MDBTableBody>
       </MDBTable>
-      <span>
-        <i
-          className="fa fa-plus-square-o fa-xs"
-          aria-hidden="false"
-          id="plus-icon"
-          onClick={() => addMeal()}
-        />
-      </span>
     </div>
   );
 };

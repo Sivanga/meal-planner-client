@@ -366,6 +366,7 @@ const GenerateMenu = props => {
             </Form.Label>
             <Col sm="8">
               <Form.Check
+                className="menuShareLable"
                 type="checkbox"
                 label=" Share with our community and get others
                 inspired!"
@@ -425,11 +426,11 @@ const GenerateMenu = props => {
 
                 {/* Panl handle at the end of the table head */}
                 <div className="burger-wrapper">
-                <Burger
-                  direction="right"
-                  isOpen={showPanel}
-                  onClick={() => setShowPanel(!showPanel)}
-                />
+                  <Burger
+                    direction="right"
+                    isOpen={showPanel}
+                    onClick={() => setShowPanel(!showPanel)}
+                  />
                 </div>
               </li>
 

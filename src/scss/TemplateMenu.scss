@@ -54,13 +54,12 @@
   font-size: 1.3rem;
 }
 
-#remove-row {
-  display: none;
-}
+.add-remove-meals {
+  display: flex;
+  flex-direction: column;
 
-.meal-row:hover {
-  #remove-row {
-    display: block;
+  .fa-plus-square {
+    margin-bottom: 10px;
   }
 }
 
@@ -68,33 +67,9 @@
   font-size: 1.3rem;
 }
 
-.dayEnabled,
-.mealEnabled {
-  // background: rgb(211, 237, 218);
-}
-
 #plus-icon {
   padding-left: 16px;
 }
-
-.remove-row-wrapper {
-  min-width: 37px;
-  display: flex;
-  justify-content: center;
-}
-
-// .generate-btn {
-//   display: flex;
-//   margin: auto;
-//   margin-top: 1rem;
-//   background-color: $primary !important;
-//   color: white;
-
-//   &:hover {
-//     background-color: $primary-dark !important;
-//     color: white;
-//   }
-// }
 
 .menu-error {
   font-size: 1rem;

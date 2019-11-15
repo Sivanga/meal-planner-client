@@ -279,7 +279,8 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
                         fields: [
                           "dishes.name^3",
                           "dishes.link",
-                          "dishes.recipe"
+                          "dishes.recipe",
+                          "dishes.tags"
                         ],
                         type: "phrase_prefix"
                       }
@@ -333,7 +334,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
                 multi_match: {
                   query: data.query,
                   type: "phrase_prefix",
-                  fields: ["name", "link", "recipe"]
+                  fields: ["name", "link", "recipe", "tags"]
                 }
               },
               must_not: {
