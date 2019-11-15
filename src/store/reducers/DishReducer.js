@@ -105,7 +105,7 @@ function privateDishesSearchDataReceived(state = {}, action) {
 
 function publicDishesSearchDataReceived(state = {}, action) {
   switch (action.type) {
-    case SEARCH_FAVORITE_DATA_RECEIVED:
+    case SEARCH_PUBLIC_DATA_RECEIVED:
       return Object.assign({}, state, {
         publicDishesSearchDataReceived: action.payload
       });
