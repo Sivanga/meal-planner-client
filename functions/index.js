@@ -229,10 +229,10 @@ exports.indexPublicDishesToElastic = functions.database
           { ignore: 404 },
           (err, result) => {
             if (err) {
-              console.log(err);
+              console.log("err: ", err);
               reject(err);
             }
-            console.log(result);
+            console.log("result: ", result);
             resolve(result);
           }
         );
@@ -257,3 +257,103 @@ exports.indexPublicDishesToElastic = functions.database
       }
     });
   });
+
+exports.searchPrivateDishes = functions.https.onCall((data, context) => {
+  // callback API
+  return new Promise((resolve, reject) => {
+    esClient.search(
+      {
+        index: "dishes",
+        body: {
+          query: {
+            bool: {
+              must: [
+                {
+                  match: { _id: data.uid }
+                },
+                {
+                  nested: {
+                    query: {
+                      multi_match: {
+                        query: data.query,
+                        fields: [
+                          "dishes.name^3",
+                          "dishes.link",
+                          "dishes.recipe"
+                        ],
+                        type: "phrase_prefix"
+                      }
+                    },
+                    path: "dishes",
+                    inner_hits: {}
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      { ignore: [404] },
+      (err, result) => {
+        if (result) console.log(result);
+        if (result.body.hits) {
+          console.log(
+            "result.body.hits.hits[0].inner_hits.dishes.hits.hits: ",
+            result.body.hits.hits[0].inner_hits.dishes.hits.hits
+          );
+
+          var dishesToReturn = [];
+          result.body.hits.hits[0].inner_hits.dishes.hits.hits.map(result => {
+            return dishesToReturn.push(result._source);
+          });
+
+          resolve(dishesToReturn);
+        }
+        if (err) {
+          reject(err);
+        }
+      }
+    );
+  }).catch(err => {
+    reject(err);
+  });
+});
+
+exports.searchPublicDishes = functions.https.onCall((data, context) => {
+  // callback API
+  return new Promise((resolve, reject) => {
+    esClient.search(
+      {
+        index: "public_dishes",
+        type: "_doc",
+        body: {
+          query: {
+            bool: {
+              must: {
+                multi_match: {
+                  query: data.query,
+                  type: "phrase_prefix",
+                  fields: ["name", "link", "recipe"]
+                }
+              },
+              must_not: {
+                match: { ownerUid: data.uid }
+              }
+            }
+          }
+        }
+      },
+      { ignore: [404] },
+      (err, result) => {
+        if (result.body.hits) {
+          console.log("result.body.hits: ", result.body.hits);
+          resolve(result.body.hits.hits);
+        }
+        if (err) reject(err);
+      }
+    );
+  }).catch(err => {
+    console.log(err);
+    reject(err);
+  });
+});

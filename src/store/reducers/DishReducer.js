@@ -37,7 +37,7 @@ function searchDishes(state = [], action) {
     case SEARCH_FAVORITE_DATA:
       var privateDishesSearchResult = [];
       action.payload.map(result => {
-        return privateDishesSearchResult.push(result._source);
+        return privateDishesSearchResult.push(result);
       });
       return privateDishesSearchResult;
     case SEARCH_PUBLIC_DISHES:

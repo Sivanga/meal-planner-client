@@ -120,30 +120,52 @@ export const fetchDishes = uid => async dispatch => {
 
 export const searchPrivateDishes = (uid, query) => async dispatch => {
   const search = firebase.functions().httpsCallable("searchPrivateDishes");
-  search({ query: query, uid: uid }).then(result => {
-    dispatch({
-      type: SEARCH_FAVORITE_DATA_RECEIVED,
-      payload: true
+  search({ query: query, uid: uid })
+    .then(result => {
+      dispatch({
+        type: SEARCH_FAVORITE_DATA_RECEIVED,
+        payload: true
+      });
+      dispatch({
+        type: SEARCH_FAVORITE_DATA,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: SEARCH_FAVORITE_DATA_RECEIVED,
+        payload: true
+      });
+      dispatch({
+        type: SEARCH_FAVORITE_DATA,
+        payload: []
+      });
     });
-    dispatch({
-      type: SEARCH_FAVORITE_DATA,
-      payload: result.data
-    });
-  });
 };
 
 export const searchPublicDishes = (uid, query) => async dispatch => {
   const search = firebase.functions().httpsCallable("searchPublicDishes");
-  search({ query: query, uid: uid }).then(result => {
-    dispatch({
-      type: SEARCH_PUBLIC_DATA_RECEIVED,
-      payload: true
+  search({ query: query, uid: uid })
+    .then(result => {
+      dispatch({
+        type: SEARCH_PUBLIC_DATA_RECEIVED,
+        payload: true
+      });
+      dispatch({
+        type: SEARCH_PUBLIC_DISHES,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: SEARCH_PUBLIC_DATA_RECEIVED,
+        payload: true
+      });
+      dispatch({
+        type: SEARCH_PUBLIC_DISHES,
+        payload: []
+      });
     });
-    dispatch({
-      type: SEARCH_PUBLIC_DISHES,
-      payload: result.data
-    });
-  });
 };
 
 /**
