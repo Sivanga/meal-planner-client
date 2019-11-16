@@ -78,7 +78,11 @@ const Dishes = ({
 
   const onSearch = query => {
     setIsSearchMode(true);
-    searchPublicDishes(auth.authState.user.uid, query);
+    var uid = null;
+    if (auth.authState.user && auth.authState.user.uid) {
+      uid = auth.authState.user.uid;
+    }
+    searchPublicDishes(uid, query);
   };
 
   const onSearchClear = () => {

@@ -95,7 +95,9 @@ const FavoriteDishes = ({
       <>
         <div className="empty-dishes">
           <div>
-            Looks like you don't have any favorites yet :(
+            You don't have any dishes saved yet
+            <br />
+            Would you like to add one?
             <ImportDish addDish={dish => onDishAdd(dish)} />
           </div>
         </div>

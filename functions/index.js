@@ -338,7 +338,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
                 }
               },
               must_not: {
-                match: { ownerUid: data.uid }
+                match: { ownerUid: data.uid ? data.uid : "dummy" } // If there's no connected user, return all public result of all users
               }
             }
           }
@@ -350,11 +350,15 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
           console.log("result.body.hits: ", result.body.hits);
           resolve(result.body.hits.hits);
         }
-        if (err) reject(err);
+        if (err) {
+          console.log(" err: ", err);
+
+          reject(err);
+        }
       }
     );
   }).catch(err => {
-    console.log(err);
+    console.log("catch err: ", err);
     reject(err);
   });
 });
