@@ -70,30 +70,6 @@ exports.getUrlMetadata = functions.https.onCall((data, context) => {
     });
 });
 
-const createDishesMapping = uid => {
-  esClient.index(
-    {
-      index: "dishes",
-      type: "_doc",
-      body: {
-        mappings: {
-          uid: {
-            properties: {
-              dishes: {
-                type: "nested"
-              }
-            }
-          }
-        }
-      }
-    },
-    (err, result) => {
-      if (err) console.log(err);
-      console.log(result);
-    }
-  );
-};
-
 const createDishesEnryForUser = (uid, dish, resolve, reject) => {
   console.log("createDishesEnryForUser: ", uid, " dish: ", dish);
   return esClient.index(
