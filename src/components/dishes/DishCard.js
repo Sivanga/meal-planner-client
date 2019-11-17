@@ -85,11 +85,8 @@ const DishCard = ({
             <>
               {dish.meals && (
                 <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
-                  {dish.meals.map(meal => (
-                    <li
-                      key={meal.id}
-                      className="badge badge-pill badge-primary"
-                    >
+                  {dish.meals.map((meal, index) => (
+                    <li key={index} className="badge badge-pill badge-primary">
                       {meal.name}
                     </li>
                   ))}

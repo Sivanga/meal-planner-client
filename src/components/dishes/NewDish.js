@@ -60,10 +60,10 @@ const NewDish = props => {
 
   /** Meals state */
   const [meals, setMeals] = useState([
-    { name: "Breakfast", id: 300 },
-    { name: "Lunch", id: 301 },
-    { name: "Snack", id: 302 },
-    { name: "Dinner", id: 303 }
+    { name: "Breakfast" },
+    { name: "Lunch" },
+    { name: "Snack" },
+    { name: "Dinner" }
   ]);
 
   /**
@@ -109,7 +109,7 @@ const NewDish = props => {
     var selectedMealsCopy;
     if (isSelected) {
       selectedMealsCopy = selectedMeals.filter(
-        currentMeal => currentMeal.id !== meal.id
+        currentMeal => currentMeal.name === meal.name
       );
 
       setSelectedMeals(selectedMealsCopy);

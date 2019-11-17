@@ -50,10 +50,10 @@ const TemplateMenu = props => {
    * Maels of the day
    */
   const [meals, setMealsState] = useState([
-    { name: "Breakfast", id: 300 },
-    { name: "Lunch", id: 301 },
-    { name: "Snack", id: 302 },
-    { name: "Dinner", id: 303 }
+    { name: "Breakfast" },
+    { name: "Lunch" },
+    { name: "Snack" },
+    { name: "Dinner" }
   ]);
 
   /**
@@ -98,6 +98,7 @@ const TemplateMenu = props => {
     if (meals.length < 1) {
       newMenuErros.push("Please have at least one meal");
     }
+
     setMenuErrors(newMenuErros);
   }, [days, meals]);
 
@@ -144,12 +145,8 @@ const TemplateMenu = props => {
    */
   const addMeal = index => {
     // Generate new meal id
-    var nextId = meals[meals.length - 1].id;
     const mealsCopy = [...meals];
-    mealsCopy.splice(index, 0, {
-      name: "",
-      id: nextId++
-    });
+    mealsCopy.splice(index, 0, { name: "" });
     setMealsState(mealsCopy);
   };
 

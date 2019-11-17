@@ -168,7 +168,7 @@ const GenerateMenu = props => {
 
   const findDishesForMeal = (dishes, meal) => {
     return dishes.filter(dish =>
-      dish.meals.some(currMeal => currMeal.id === meal.id)
+      dish.meals.some(currMeal => currMeal.name === meal.name)
     );
   };
 
