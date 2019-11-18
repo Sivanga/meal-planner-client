@@ -82,6 +82,9 @@ const GenerateMenu = props => {
   /** Save modal is shown */
   const [saveModalShow, setSaveModalShow] = useState(false);
 
+  /** Merged favorite and public dishes to be used in paenl */
+  const [allDishes, setAllDishes] = useState([]);
+
   /**
    * Fetch private and public dishes. Compute random dishes after all data is received
    */
@@ -97,12 +100,13 @@ const GenerateMenu = props => {
       props.fetchPublicDishes(auth.authState.user.uid);
     }
 
-    // Compute random dishes if there's no dishes in props and favorite and public dishes received
+    // Compute random dishes if both favorite and public dishes received
     if (
       !randomDishes &&
       (props.favoriteDataReceived && props.publicDataReceived)
     ) {
       computeRandomDishes();
+      mergePrivateAndPublic(); // Merge dishes are used in the panel. Merge ony once
     }
   }, [auth, props.favoriteDataReceived, props.publicDataReceived]);
 
@@ -127,6 +131,12 @@ const GenerateMenu = props => {
   }
   const days = props.location.state.menuData.days;
   const meals = props.location.state.menuData.meals;
+
+  var mergePrivateAndPublic = () => {
+    var mergedDishes = props.favoriteDishes.concat(props.publicDishes);
+    var map = new Map(mergedDishes.map(dish => [dish.id, dish]));
+    setAllDishes([...map.values()]);
+  };
 
   /**
    * Create random dishes array of the length of days and meals.
@@ -159,7 +169,6 @@ const GenerateMenu = props => {
         var randomDish =
           mergedDishes[Math.floor(Math.random() * mergedDishes.length)];
         if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
-        console.log("random Dish: ", randomDish);
         return (randomDishes[mealIndex][dayIndex] = randomDish);
       });
     });
@@ -301,7 +310,9 @@ const GenerateMenu = props => {
 
     setSaveModalShow(false);
 
-    history.push("/myFavorites", { activeView: "ACTIVE_VIEW_MENUS" });
+    history.push("/myFavorites", {
+      activeView: "ACTIVE_VIEW_MENUS"
+    });
   };
 
   /** Shuffle array for randomized menu preview */
@@ -453,7 +464,7 @@ const GenerateMenu = props => {
             <div
               className={classNames("panel-wrap", showPanel ? "show" : "hide")}
             >
-              <PanelDroppable dishes={props.favoriteDishes} />
+              <PanelDroppable dishes={allDishes} />
             </div>
           </div>
         </div>
