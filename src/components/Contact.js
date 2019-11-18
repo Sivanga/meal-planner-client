@@ -48,12 +48,18 @@ const Contact = () => {
 
     setValidated(true);
     if (form.checkValidity() === true) {
-      sendEmailFromForm({ values }).then(res => {
-        console.log("sent res: ", res);
-        if (res.data && res.data.isEmailSend) {
-          setShowAlert(true);
-        }
-      });
+      sendEmailFromForm({ values })
+        .then(res => {
+          if (res && res.data && res.data.isEmailSend) {
+            setShowAlert(true);
+          }
+        })
+        .then(error => {
+          if (error) {
+            console.log(error);
+            // TODO: show error to user
+          }
+        });
     }
   };
 

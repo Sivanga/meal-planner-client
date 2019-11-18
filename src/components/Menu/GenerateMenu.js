@@ -158,6 +158,8 @@ const GenerateMenu = props => {
 
         var randomDish =
           mergedDishes[Math.floor(Math.random() * mergedDishes.length)];
+        if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
+        console.log("random Dish: ", randomDish);
         return (randomDishes[mealIndex][dayIndex] = randomDish);
       });
     });
