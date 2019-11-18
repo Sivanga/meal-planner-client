@@ -9,14 +9,7 @@ const MenuList = ({
   menuListEnum,
   currentUid
 }) => {
-  if (!menus || menus.length === 0) {
-    return (
-      <div style={{ textAlign: "center" }}>
-        You don't have manus saved yet.. <br />
-        Would you like to add one?
-      </div>
-    );
-  }
+ 
   return (
     <div className="menu-list-container">
       {menus.map(menu => {

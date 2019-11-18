@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MenuList from "./MenuList";
 import { MenuListEnum } from "./MenuItem";
 import CreateNewMenu from "./CreateNewMenu";
@@ -6,21 +6,26 @@ import { connect } from "react-redux";
 import {
   removeMenu,
   fetchPublicMenus,
-  addMenuToFavorites
+  addMenuToFavorites,
+  searchPublicMenus
 } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
+import SearchComponent from "../SearchComponent";
 
 const mapStateToProps = state => {
   return {
     publicMenus: state.menus.publicMenus,
-    dataReceived: state.menus.publicMenusDataReceived
+    dataReceived: state.menus.publicMenusDataReceived,
+    searchReceived: state.menus.publicMenusSearchReceived,
+    searchResult: state.menus.searchMenus
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   removeFromFavorites: (id, uid) => dispatch(removeMenu(id, uid)),
   addToFavorites: (menu, uid) => dispatch(addMenuToFavorites(menu, uid)),
-  fetchPublicMenus: uid => dispatch(fetchPublicMenus(uid))
+  fetchPublicMenus: uid => dispatch(fetchPublicMenus(uid)),
+  searchPublicMenus: (uid, query) => dispatch(searchPublicMenus(uid, query))
 });
 
 function Menu({
@@ -28,12 +33,18 @@ function Menu({
   fetchPublicMenus,
   addToFavorites,
   removeFromFavorites,
-  dataReceived
+  dataReceived,
+  searchResult,
+  searchReceived,
+  searchPublicMenus
 }) {
   /**
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
+
+  /** Used to determine if to use search result */
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   /**
    * Fetch public menus in first render.
@@ -55,6 +66,19 @@ function Menu({
     removeFromFavorites(id, auth.authState.user.uid);
   };
 
+  const onSearch = query => {
+    setIsSearchMode(true);
+    var uid = null;
+    if (auth.authState.user && auth.authState.user.uid) {
+      uid = auth.authState.user.uid;
+    }
+    searchPublicMenus(uid, query);
+  };
+
+  const onSearchClear = () => {
+    setIsSearchMode(false);
+  };
+
   /**
    * If menu data is still loading, show message
    */
@@ -69,8 +93,18 @@ function Menu({
 
   return (
     <>
+      <SearchComponent
+        onSearch={value => onSearch(value)}
+        onSearchClear={onSearchClear}
+      />
+      {/* No search result to show */}
+      {isSearchMode && searchReceived && searchResult.length === 0 && (
+        <div className="center-text">
+          Couldn't find what you've search for...
+        </div>
+      )}
       <MenuList
-        menus={publicMenus}
+        menus={isSearchMode ? searchResult : publicMenus}
         handleMenuAdd={menu => handleMenuFavorite(menu, currentUid)}
         handleMenuRemove={menuId => handleMenuUnfavorite(menuId, currentUid)}
         menuListEnum={MenuListEnum.PUBLIC_LIST}

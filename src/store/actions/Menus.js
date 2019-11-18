@@ -3,9 +3,14 @@ import {
   FETCH_PUBLIC_MENUS,
   PRIVATE_MENUS_DATA_RECIEVED,
   PUBLIC_MENUS_DATA_RECIEVED,
-  SET_MENU
+  SET_MENU,
+  SEARCH_FAVORITE_MENUS,
+  SEARCH_FAVORITE_MENUS_RECEIVED,
+  SEARCH_PUBLIC_MENUS_RECEIVED,
+  SEARCH_PUBLIC_MENUS
 } from "../constants/Action-types";
 import { menusDbRef, publicMenusDbRef, databaseRef } from "../../firebase";
+import * as firebase from "firebase/app";
 
 /**
  * Set menu to backend
@@ -20,6 +25,7 @@ export const setMenu = (payload, uid) => async dispatch => {
   // Get a ref for a new menu
   var newMenuKey = menusDbRef(uid).push().key;
   var updates = {};
+  payload.id = newMenuKey;
 
   // Push the menu under current user
   updates["/menus/" + uid + "/" + newMenuKey] = payload;
@@ -109,5 +115,53 @@ export const addMenuToFavorites = (menu, uid) => async dispatch => {
       var favoriteUsers = menuToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
       ref.child(`${menu.id}/`).update({ favoriteUsers: favoriteUsers });
+    });
+};
+
+export const searchPrivateMenus = (uid, query) => async dispatch => {
+  const search = firebase.functions().httpsCallable("searchPrivateMenus");
+  search({ query: query, uid: uid })
+    .then(result => {
+      dispatch({
+        type: SEARCH_FAVORITE_MENUS,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: SEARCH_FAVORITE_MENUS,
+        payload: []
+      });
+    })
+    .finally(() => {
+      dispatch({
+        type: SEARCH_FAVORITE_MENUS_RECEIVED,
+        payload: true
+      });
+    });
+};
+
+export const searchPublicMenus = (uid, query) => async dispatch => {
+  const search = firebase.functions().httpsCallable("searchPublicMenus");
+  search({ query: query, uid: uid })
+    .then(result => {
+      dispatch({
+        type: SEARCH_PUBLIC_MENUS_RECEIVED,
+        payload: true
+      });
+      dispatch({
+        type: SEARCH_PUBLIC_MENUS,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: SEARCH_PUBLIC_MENUS_RECEIVED,
+        payload: true
+      });
+      dispatch({
+        type: SEARCH_PUBLIC_MENUS,
+        payload: []
+      });
     });
 };

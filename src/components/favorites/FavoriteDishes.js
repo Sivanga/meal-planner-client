@@ -43,6 +43,7 @@ const FavoriteDishes = ({
   searchReceived,
   searchResult
 }) => {
+  /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
 
   /**
@@ -112,10 +113,13 @@ const FavoriteDishes = ({
   }
   return (
     <>
-      <SearchComponent
-        onSearch={value => onSearch(value)}
-        onSearchClear={onSearchClear}
-      />
+      {/* Show search only if there's dishes */}
+      {dishes && dishes.length > 0 && (
+        <SearchComponent
+          onSearch={value => onSearch(value)}
+          onSearchClear={onSearchClear}
+        />
+      )}
       {/* No search result to show */}
       {isSearchMode && searchReceived && searchResult.length === 0 && (
         <div className="center-text">

@@ -35,17 +35,9 @@ function dishes(state = [], action) {
 function searchDishes(state = [], action) {
   switch (action.type) {
     case SEARCH_FAVORITE_DATA:
-      var privateDishesSearchResult = [];
-      action.payload.map(result => {
-        return privateDishesSearchResult.push(result);
-      });
-      return privateDishesSearchResult;
+      return action.payload;
     case SEARCH_PUBLIC_DISHES:
-      var publicDishesSearchResult = [];
-      action.payload.map(result => {
-        return publicDishesSearchResult.push(result._source);
-      });
-      return publicDishesSearchResult;
+      return action.payload;
     default:
       return state;
   }
@@ -91,7 +83,7 @@ function privateDishesDataReceived(state = {}, action) {
   }
 }
 
-function privateDishesSearchDataReceived(state = {}, action) {
+function privateDishesSearchDataReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_FAVORITE_DATA_RECEIVED:
       return Object.assign({}, state, {
@@ -103,7 +95,7 @@ function privateDishesSearchDataReceived(state = {}, action) {
   }
 }
 
-function publicDishesSearchDataReceived(state = {}, action) {
+function publicDishesSearchDataReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_PUBLIC_DATA_RECEIVED:
       return Object.assign({}, state, {

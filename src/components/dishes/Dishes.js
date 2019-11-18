@@ -50,6 +50,7 @@ const Dishes = ({
    */
   const auth = useAuth();
 
+  /** Used to determine if to use search result */
   const [isSearchMode, setIsSearchMode] = useState(false);
 
   /**

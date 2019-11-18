@@ -3,7 +3,11 @@ import {
   FETCH_PUBLIC_MENUS,
   FETCH_PRIVATE_MENUS,
   PRIVATE_MENUS_DATA_RECIEVED,
-  PUBLIC_MENUS_DATA_RECIEVED
+  PUBLIC_MENUS_DATA_RECIEVED,
+  SEARCH_FAVORITE_MENUS_RECEIVED,
+  SEARCH_FAVORITE_MENUS,
+  SEARCH_PUBLIC_MENUS_RECEIVED,
+  SEARCH_PUBLIC_MENUS
 } from "../constants/Action-types";
 import { combineReducers } from "redux";
 
@@ -60,11 +64,43 @@ function publicMenusDataReceived(state = false, action) {
   }
 }
 
+function searchMenus(state = [], action) {
+  switch (action.type) {
+    case SEARCH_FAVORITE_MENUS:
+      return action.payload;
+    case SEARCH_PUBLIC_MENUS:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
+function privateMenusSearchReceived(state = false, action) {
+  switch (action.type) {
+    case SEARCH_FAVORITE_MENUS_RECEIVED:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
+function publicMenusSearchReceived(state = false, action) {
+  switch (action.type) {
+    case SEARCH_PUBLIC_MENUS_RECEIVED:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
 const MealsReducer = combineReducers({
   menus,
   publicMenus,
   privateMenusDataReceived,
-  publicMenusDataReceived
+  publicMenusDataReceived,
+  searchMenus,
+  privateMenusSearchReceived,
+  publicMenusSearchReceived
 });
 
 export default MealsReducer;
