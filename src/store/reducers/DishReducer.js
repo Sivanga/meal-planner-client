@@ -87,7 +87,7 @@ function privateDishesDataReceived(state = {}, action) {
   }
 }
 
-function privateDishesSearchDataReceived(state = false, action) {
+function privateDishesSearchReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_FAVORITE_DATA_RECEIVED:
       return action.payload;
@@ -126,8 +126,8 @@ export default function DishReducer(state = {}, action) {
       state.privateDishesDataReceived,
       action
     ),
-    privateDishesSearchDataReceived: privateDishesSearchDataReceived(
-      state.privateDishesSearchDataReceived,
+    privateDishesSearchReceived: privateDishesSearchReceived(
+      state.privateDishesSearchReceived,
       action
     ),
     privateDishesSearchResult: searchDishes(

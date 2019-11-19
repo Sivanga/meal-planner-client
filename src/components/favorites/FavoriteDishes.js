@@ -18,9 +18,7 @@ const mapStateToProps = state => {
     dishes: state.dishes.dishes,
     dataReceived:
       state.dishes.privateDishesDataReceived.privateDishesDataReceived,
-    searchReceived:
-      state.dishes.privateDishesSearchDataReceived
-        .privateDishesSearchDataReceived,
+    searchReceived: state.dishes.privateDishesSearchReceived,
     searchResult: state.dishes.privateDishesSearchResult
   };
 };
@@ -121,6 +119,14 @@ const FavoriteDishes = ({
         />
       )}
       {/* No search result to show */}
+      {console.log(
+        "isSearchMode: ",
+        isSearchMode,
+        " searchReceived: ",
+        searchReceived,
+        " searchResult.length: ",
+        searchResult.length
+      )}
       {isSearchMode && searchReceived && searchResult.length === 0 && (
         <div className="center-text">
           Couldn't find what you've search for...
