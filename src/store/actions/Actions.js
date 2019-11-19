@@ -7,7 +7,9 @@ import {
   SEARCH_PUBLIC_DISHES,
   SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
-  FETCH_PUBLIC_DISHES
+  FETCH_PUBLIC_DISHES,
+  SEARCH_ALL_DISHES,
+  SEARCH_ALL_DISHES_RECEIVED
 } from "../constants/Action-types";
 import {
   databaseRef,
@@ -123,22 +125,20 @@ export const searchPrivateDishes = (uid, query) => async dispatch => {
   search({ query: query, uid: uid })
     .then(result => {
       dispatch({
-        type: SEARCH_FAVORITE_DATA_RECEIVED,
-        payload: true
-      });
-      dispatch({
         type: SEARCH_FAVORITE_DATA,
         payload: result.data
       });
     })
     .catch(err => {
       dispatch({
-        type: SEARCH_FAVORITE_DATA_RECEIVED,
-        payload: true
-      });
-      dispatch({
         type: SEARCH_FAVORITE_DATA,
         payload: []
+      });
+    })
+    .finally(() => {
+      dispatch({
+        type: SEARCH_FAVORITE_DATA_RECEIVED,
+        payload: true
       });
     });
 };
@@ -148,22 +148,44 @@ export const searchPublicDishes = (uid, query) => async dispatch => {
   search({ query: query, uid: uid })
     .then(result => {
       dispatch({
-        type: SEARCH_PUBLIC_DATA_RECEIVED,
-        payload: true
-      });
-      dispatch({
         type: SEARCH_PUBLIC_DISHES,
         payload: result.data
       });
     })
     .catch(err => {
       dispatch({
+        type: SEARCH_PUBLIC_DISHES,
+        payload: []
+      });
+    })
+    .finally(() => {
+      dispatch({
         type: SEARCH_PUBLIC_DATA_RECEIVED,
         payload: true
       });
+    });
+};
+
+export const searchAllDishes = (uid, query) => async dispatch => {
+  console.log("searchAllDishes ");
+  const search = firebase.functions().httpsCallable("searchAllDishes");
+  search({ query: query, uid: uid })
+    .then(result => {
       dispatch({
-        type: SEARCH_PUBLIC_DISHES,
+        type: SEARCH_ALL_DISHES,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: SEARCH_ALL_DISHES,
         payload: []
+      });
+    })
+    .finally(() => {
+      dispatch({
+        type: SEARCH_ALL_DISHES_RECEIVED,
+        payload: true
       });
     });
 };

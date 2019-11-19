@@ -5,6 +5,7 @@ import classNames from "classnames";
 import {
   fetchDishes,
   fetchPublicDishes,
+  searchAllDishes,
   setMenu
 } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
@@ -28,6 +29,7 @@ import { useHistory } from "react-router-dom";
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
 import "../../scss/GenerateMenu.scss";
+import SearchComponent from "../SearchComponent";
 
 const mapStateToProps = state => {
   return {
@@ -36,14 +38,17 @@ const mapStateToProps = state => {
       state.dishes.privateDishesDataReceived.privateDishesDataReceived,
     publicDishes: state.dishes.publicDishes,
     publicDataReceived:
-      state.dishes.publicDishesDataReceived.publicDishesDataReceived
+      state.dishes.publicDishesDataReceived.publicDishesDataReceived,
+    searchReceived: state.dishes.allDishesSearchReceived,
+    searchResult: state.dishes.allDishesSearchResult
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   fetchDishes: uid => dispatch(fetchDishes(uid)),
   fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
-  setMenu: (payload, uid) => dispatch(setMenu(payload, uid))
+  setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
+  searchAllDishes: (uid, query) => dispatch(searchAllDishes(uid, query))
 });
 
 const GenerateMenu = props => {
@@ -84,6 +89,9 @@ const GenerateMenu = props => {
 
   /** Merged favorite and public dishes to be used in paenl */
   const [allDishes, setAllDishes] = useState([]);
+
+  /** Used to determine if to show results from searchResult object */
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   /**
    * Fetch private and public dishes. Compute random dishes after all data is received
@@ -325,6 +333,16 @@ const GenerateMenu = props => {
     return array;
   }
 
+  const onSearch = query => {
+    console.log("onSearch");
+    setIsSearchMode(true);
+    props.searchAllDishes(auth.authState.user.uid, query);
+  };
+
+  const onSearchClear = () => {
+    setIsSearchMode(false);
+  };
+
   /**
    * If there's no logged in user, show login message
    */
@@ -464,7 +482,21 @@ const GenerateMenu = props => {
             <div
               className={classNames("panel-wrap", showPanel ? "show" : "hide")}
             >
-              <PanelDroppable dishes={allDishes} />
+              <SearchComponent
+                onSearch={value => onSearch(value)}
+                onSearchClear={onSearchClear}
+              />
+              {/* No search result to show */}
+              {isSearchMode &&
+                props.searchReceived &&
+                props.searchResult.length === 0 && (
+                  <div className="center-text">
+                    Couldn't find what you've search for...
+                  </div>
+                )}
+              <PanelDroppable
+                dishes={isSearchMode ? props.searchResult : allDishes}
+              />
             </div>
           </div>
         </div>

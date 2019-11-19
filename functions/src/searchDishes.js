@@ -240,8 +240,8 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
     reject(err);
   });
 });
-/** elastic - search in "public_dishes" index */
 
+/** elastic - search in "public_dishes" index */
 exports.searchPublicDishes = functions.https.onCall((data, context) => {
   // callback API
   return new Promise((resolve, reject) => {
@@ -279,6 +279,96 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
         if (err) {
           console.log(" err: ", err);
 
+          reject(err);
+        }
+      }
+    );
+  }).catch(err => {
+    console.log("catch err: ", err);
+    reject(err);
+  });
+});
+
+/** elastic - search in both "dishes" and "public_dishes" index */
+exports.searchAllDishes = functions.https.onCall((data, context) => {
+  // callback API
+  return new Promise((resolve, reject) => {
+    esClient.msearch(
+      {
+        body: [
+          { index: "dishes" },
+          {
+            query: {
+              bool: {
+                must: [
+                  { match: { _id: data.uid } },
+                  {
+                    nested: {
+                      query: {
+                        multi_match: {
+                          query: data.query,
+                          fields: [
+                            "dishes.name^3",
+                            "dishes.link",
+                            "dishes.recipe",
+                            "dishes.tags"
+                          ],
+                          type: "phrase_prefix"
+                        }
+                      },
+                      path: "dishes",
+                      inner_hits: {}
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          { index: "public_dishes" },
+          {
+            query: {
+              bool: {
+                must: {
+                  multi_match: {
+                    query: data.query,
+                    type: "phrase_prefix",
+                    fields: ["name", "link", "recipe", "tags"]
+                  }
+                },
+                must_not: [
+                  { match: { ownerUid: data.uid } },
+                  { match: { favoriteUsers: data.uid } }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      { ignore: [404] },
+      (err, result) => {
+        if (result) {
+          console.log(result);
+
+          var dishesArray = [];
+          if (result.body.responses[0].hits.hits[0]) {
+            dishesArray =
+              result.body.responses[0].hits.hits[0].inner_hits.dishes.hits.hits;
+          }
+          var publidDishesArray = dishesArray.concat(
+            result.body.responses[1].hits.hits
+          );
+
+          var dishesToReturn = [];
+          publidDishesArray.map(result => {
+            return dishesToReturn.push(result._source);
+          });
+          console.log("dishesToReturn: ", dishesToReturn);
+
+          resolve(dishesToReturn);
+        }
+
+        if (err) {
+          console.log(err);
           reject(err);
         }
       }

@@ -32,7 +32,8 @@ $panel-width-small: 8rem;
   margin-top: 1.9rem;
   transform: translate(100%);
   transition: 0.3s ease-out;
-  background: $dark-text-color;
+  background: white;
+  border: solid$dark-text-color 2px;
   &.show {
     transform: translate(0%);
   }
@@ -47,6 +48,16 @@ $panel-width-small: 8rem;
 
   @media only screen and (min-width: 1024px) {
     width: $panel-width-large;
+  }
+
+  .col-md-4 {
+    // Search in panel
+    min-width: 100%;
+    padding: 1rem;
+
+    form {
+      margin: 0 !important;
+    }
   }
 }
 
@@ -181,4 +192,8 @@ li {
   label {
     margin-top: 0.6rem;
   }
+}
+
+.search-in-pannel {
+  width: 100%;
 }
