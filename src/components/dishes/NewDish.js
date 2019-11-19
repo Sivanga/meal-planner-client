@@ -107,16 +107,21 @@ const NewDish = props => {
   const toggleMealSelection = meal => {
     var isSelected = selectedMeals.includes(meal);
     var selectedMealsCopy;
+
+    // Remove from selectedMeals
     if (isSelected) {
       selectedMealsCopy = selectedMeals.filter(
-        currentMeal => currentMeal.name === meal.name
+        currentMeal => currentMeal.name !== meal.name
       );
-
       setSelectedMeals(selectedMealsCopy);
-    } else {
+    }
+
+    // Insert to selectedMeals
+    else {
       selectedMealsCopy = [...selectedMeals, meal];
       setSelectedMeals(selectedMealsCopy);
     }
+
     setSelectedMealsErrors(selectedMealsCopy);
   };
 
