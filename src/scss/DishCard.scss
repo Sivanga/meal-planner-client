@@ -3,18 +3,23 @@
 .deleteOverlay {
   position: absolute;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
   width: 100%;
-  height: 97%;
+  height: 98%;
   background: rgba($color: #000000, $alpha: 0.7);
   z-index: 2;
   border-radius: 0.2rem;
   color: white;
   text-align: center;
-  padding-top: 50%;
+  padding-top: 50px;
   font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 5rem;
+
+  span {
+    margin-top: auto;
+  }
 }
 
 .dish-card {

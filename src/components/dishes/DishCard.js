@@ -160,7 +160,7 @@ const DishCard = ({
       </Card>
       {showDeleteOverlay && (
         <div className="deleteOverlay">
-          Unfavorite dish?
+          <span>Unfavorite dish?</span>
           <div>
             <Button
               className="btn-modal"
