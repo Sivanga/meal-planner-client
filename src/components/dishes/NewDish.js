@@ -5,7 +5,8 @@ import {
   Row,
   Col,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  InputGroup
 } from "react-bootstrap";
 import { MDBBadge } from "mdbreact";
 import DragAndDrop from "../abstract/DragAndDrop";
@@ -154,6 +155,10 @@ const NewDish = props => {
     fileUploaderInput.current.click();
   };
 
+  const addNewMeal = event => {
+    setMeals([...meals, { name: event.target.value }]);
+  };
+
   /** Use placeholder or local image url if exist */
   var imageSrc = DishPlaceholder;
   if (dish.localImageUrl) {
@@ -232,6 +237,17 @@ const NewDish = props => {
                 </MDBBadge>
               );
             })}
+
+            {/** Add new meal */}
+            <Form.Control
+              type="text"
+              placeholder="New"
+              onKeyPress={event => {
+                if (event.key === "Enter") {
+                  addNewMeal(event);
+                }
+              }}
+            />
           </div>
           {errors.meals && errors.meals !== DISH_MEAL_VALID && (
             <span className="error">{errors.meals}</span>
@@ -245,7 +261,6 @@ const NewDish = props => {
         <Col sm="8">
           <DishTags
             onChange={tags => {
-              console.log("Tags on change: ", tags);
               setDish({
                 ...dish,
                 tags: tags

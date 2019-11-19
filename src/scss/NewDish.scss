@@ -80,8 +80,9 @@ img {
 .meals-control {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
-  height: 2.8rem;
+  height: 2.7rem;
   padding: 0.5rem;
+  overflow-x: scroll;
 
   &.invalid {
     border: 1px solid rgb(220, 53, 69);
@@ -89,5 +90,14 @@ img {
 
   &.valid {
     border: 1px solid rgb(40, 167, 69);
+  }
+
+  input {
+    display: inline;
+    max-width: 60px;
+    height: 1.1rem;
+    border-radius: 10px;
+    padding: 5px;
+    font-size: 75%;
   }
 }

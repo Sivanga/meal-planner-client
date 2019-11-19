@@ -119,14 +119,6 @@ const FavoriteDishes = ({
         />
       )}
       {/* No search result to show */}
-      {console.log(
-        "isSearchMode: ",
-        isSearchMode,
-        " searchReceived: ",
-        searchReceived,
-        " searchResult.length: ",
-        searchResult.length
-      )}
       {isSearchMode && searchReceived && searchResult.length === 0 && (
         <div className="center-text">
           Couldn't find what you've search for...
