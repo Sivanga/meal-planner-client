@@ -1,6 +1,9 @@
 import {
   FETCH_DISHES,
   ADD_DISH,
+  REMOVE_DISH,
+  ADD_DISH_TO_FAVORITE,
+  REMOVE_DISH_FROM_FAVORITE,
   PRIVATE_DISHES_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA,
@@ -42,6 +45,24 @@ function searchDishes(state = [], action) {
       return action.payload;
     case SEARCH_ALL_DISHES:
       return action.payload;
+    case ADD_DISH_TO_FAVORITE:
+    case REMOVE_DISH_FROM_FAVORITE:
+      // Update the search result with this dish state
+      var index = state.findIndex(dish => {
+        return dish.id === action.payload.dishId;
+      });
+      if (index > -1) {
+        var stateCopy = [...state];
+        stateCopy[index].favoriteUsers = action.payload.favoriteUsers;
+        return stateCopy;
+      }
+      return state;
+    case REMOVE_DISH:
+      // Update the search result with this dish state
+      return state.filter(dish => {
+        return dish.id !== action.payload;
+      });
+
     default:
       return state;
   }

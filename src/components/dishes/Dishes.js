@@ -63,7 +63,7 @@ const Dishes = ({
       uid = auth.authState.user.uid;
     }
     fetchPublicDishes(uid);
-  }, [auth, fetchPublicDishes]);
+  }, []);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -77,13 +77,13 @@ const Dishes = ({
     removeFromFavorites(id, auth.authState.user.uid);
   };
 
-  const onSearch = query => {
+  const onSearch = value => {
     setIsSearchMode(true);
     var uid = null;
     if (auth.authState.user && auth.authState.user.uid) {
       uid = auth.authState.user.uid;
     }
-    searchPublicDishes(uid, query);
+    searchPublicDishes(uid, value);
   };
 
   const onSearchClear = () => {
@@ -106,15 +106,19 @@ const Dishes = ({
   return (
     <>
       <SearchComponent
-        onSearch={value => onSearch(value)}
+        onSearch={value => {
+          onSearch(value);
+        }}
         onSearchClear={onSearchClear}
       />
       {/* No search result to show */}
-      {isSearchMode && searchReceived && searchResult.length === 0 && (
-        <div className="center-text">
-          Couldn't find what you've search for...
-        </div>
-      )}
+      {isSearchMode &&
+        searchReceived &&
+        (!searchResult || searchResult.length === 0) && (
+          <div className="center-text">
+            Couldn't find what you've search for...
+          </div>
+        )}
       <DishesList
         dishes={isSearchMode ? searchResult : publicDishes}
         dishListEnum={DishListEnum.PUBLIC_LIST}

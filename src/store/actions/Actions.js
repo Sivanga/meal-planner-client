@@ -1,6 +1,9 @@
 import {
   FETCH_DISHES,
   ADD_DISH,
+  REMOVE_DISH,
+  ADD_DISH_TO_FAVORITE,
+  REMOVE_DISH_FROM_FAVORITE,
   PRIVATE_DISHES_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA,
@@ -77,6 +80,9 @@ const pushToDb = (dish, uid) => {
  * Remove dish from backend. Update list will be invoked by fetchDishes observer
  */
 export const removeDish = (payload, uid) => async dispatch => {
+  // Remove the dish locally
+  dispatch({ type: REMOVE_DISH, payload: payload });
+
   // Remove the dish under current user
   dishesDbRef(uid)
     .child(payload)
@@ -101,6 +107,12 @@ export const removeDish = (payload, uid) => async dispatch => {
           return id !== uid;
         });
         ref.child(`${payload}/`).update({ favoriteUsers: favoriteUsers });
+
+        // This is usuful to update search result as elasticsearch doesn't refresh frequently
+        dispatch({
+          type: REMOVE_DISH_FROM_FAVORITE,
+          payload: { dishId: payload, favoriteUsers }
+        });
       }
     });
 };
@@ -222,6 +234,12 @@ export const addToFavorites = (dish, uid) => async dispatch => {
       var favoriteUsers = dishToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
       ref.child(`${dish.id}`).update({ favoriteUsers: favoriteUsers });
+
+      // This is usuful to update search result as elasticsearch doesn't refresh frequently
+      dispatch({
+        type: ADD_DISH_TO_FAVORITE,
+        payload: { dishId: dish.id, favoriteUsers }
+      });
     });
 };
 

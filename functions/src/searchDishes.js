@@ -45,6 +45,7 @@ const updateDishForUser = (uid, change, resolve, reject) => {
         id: uid,
         type: "_doc",
         index: "dishes",
+
         body: {
           script: {
             source: `ctx._source.dishes.add(params.dish)`,
