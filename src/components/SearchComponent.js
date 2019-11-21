@@ -13,7 +13,10 @@ const SearcComponent = ({ onSearch, onSearchClear }) => {
 
   return (
     <MDBCol md="4" className="mx-auto">
-      <form className="form-inline mt-4 mb-4">
+      <form
+        className="form-inline mt-4 mb-4"
+        onSubmit={e => e.preventDefault()}
+      >
         <MDBIcon
           onClick={() => onSearchClick(formInput.current.value)}
           icon="search"
