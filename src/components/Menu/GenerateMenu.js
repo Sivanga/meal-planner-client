@@ -61,17 +61,31 @@ const GenerateMenu = props => {
   const auth = useAuth();
 
   /**
-  Random dishes array
+  Get from history the Random dishes array if exist - this data comes from clicking an existing menu
+  Get from history days and meal - this data comes from previous page - menu template
    */
   var initialRandomDishes = null;
-  if (
-    props.location &&
-    props.location.state &&
-    props.location.state.menuData &&
-    props.location.state.menuData.dishes
-  ) {
-    initialRandomDishes = props.location.state.menuData.dishes;
+  var days = null;
+  var meals = props.location.state.menuData.meals;
+  if (props.location && props.location.state && props.location.state.menuData) {
+    if (props.location.state.menuData.days) {
+      days = props.location.state.menuData.days;
+    }
+    if (props.location.state.menuData.meals) {
+      meals = props.location.state.menuData.meals;
+    }
+    if (props.location.state.menuData.dishes) {
+      initialRandomDishes = props.location.state.menuData.dishes;
+
+      // initialRandomDishes can arrive with undefined valus from backend, change it to empty array
+      if (meals) {
+        meals.map((meal, index) => {
+          if (!initialRandomDishes[index]) initialRandomDishes[index] = [];
+        });
+      }
+    }
   }
+
   const [randomDishes, setRandomDishes] = useState(initialRandomDishes);
 
   /**
@@ -122,11 +136,7 @@ const GenerateMenu = props => {
    If theres no days and meals data, go back main menu page
    */
 
-  if (
-    !props.location ||
-    !props.location.state ||
-    !props.location.state.menuData
-  ) {
+  if (!meals || !days) {
     return (
       <Redirect
         push
@@ -136,8 +146,6 @@ const GenerateMenu = props => {
       />
     );
   }
-  const days = props.location.state.menuData.days;
-  const meals = props.location.state.menuData.meals;
 
   var mergePrivateAndPublic = () => {
     var mergedDishes = props.favoriteDishes.concat(props.publicDishes);
