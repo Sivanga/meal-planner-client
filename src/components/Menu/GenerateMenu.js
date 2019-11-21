@@ -79,8 +79,13 @@ const GenerateMenu = props => {
 
       // initialRandomDishes can arrive with undefined valus from backend, change it to empty array
       if (meals) {
-        meals.map((meal, index) => {
-          if (!initialRandomDishes[index]) initialRandomDishes[index] = [];
+        meals.map((meal, mealIndex) => {
+          if (!initialRandomDishes[mealIndex]) {
+            initialRandomDishes[mealIndex] = [];
+            days.map((day, dayIndex) => {
+              initialRandomDishes[mealIndex][dayIndex] = null;
+            });
+          }
         });
       }
     }
@@ -221,7 +226,12 @@ const GenerateMenu = props => {
     // Dropped from panel dishes
     if (source.droppableId === PANEL_DROPPABLE_ID) {
       // Get the wanted dish
-      const dish = props.favoriteDishes[source.index];
+      var dish;
+      if (isSearchMode) {
+        dish = props.searchResult[source.index];
+      } else {
+        dish = allDishes[source.index];
+      }
       // Replcae with current table dish
       const destinationArray = [...randomDishes[destination.droppableId]];
       destinationArray.splice(destination.index, 1, dish);
