@@ -12,7 +12,8 @@ const TableDroppable = ({
   randomDishes,
   onMinusClick,
   onPlusClick,
-  showPlusButton
+  showPlusButton,
+  isEditMode
 }) => {
   /**
    * Used to create unique index from the matrix
@@ -44,6 +45,7 @@ const TableDroppable = ({
           </div>
           {days.map((day, dayIndex) => (
             <TableDraggable
+              isEditMode={isEditMode}
               key={dayIndex}
               id={matrixToIndex(mealIndex, dayIndex).toString()}
               dayIndex={dayIndex}

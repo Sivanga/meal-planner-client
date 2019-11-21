@@ -19,7 +19,8 @@ const DishCard = ({
   handleDishFavorite,
   handleDishUnfavorite,
   handleDishMinusClick,
-  onLoginNeeded
+  onLoginNeeded,
+  isEditMode
 }) => {
   /**
    * Show recipe for chosen card
@@ -148,7 +149,7 @@ const DishCard = ({
             </>
           )}
 
-          {dishListEnum === DishListEnum.NO_LIST && (
+          {dishListEnum === DishListEnum.NO_LIST && isEditMode && (
             <span onClick={() => onMinusClick()}>
               <i className="far fas fa-minus-circle"></i>
             </span>

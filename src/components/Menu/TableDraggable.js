@@ -12,14 +12,15 @@ const TableDraggable = ({
   dishIndex,
   onMinusClick,
   onPlusClick,
-  showPlusButton
+  showPlusButton,
+  isEditMode
 }) => {
   return (
     <Draggable
       draggableId={id}
       index={dayIndex}
       key={dayIndex}
-      isDragDisabled={!dayEnabled}
+      isDragDisabled={!dayEnabled || !isEditMode}
     >
       {(provided, snapshot) => (
         <div
@@ -38,18 +39,21 @@ const TableDraggable = ({
               index={dishIndex}
               dishListEnum={DishListEnum.NO_LIST}
               handleDishMinusClick={() => onMinusClick()}
+              isEditMode={isEditMode}
             />
           ) : (
-            <span
-              className="tableDraggabblePlusWrapper"
-              onClick={() => onPlusClick()}
-            >
-              <i
-                className={classNames("fas fa-plus-circle", {
-                  hide: !showPlusButton || !dayEnabled
-                })}
-              ></i>
-            </span>
+            isEditMode && (
+              <span
+                className="tableDraggabblePlusWrapper"
+                onClick={() => onPlusClick()}
+              >
+                <i
+                  className={classNames("fas fa-plus-circle", {
+                    hide: !showPlusButton || !dayEnabled
+                  })}
+                ></i>
+              </span>
+            )
           )}
         </div>
       )}

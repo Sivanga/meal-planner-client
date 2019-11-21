@@ -5,7 +5,7 @@ import PortalDishCard from "../dishes/PortalDish";
 /** Dishes panel droppable id  */
 export const PANEL_DROPPABLE_ID = "PANEL_DROPPABLE";
 
-const PanelDroppable = ({ dishes }) => {
+const PanelDroppable = ({ dishes, isEditMode }) => {
   return (
     <Droppable droppableId={PANEL_DROPPABLE_ID} isDropDisabled={true}>
       {(droppableProvided, droppableSnapshot) => (
@@ -15,7 +15,12 @@ const PanelDroppable = ({ dishes }) => {
           {...droppableProvided.droppablePlaceholder}
         >
           {dishes.map((dish, index) => (
-            <Draggable draggableId={dish.id} index={index} key={index}>
+            <Draggable
+              draggableId={dish.id}
+              index={index}
+              key={index}
+              isDragDisabled={!isEditMode}
+            >
               {(draggebleProvided, draggebleSnapshot) => (
                 <PortalDishCard
                   dish={dish}

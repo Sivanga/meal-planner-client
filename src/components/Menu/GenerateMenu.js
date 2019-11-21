@@ -91,7 +91,14 @@ const GenerateMenu = props => {
     }
   }
 
+  /** Random dishes */
   const [randomDishes, setRandomDishes] = useState(initialRandomDishes);
+
+  /** IsEditMode - if initialRandomDishes exist it means the menu was opened for viewing from existing menu
+  Otherwise this is a newly created menu */
+  const [isEditMode, setIsEditMode] = useState(
+    initialRandomDishes ? false : true
+  );
 
   /**
    * Show dishes panel
@@ -443,12 +450,22 @@ const GenerateMenu = props => {
         onDragEnd={result => onDragEnd(result)}
         onDragStart={() => onDragStart()}
       >
-        <Button
-          className="meal-plan-btn generate-btn "
-          onClick={() => setSaveModalShow(true)}
-        >
-          DONE
-        </Button>
+        {isEditMode && (
+          <Button
+            className="meal-plan-btn generate-btn "
+            onClick={() => setSaveModalShow(true)}
+          >
+            DONE
+          </Button>
+        )}
+        {!isEditMode && (
+          <Button
+            className="meal-plan-btn generate-btn "
+            onClick={() => setIsEditMode(true)}
+          >
+            EDIT
+          </Button>
+        )}
         <div id="menuContainer" className="generateMenuContainer">
           <div className="generateMenuTableContainer">
             <ol className="collection collection-container generateMenuTable">
@@ -473,13 +490,15 @@ const GenerateMenu = props => {
                 ))}
 
                 {/* Panl handle at the end of the table head */}
-                <div className="burger-wrapper">
-                  <Burger
-                    direction="right"
-                    isOpen={showPanel}
-                    onClick={() => setShowPanel(!showPanel)}
-                  />
-                </div>
+                {isEditMode && (
+                  <div className="burger-wrapper">
+                    <Burger
+                      direction="right"
+                      isOpen={showPanel}
+                      onClick={() => setShowPanel(!showPanel)}
+                    />
+                  </div>
+                )}
               </li>
 
               {/* Meals */}
@@ -493,6 +512,7 @@ const GenerateMenu = props => {
                   onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
                   onPlusClick={dayIndex => setShowPanel(true)}
                   showPlusButton={showPlusButton}
+                  isEditMode={isEditMode}
                 />
               ))}
             </ol>
@@ -517,6 +537,7 @@ const GenerateMenu = props => {
                 )}
               <PanelDroppable
                 dishes={isSearchMode ? props.searchResult : allDishes}
+                isEditMode={isEditMode}
               />
             </div>
           </div>
