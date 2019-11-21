@@ -97,6 +97,10 @@ function Menu({
         onSearch={value => onSearch(value)}
         onSearchClear={onSearchClear}
       />
+      {/* Searching */}
+      {isSearchMode && !searchReceived && (
+        <div className="center-text">Searching...</div>
+      )}
       {/* No search result to show */}
       {isSearchMode && searchReceived && searchResult.length === 0 && (
         <div className="center-text">

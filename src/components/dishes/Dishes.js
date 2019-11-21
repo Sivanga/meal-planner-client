@@ -111,6 +111,10 @@ const Dishes = ({
         }}
         onSearchClear={onSearchClear}
       />
+      {/* Searching */}
+      {isSearchMode && !searchReceived && (
+        <div className="center-text">Searching...</div>
+      )}
       {/* No search result to show */}
       {isSearchMode &&
         searchReceived &&

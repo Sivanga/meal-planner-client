@@ -503,12 +503,16 @@ const GenerateMenu = props => {
                 onSearch={value => onSearch(value)}
                 onSearchClear={onSearchClear}
               />
+              {/* Searching */}
+              {isSearchMode && !props.searchReceived && (
+                <div className="center-text">Searching...</div>
+              )}
               {/* No search result to show */}
               {isSearchMode &&
                 props.searchReceived &&
                 props.searchResult.length === 0 && (
                   <div className="center-text">
-                    Couldn't find what you've search for...
+                    Couldn't find what you've search for.
                   </div>
                 )}
               <PanelDroppable
