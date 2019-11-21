@@ -202,7 +202,8 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
                           "dishes.name^3",
                           "dishes.link",
                           "dishes.recipe",
-                          "dishes.tags"
+                          "dishes.tags.name",
+                          "dishes.meals.name"
                         ],
                         type: "phrase_prefix"
                       }
@@ -257,7 +258,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
                 multi_match: {
                   query: data.query,
                   type: "phrase_prefix",
-                  fields: ["name", "link", "recipe", "tags"]
+                  fields: ["name", "link", "recipe", "tags.name", "meals.name"]
                 }
               },
               must_not: {
@@ -312,7 +313,8 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                             "dishes.name^3",
                             "dishes.link",
                             "dishes.recipe",
-                            "dishes.tags"
+                            "dishes.tags.name",
+                            "dishes.meals.name"
                           ],
                           type: "phrase_prefix"
                         }
@@ -333,7 +335,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                   multi_match: {
                     query: data.query,
                     type: "phrase_prefix",
-                    fields: ["name", "link", "recipe", "tags"]
+                    fields: ["name", "link", "recipe", "tags", "meals"]
                   }
                 },
                 must_not: [

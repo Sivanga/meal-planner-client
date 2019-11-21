@@ -66,7 +66,7 @@ const GenerateMenu = props => {
    */
   var initialRandomDishes = null;
   var days = null;
-  var meals = props.location.state.menuData.meals;
+  var meals = null;
   if (props.location && props.location.state && props.location.state.menuData) {
     if (props.location.state.menuData.days) {
       days = props.location.state.menuData.days;
