@@ -109,11 +109,10 @@ const GenerateMenu = props => {
     }
 
     // Compute random dishes if both favorite and public dishes received
-    if (
-      !randomDishes &&
-      (props.favoriteDataReceived && props.publicDataReceived)
-    ) {
-      computeRandomDishes();
+    if (props.favoriteDataReceived && props.publicDataReceived) {
+      if (!randomDishes) {
+        computeRandomDishes();
+      }
       mergePrivateAndPublic(); // Merge dishes are used in the panel. Merge ony once
     }
   }, [auth, props.favoriteDataReceived, props.publicDataReceived]);
