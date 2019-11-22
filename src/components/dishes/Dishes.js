@@ -103,6 +103,7 @@ const Dishes = ({
   if (auth.authState.user && auth.authState.user.uid) {
     currentUid = auth.authState.user.uid;
   }
+
   return (
     <>
       <SearchComponent

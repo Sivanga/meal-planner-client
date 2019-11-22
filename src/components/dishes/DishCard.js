@@ -160,27 +160,25 @@ const DishCard = ({
           </Collapse>
         </Card.Body>
       </Card>
-      {showDeleteOverlay && (
-        <div className="deleteOverlay">
-          <span>Unfavorite dish?</span>
-          <div>
-            <Button
-              className="btn-modal"
-              onClick={() => setShowDeletOverlay(false)}
-              size="sm"
-            >
-              NO
-            </Button>
-            <Button
-              size="sm"
-              className="btn-modal"
-              onClick={() => unfavoriteDish(dish.id)}
-            >
-              YES
-            </Button>
-          </div>
+      <div className={classNames("deleteOverlay", { show: showDeleteOverlay })}>
+        <span>Unfavorite dish?</span>
+        <div>
+          <Button
+            className="btn-modal"
+            onClick={() => setShowDeletOverlay(false)}
+            size="sm"
+          >
+            NO
+          </Button>
+          <Button
+            size="sm"
+            className="btn-modal"
+            onClick={() => unfavoriteDish(dish.id)}
+          >
+            YES
+          </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 };

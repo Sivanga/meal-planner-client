@@ -5,6 +5,7 @@ import {
   fetchDishes,
   searchPrivateDishes
 } from "../../store/actions/Actions";
+
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import "../../scss/Dishes.scss";
@@ -109,6 +110,7 @@ const FavoriteDishes = ({
   if (auth.authState.user && auth.authState.user.uid) {
     currentUid = auth.authState.user.uid;
   }
+
   return (
     <>
       {/* Show search only if there's dishes */}

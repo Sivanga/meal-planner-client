@@ -2,12 +2,12 @@
 
 .deleteOverlay {
   position: absolute;
+  transition: all 0.5s ease-in-out;
   top: 0;
   left: 0;
   width: 100%;
   height: 98%;
   background: rgba($color: #000000, $alpha: 0.7);
-  z-index: 2;
   border-radius: 0.2rem;
   color: white;
   text-align: center;
@@ -16,9 +16,16 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 5rem;
+  opacity: 0;
+  z-index: -1;
 
   span {
     margin-top: auto;
+  }
+
+  &.show {
+    opacity: 1;
+    z-index: 1;
   }
 }
 
