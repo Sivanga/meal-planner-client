@@ -203,7 +203,10 @@ li {
 }
 
 .random-btn {
-  margin: auto;
+  position: fixed;
+  left: 50%;
+  z-index: 9;
+  translate: transform(-50%, -50%);
 }
 
 .generate-btn-wrapper {
