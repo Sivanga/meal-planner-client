@@ -1,6 +1,7 @@
 // Dishes
 export const FETCH_DISHES = "FETCH_DISHES";
 export const ADD_DISH = "ADD_DISH";
+export const UPDATE_DISH = "UPDATE_DISH";
 export const REMOVE_DISH = "REMOVE_DISH";
 export const ADD_DISH_TO_FAVORITE = "ADD_DISH_TO_FAVORITE";
 export const REMOVE_DISH_FROM_FAVORITE = "REMOVE_DISH_FROM_FAVORITE";

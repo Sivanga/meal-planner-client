@@ -5,8 +5,7 @@ import {
   Row,
   Col,
   OverlayTrigger,
-  Tooltip,
-  InputGroup
+  Tooltip
 } from "react-bootstrap";
 import { MDBBadge } from "mdbreact";
 import DragAndDrop from "../abstract/DragAndDrop";
@@ -41,14 +40,17 @@ const NewDish = props => {
 
   /** Dish state */
   const [dish, setDish] = useState({
+    id: props.dish && props.dish.id ? props.dish.id : "",
     name: props.dish && props.dish.name ? props.dish.name : "",
-    localImageUrl: props.dish && props.dish.image ? props.dish.image : "",
-    imageUrl: props.dish && props.dish.image ? props.dish.image : "",
+    localImageUrl:
+      props.dish && props.dish.localImageUrl ? props.dish.localImageUrl : "",
+    imageUrl: props.dish && props.dish.imageUrl ? props.dish.imageUrl : "",
     imageFile: "",
-    recipe: "",
-    meals: [],
-    tags: [],
-    sharePublic: true,
+    recipe: props.dish && props.dish.recipe ? props.dish.recipe : "",
+    meals: props.dish && props.dish.meals ? props.dish.meals : [],
+    tags: props.dish && props.dish.tags ? props.dish.tags : [],
+    sharePublic:
+      props.dish && "sharePublic" in props.dish ? props.dish.sharePublic : true,
     link: props.dish && props.dish.link ? props.dish.link : ""
   });
 
@@ -69,7 +71,9 @@ const NewDish = props => {
 
   /**
   Selected Meals */
-  const [selectedMeals, setSelectedMeals] = useState([]);
+  const [selectedMeals, setSelectedMeals] = useState(
+    props.dish && props.dish.meals ? props.dish.meals : []
+  );
 
   /**
    * Fetch once the user's saved meals
@@ -161,7 +165,7 @@ const NewDish = props => {
 
   /** Use placeholder or local image url if exist */
   var imageSrc = DishPlaceholder;
-  if (dish.localImageUrl) {
+  if (dish && dish.localImageUrl) {
     imageSrc = dish.localImageUrl;
   }
 
@@ -170,7 +174,6 @@ const NewDish = props => {
       <Form.Group controlId="dishImage">
         <div className="newDishImageTitle">
           <Form.Label>Drag image or</Form.Label>
-
           {/** File Uploader without input **/}
           <Form.Label className="file-browser" onClick={onFileBrowserClick}>
             &nbsp;click here:
@@ -198,7 +201,7 @@ const NewDish = props => {
         <Col sm="8">
           <Form.Control
             type="text"
-            value={dish.name}
+            value={dish && dish.name ? dish.name : ""}
             placeholder=""
             onChange={event =>
               setDish({
@@ -229,7 +232,9 @@ const NewDish = props => {
                   pill
                   color="primary"
                   className={classNames("meal-pill", {
-                    active: selectedMeals.includes(meal)
+                    active: selectedMeals.find(
+                      currMeal => currMeal.name === meal.name
+                    )
                   })}
                   onClick={() => toggleMealSelection(meal)}
                 >
@@ -244,6 +249,7 @@ const NewDish = props => {
               placeholder="New"
               onKeyPress={event => {
                 if (event.key === "Enter") {
+                  event.preventDefault();
                   addNewMeal(event);
                 }
               }}
@@ -260,6 +266,7 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <DishTags
+            tags={dish && dish.tags ? dish.tags : []}
             onChange={tags => {
               setDish({
                 ...dish,
@@ -276,7 +283,7 @@ const NewDish = props => {
         <Col sm="8">
           <Form.Control
             type="text"
-            value={dish.link}
+            value={dish && dish.link ? dish.link : ""}
             onChange={event =>
               setDish({
                 ...dish,
@@ -293,6 +300,7 @@ const NewDish = props => {
         <Col sm="8">
           <Form.Control
             as="textarea"
+            value={dish && dish.recipe ? dish.recipe : ""}
             onChange={event =>
               setDish({
                 ...dish,
@@ -302,64 +310,34 @@ const NewDish = props => {
           />
         </Col>
       </Form.Group>
+
       <Form.Group as={Row} controlId="sharePublic">
         <Form.Label column sm="2">
-          Share public
+          Visibility
         </Form.Label>
         <Col sm="8">
-          <div className="custom-control custom-radio custom-control-inline">
-            <input
-              type="radio"
-              className="custom-control-input"
-              id="shareYes"
-              name="share"
-              defaultChecked
-            />
-            <label
-              className="custom-control-label"
-              htmlFor="shareYes"
-              onClick={() =>
-                setDish({
-                  ...dish,
-                  sharePublic: true
-                })
-              }
-            >
-              Yes
-            </label>
-          </div>
-
-          <div className="custom-control custom-radio custom-control-inline">
-            <input
-              type="radio"
-              className="custom-control-input"
-              id="shareNo"
-              name="share"
-            />
-            <label
-              className="custom-control-label"
-              htmlFor="shareNo"
-              onClick={() =>
-                setDish({
-                  ...dish,
-                  sharePublic: false
-                })
-              }
-            >
-              No
-            </label>
-            <OverlayTrigger
-              placement={"top"}
-              overlay={
-                <Tooltip>
-                  Share your dish anonymously with our community and get others
-                  inspired!
-                </Tooltip>
-              }
-            >
-              <i className="fas fa-question-circle fa-sm"></i>
-            </OverlayTrigger>
-          </div>
+          <Form.Check
+            className="dish-public-share"
+            type="checkbox"
+            checked={dish.sharePublic}
+            onChange={e =>
+              setDish({
+                ...dish,
+                sharePublic: !dish.sharePublic
+              })
+            }
+          ></Form.Check>
+          <OverlayTrigger
+            placement={"top"}
+            overlay={
+              <Tooltip>
+                Share your dish anonymously with our community and get others
+                inspired!
+              </Tooltip>
+            }
+          >
+            <i className="fas fa-question-circle fa-sm"></i>
+          </OverlayTrigger>
         </Col>
       </Form.Group>
       <Button variant="outline" type="submit" className="btn-new-dish">

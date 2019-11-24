@@ -103,9 +103,7 @@ function Menu({
       )}
       {/* No search result to show */}
       {isSearchMode && searchReceived && searchResult.length === 0 && (
-        <div className="center-text">
-          Couldn't find what you've search for...
-        </div>
+        <div className="center-text">Couldn't find what you've search for</div>
       )}
       <MenuList
         menus={isSearchMode ? searchResult : publicMenus}

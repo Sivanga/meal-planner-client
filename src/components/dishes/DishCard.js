@@ -20,7 +20,10 @@ const DishCard = ({
   handleDishUnfavorite,
   handleDishMinusClick,
   onLoginNeeded,
-  isEditMode
+  isEditMode,
+  clickedDish,
+  onClick,
+  onDishEditClick
 }) => {
   /**
    * Show recipe for chosen card
@@ -36,7 +39,8 @@ const DishCard = ({
    * Toggle the card open state by id
    * @param {card index to be togelled} index
    */
-  const handleExpandCard = index => {
+  const handleExpandCard = (e, index) => {
+    e.stopPropagation();
     var newArray = { ...expandCardsArray };
     newArray[index]
       ? (newArray[index] = !newArray[index])
@@ -52,12 +56,14 @@ const DishCard = ({
     handleDishFavorite(dish);
   };
 
-  const unfavoriteDish = id => {
+  const unfavoriteDish = (e, id) => {
+    e.stopPropagation();
     handleDishUnfavorite(id);
     setShowDeletOverlay(false);
   };
 
-  const onMinusClick = () => {
+  const onMinusClick = e => {
+    e.stopPropagation();
     handleDishMinusClick();
   };
 
@@ -66,7 +72,25 @@ const DishCard = ({
       className={classNames("dish-card", {
         "card-with-margin": dishListEnum === DishListEnum.GENERATE_MENU_LIST
       })}
+      onClick={() => onClick(dish.id)}
     >
+      <span
+        className={classNames("dish-card-menu", {
+          show:
+            dishListEnum === DishListEnum.MY_FAVORITES_LIST &&
+            clickedDish === dish.id
+        })}
+      >
+        <ul className="dish-card-menu-list">
+          <li
+            onClick={() => {
+              onDishEditClick(dish);
+            }}
+          >
+            Edit
+          </li>
+        </ul>
+      </span>
       <Card
         className={classNames({
           "local-dish": dish.isLocal
@@ -108,6 +132,7 @@ const DishCard = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="dishLink"
+                  onClick={e => e.stopPropagation()}
                 >
                   {dish.link}
                 </a>
@@ -117,8 +142,8 @@ const DishCard = ({
                 <span
                   className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more bc-white"
                   style={{ visibility: dish.recipe ? "visible" : "hidden" }}
-                  onClick={() => {
-                    handleExpandCard(index);
+                  onClick={e => {
+                    handleExpandCard(e, index);
                   }}
                   aria-controls="recipe"
                   aria-expanded={expandCardsArray[index] === true}
@@ -131,7 +156,12 @@ const DishCard = ({
                   (dishListEnum === DishListEnum.PUBLIC_LIST &&
                     dish.favoriteUsers &&
                     dish.favoriteUsers.indexOf(currentUid) !== -1)) && (
-                  <span onClick={() => setShowDeletOverlay(true)}>
+                  <span
+                    onClick={e => {
+                      e.stopPropagation();
+                      setShowDeletOverlay(true);
+                    }}
+                  >
                     <i className="fas fa-heart fa-sm"></i>
                   </span>
                 )}
@@ -141,7 +171,12 @@ const DishCard = ({
                 {dishListEnum === DishListEnum.PUBLIC_LIST &&
                   dish.favoriteUsers &&
                   dish.favoriteUsers.indexOf(currentUid) === -1 && (
-                    <span onClick={() => favoriteDish(dish)}>
+                    <span
+                      onClick={e => {
+                        e.stopPropagation();
+                        favoriteDish(dish);
+                      }}
+                    >
                       <i className="far fa-heart fa-sm"></i>
                     </span>
                   )}
@@ -150,7 +185,7 @@ const DishCard = ({
           )}
 
           {dishListEnum === DishListEnum.NO_LIST && isEditMode && (
-            <span onClick={() => onMinusClick()}>
+            <span onClick={e => onMinusClick(e)}>
               <i className="far fas fa-minus-circle"></i>
             </span>
           )}
@@ -165,7 +200,10 @@ const DishCard = ({
         <div>
           <Button
             className="btn-modal"
-            onClick={() => setShowDeletOverlay(false)}
+            onClick={e => {
+              e.stopPropagation();
+              setShowDeletOverlay(false);
+            }}
             size="sm"
           >
             NO
@@ -173,7 +211,7 @@ const DishCard = ({
           <Button
             size="sm"
             className="btn-modal"
-            onClick={() => unfavoriteDish(dish.id)}
+            onClick={e => unfavoriteDish(e, dish.id)}
           >
             YES
           </Button>

@@ -1,6 +1,7 @@
 import {
   FETCH_DISHES,
   ADD_DISH,
+  UPDATE_DISH,
   REMOVE_DISH,
   ADD_DISH_TO_FAVORITE,
   REMOVE_DISH_FROM_FAVORITE,
@@ -30,7 +31,10 @@ export * from "./Menus";
  */
 export const addDish = (payload, uid) => async dispatch => {
   // Add the dish locally
-  dispatch({ type: ADD_DISH, payload: payload });
+  dispatch({
+    type: ADD_DISH,
+    payload: payload
+  });
 
   // Add to backend if there's authenticated user
   if (!uid) {
@@ -42,9 +46,9 @@ export const addDish = (payload, uid) => async dispatch => {
   if (!payload.imageFile) {
     return pushToDb(payload, uid);
   }
-
+  
   // First upload dish image to storage
-  // Then update the image url of the dish and push to db
+  // Then update the image url of the dish and set to db
   const storageRefChild = storageRef(uid).child(
     "images/" + payload.imageFile.name
   );
@@ -54,6 +58,47 @@ export const addDish = (payload, uid) => async dispatch => {
       pushToDb(payload, uid);
     });
   });
+};
+
+/**
+ * Update dish
+ */
+export const updateDish = (payload, uid) => async dispatch => {
+  // Update the dish locally
+  dispatch({
+    type: UPDATE_DISH,
+    payload: payload
+  });
+
+  // Dishes without images can be push in db as is
+  if (!payload.imageFile) {
+    return setToDb(payload, uid);
+  }
+
+  // First upload dish image to storage
+  // Then update the image url of the dish and set to db
+  const storageRefChild = storageRef(uid).child(
+    "images/" + payload.imageFile.name
+  );
+  storageRefChild.put(payload.imageFile).then(function(snapshot) {
+    storageRefChild.getDownloadURL().then(url => {
+      payload.imageUrl = url;
+      setToDb(payload, uid);
+    });
+  });
+};
+
+const setToDb = (dish, uid) => {
+  dishesDbRef(uid)
+    .child(dish.id)
+    .set(dish);
+
+  // If dish is public, set to public dishes table
+  if (dish.sharePublic) {
+    publicDishesDbRef()
+      .child(dish.id)
+      .set(dish);
+  }
 };
 
 const pushToDb = (dish, uid) => {

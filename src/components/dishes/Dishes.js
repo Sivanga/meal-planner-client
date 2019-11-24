@@ -63,7 +63,7 @@ const Dishes = ({
       uid = auth.authState.user.uid;
     }
     fetchPublicDishes(uid);
-  }, []);
+  }, [auth]);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -121,7 +121,7 @@ const Dishes = ({
         searchReceived &&
         (!searchResult || searchResult.length === 0) && (
           <div className="center-text">
-            Couldn't find what you've search for...
+            Couldn't find what you've search for
           </div>
         )}
       <DishesList

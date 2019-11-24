@@ -9,7 +9,7 @@ class DishTags extends Component {
     super(props);
 
     this.state = {
-      tags: [],
+      tags: props.tags ? props.tags : [],
       suggestions: [
         { id: 1, name: "Lunch" },
         { id: 2, name: "Chicken" },

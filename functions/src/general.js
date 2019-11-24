@@ -45,7 +45,7 @@ exports.getUrlMetadata = functions.https.onCall((data, context) => {
       // success handler
       var result = {
         name: metadata.title,
-        image: metadata.image,
+        imageUrl: metadata.image,
         description: metadata.description
       };
       return result;

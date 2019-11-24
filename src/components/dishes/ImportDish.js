@@ -56,7 +56,8 @@ const ImportDish = ({ addDish }) => {
       // Move to new dish dialog and send the data
       setDishFromUrl({
         name: result.data.name,
-        image: result.data.image,
+        imageUrl: result.data.imageUrl,
+        localImageUrl: result.data.imageUrl,
         link: urlState.content
       });
       setModalsShowState({ ...modalsShowState, import: false, new: true });

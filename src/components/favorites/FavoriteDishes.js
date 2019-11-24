@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
   addDish,
+  updateDish,
   removeDish,
   fetchDishes,
   searchPrivateDishes
 } from "../../store/actions/Actions";
+import EditDishModal from "../dishes/EditDishModal";
 
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -26,6 +28,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
+  updateDish: (dish, uid) => dispatch(updateDish(dish, uid)),
   removeDish: (id, uid) => dispatch(removeDish(id, uid)),
   fetchDishes: uid => dispatch(fetchDishes(uid)),
   searchPrivateDishes: (uid, query) => dispatch(searchPrivateDishes(uid, query))
@@ -36,6 +39,7 @@ const FavoriteDishes = ({
   fetchDishes,
   searchPrivateDishes,
   addDish,
+  updateDish,
   removeDish,
   dishes,
   dataReceived,
@@ -44,6 +48,12 @@ const FavoriteDishes = ({
 }) => {
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
+
+  /** Show editDishModal */
+  const [showEditDishModal, setShowEditDishModal] = useState({
+    show: false,
+    dish: null
+  });
 
   /**
    * Fetch dishes in first render.
@@ -56,6 +66,11 @@ const FavoriteDishes = ({
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
+  };
+
+  const onDishEdit = dish => {
+    setShowEditDishModal({ show: false, dish: null });
+    updateDish(dish, auth.authState.user.uid);
   };
 
   const handleDishRemove = id => {
@@ -113,6 +128,16 @@ const FavoriteDishes = ({
 
   return (
     <>
+      {showEditDishModal.show && (
+        <EditDishModal
+          show={showEditDishModal.show}
+          dish={showEditDishModal.dish}
+          onEditDishHide={() =>
+            setShowEditDishModal({ show: false, dish: null })
+          }
+          onDishEdit={dish => onDishEdit(dish)}
+        />
+      )}
       {/* Show search only if there's dishes */}
       {dishes && dishes.length > 0 && (
         <SearchComponent
@@ -127,7 +152,7 @@ const FavoriteDishes = ({
       {/* No search result to show */}
       {isSearchMode && searchReceived && searchResult.length === 0 && (
         <div className="center-text">
-          Couldn't find what you've search for...
+          Couldn't find what you've search for
         </div>
       )}
       <DishesList
@@ -137,6 +162,9 @@ const FavoriteDishes = ({
         currentUid={currentUid}
         onSearch={query => onSearch(query)}
         onSearchClear={() => onSearchClear()}
+        onDishEditClick={dish =>
+          setShowEditDishModal({ show: true, dish: dish })
+        }
       />
       <ImportDish addDish={dish => onDishAdd(dish)} />
     </>

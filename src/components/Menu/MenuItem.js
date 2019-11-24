@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "../../scss/MenuItem.scss";
 import { Card, Button } from "react-bootstrap";
+import classNames from "classnames";
 
 export const MenuListEnum = {
   MY_FAVORITES_LIST: 1,
@@ -96,27 +97,25 @@ const MenuItem = ({
             )}
         </Card.Body>
       </Card>
-      {showDeleteOverlay && (
-        <div className="deleteOverlay">
-          Unfavorite Menu?
-          <div>
-            <Button
-              className="btn-modal"
-              onClick={() => setShowDeletOverlay(false)}
-              size="sm"
-            >
-              NO
-            </Button>
-            <Button
-              size="sm"
-              className="btn-modal"
-              onClick={() => unfavoriteClicked()}
-            >
-              YES
-            </Button>
-          </div>
+      <div className={classNames("deleteOverlay", { show: showDeleteOverlay })}>
+        <span>Unfavorite Menu?</span>
+        <div>
+          <Button
+            className="btn-modal"
+            onClick={() => setShowDeletOverlay(false)}
+            size="sm"
+          >
+            NO
+          </Button>
+          <Button
+            size="sm"
+            className="btn-modal"
+            onClick={() => unfavoriteClicked()}
+          >
+            YES
+          </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 };

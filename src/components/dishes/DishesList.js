@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CardColumns } from "react-bootstrap";
 import DishCard from "./DishCard";
 import PropTypes from "prop-types";
@@ -11,16 +11,21 @@ const DishesList = ({
   handleDishRemove,
   handleDishFavorite,
   dishListEnum,
-  currentUid
+  currentUid,
+  onDishEditClick
 }) => {
-  const onDishRemove = id => {
-    handleDishRemove(id);
-  };
-
   /**
    * Show/ hide login alert
    */
   const [showLoginAlert, setShowLoginAlert] = useState(false);
+
+  /** Show / hide menu on selected dish */
+  const [clickedDish, setClickedDish] = useState(null);
+
+  useEffect(() => {
+    // Reset the clicked dish id after menu item was clicked
+    setClickedDish("");
+  }, [onDishEditClick]);
 
   return (
     <>
@@ -35,10 +40,13 @@ const DishesList = ({
             dish={dish}
             index={index}
             onLoginNeeded={() => setShowLoginAlert(true)}
-            handleDishUnfavorite={id => onDishRemove(id)}
+            handleDishUnfavorite={id => handleDishRemove(id)}
             handleDishFavorite={dish => handleDishFavorite(dish, currentUid)}
             dishListEnum={dishListEnum}
             currentUid={currentUid}
+            clickedDish={clickedDish}
+            onClick={id => setClickedDish(id)}
+            onDishEditClick={dish => onDishEditClick(dish)}
           />
         ))}
       </CardColumns>

@@ -1,6 +1,7 @@
 import {
   FETCH_DISHES,
   ADD_DISH,
+  UPDATE_DISH,
   REMOVE_DISH,
   ADD_DISH_TO_FAVORITE,
   REMOVE_DISH_FROM_FAVORITE,
@@ -23,6 +24,13 @@ function dishes(state = [], action) {
         isLocal: true
       });
       return [newDish, ...state];
+    case UPDATE_DISH:
+      var dishesCopy = [...state];
+      var foundIndex = dishesCopy.findIndex(
+        dish => dish.id === action.payload.id
+      );
+      dishesCopy[foundIndex] = action.payload;
+      return dishesCopy;
     case FETCH_DISHES:
       // // Create new state for updated dishes array
       // // Give each dish it's backend generated id for future reference

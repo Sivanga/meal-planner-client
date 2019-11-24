@@ -82,12 +82,14 @@
 .btn-modal {
   color: white;
   background-color: $primary !important;
-  font-size: 0.9rem !important;
+font-size: 0.9rem !important;
   padding: 0.3rem !important;
   border-color: $primary;
-  &:hover {
-    background-color: $primary-dark;
+  &:hover,
+  &:active,
+  &:not([disabled]):not(.disabled):active {
+    background-color: $primary-dark !important;
     color: white;
-    border-color: $primary;
+    border-color: $primary !important;
   }
 }
