@@ -72,3 +72,17 @@
   -webkit-box-orient: vertical;
   color: $dark-text-color;
 }
+
+.lock-dish {
+  position: absolute;
+  right: 0;
+  padding: 0.5rem;
+
+  .lock-border {
+    border: 5px;
+  }
+
+  .lock-background {
+    color: white;
+  }
+}

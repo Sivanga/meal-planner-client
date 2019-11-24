@@ -12,6 +12,8 @@ const TableDroppable = ({
   randomDishes,
   onMinusClick,
   onPlusClick,
+  handleDishLock,
+  handleDishUnlock,
   showPlusButton,
   isEditMode
 }) => {
@@ -58,6 +60,8 @@ const TableDroppable = ({
               dishIndex={matrixToIndex(mealIndex, dayIndex)}
               onMinusClick={() => onMinusClick(dayIndex)}
               onPlusClick={() => onPlusClick(dayIndex)}
+              handleDishLock={() => handleDishLock(dayIndex)}
+              handleDishUnlock={() => handleDishUnlock(dayIndex)}
               showPlusButton={showPlusButton}
             />
           ))}

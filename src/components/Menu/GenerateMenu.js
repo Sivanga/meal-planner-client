@@ -180,22 +180,7 @@ const GenerateMenu = props => {
         // Don't assign a dish for a disabled day
         if (!day.enabled) return (randomDishes[mealIndex][dayIndex] = null);
 
-        // First find a random dish from favorites that matches this meal
-        const mealsFavoriteDishes = findDishesForMeal(
-          props.favoriteDishes,
-          meal
-        );
-        var mergedDishes = mealsFavoriteDishes;
-
-        // If mealsFavoriteDishes length is less then days length, use public dishes as well
-        if (mealsFavoriteDishes.length < days.length) {
-          const mealsPublicDishes = findDishesForMeal(props.publicDishes, meal);
-          mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
-        }
-
-        var randomDish =
-          mergedDishes[Math.floor(Math.random() * mergedDishes.length)];
-        if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
+        const randomDish = getRandomDish(meal);
         return (randomDishes[mealIndex][dayIndex] = randomDish);
       });
     });
@@ -206,8 +191,51 @@ const GenerateMenu = props => {
 
   const findDishesForMeal = (dishes, meal) => {
     return dishes.filter(dish =>
-      dish.meals.some(currMeal => currMeal.name === meal.name)
+      dish.meals.some(
+        currMeal => currMeal.name.toUpperCase() === meal.name.toUpperCase()
+      )
     );
+  };
+
+  /** Recompute all unlocked dishes
+   */
+  const handleRandomClick = () => {
+    var copy = { ...randomDishes };
+    meals.map((meal, mealIndex) => {
+      days.map((day, dayIndex) => {
+        // Don't assign a dish for a disabled day
+        // Don't replace a locked dish
+        if (
+          !day.enabled ||
+          (copy[mealIndex][dayIndex] && copy[mealIndex][dayIndex].locked)
+        )
+          return copy[mealIndex][dayIndex];
+
+        const randomDish = getRandomDish(meal);
+
+        copy[mealIndex][dayIndex] = randomDish;
+      });
+    });
+
+    // Set result
+    setRandomDishes(copy);
+  };
+
+  const getRandomDish = meal => {
+    // First find a random dish from favorites that matches this meal
+    const mealsFavoriteDishes = findDishesForMeal(props.favoriteDishes, meal);
+    var mergedDishes = mealsFavoriteDishes;
+
+    // If mealsFavoriteDishes length is less then days length, use public dishes as well
+    if (mealsFavoriteDishes.length < days.length) {
+      const mealsPublicDishes = findDishesForMeal(props.publicDishes, meal);
+      mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
+    }
+
+    var randomDish =
+      mergedDishes[Math.floor(Math.random() * mergedDishes.length)];
+    if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
+    return randomDish;
   };
 
   /**
@@ -305,6 +333,22 @@ const GenerateMenu = props => {
     mealResult[mealIndex][dayIndex] = null;
 
     setRandomDishes(mealResult);
+  };
+
+  const handleDishLock = (mealIndex, dayIndex) => {
+    var randomDishesCopy = { ...randomDishes };
+    var dishCopy = {
+      ...randomDishesCopy[mealIndex][dayIndex]
+    };
+    dishCopy.locked = true;
+    randomDishesCopy[mealIndex][dayIndex] = dishCopy;
+    setRandomDishes(randomDishesCopy);
+  };
+
+  const handleDishUnlock = (mealIndex, dayIndex) => {
+    var randomDishesCopy = { ...randomDishes };
+    randomDishesCopy[mealIndex][dayIndex].locked = false;
+    setRandomDishes(randomDishesCopy);
   };
 
   const onDoneClick = (menuShareState, menuNameState) => {
@@ -451,12 +495,20 @@ const GenerateMenu = props => {
         onDragStart={() => onDragStart()}
       >
         {isEditMode && (
-          <Button
-            className="meal-plan-btn generate-btn "
-            onClick={() => setSaveModalShow(true)}
-          >
-            DONE
-          </Button>
+          <div className="generate-btn-wrapper">
+            <Button
+              className="meal-plan-btn generate-btn "
+              onClick={() => setSaveModalShow(true)}
+            >
+              DONE
+            </Button>
+            <MDBBtn
+              className="generate-btn random-btn"
+              onClick={() => handleRandomClick()}
+            >
+              RANDOM!
+            </MDBBtn>
+          </div>
         )}
         {!isEditMode && (
           <Button
@@ -510,6 +562,12 @@ const GenerateMenu = props => {
                   days={days}
                   randomDishes={randomDishes}
                   onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
+                  handleDishLock={dayIndex =>
+                    handleDishLock(mealIndex, dayIndex)
+                  }
+                  handleDishUnlock={dayIndex =>
+                    handleDishUnlock(mealIndex, dayIndex)
+                  }
                   onPlusClick={dayIndex => setShowPanel(true)}
                   showPlusButton={showPlusButton}
                   isEditMode={isEditMode}

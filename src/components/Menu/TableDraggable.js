@@ -13,7 +13,9 @@ const TableDraggable = ({
   onMinusClick,
   onPlusClick,
   showPlusButton,
-  isEditMode
+  isEditMode,
+  handleDishUnlock,
+  handleDishLock
 }) => {
   return (
     <Draggable
@@ -40,6 +42,8 @@ const TableDraggable = ({
               dishListEnum={DishListEnum.NO_LIST}
               handleDishMinusClick={() => onMinusClick()}
               isEditMode={isEditMode}
+              handleDishLock={handleDishLock}
+              handleDishUnlock={handleDishUnlock}
             />
           ) : (
             isEditMode && (

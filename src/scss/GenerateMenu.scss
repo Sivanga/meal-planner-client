@@ -172,14 +172,27 @@ li {
   }
 }
 
+.menuShareLable {
+  label {
+    margin-top: 0.6rem;
+  }
+}
+
+.search-in-pannel {
+  width: 100%;
+}
+
+.random-btn,
 .generate-btn {
-  background-color: $primary !important;
-  color: white;
+  background-color: white !important;
+  border: solid $primary 2px !important;
+  color: $primary;
 
   &:hover,
   &:not(.disabled):active:active {
-    background-color: $primary-dark !important;
-    color: white;
+    background-color: white !important;
+    border: solid $primary 1px !important;
+    color: $primary;
   }
 
   &.meal-plan-btn {
@@ -189,12 +202,11 @@ li {
   }
 }
 
-.menuShareLable {
-  label {
-    margin-top: 0.6rem;
-  }
+.random-btn {
+  margin: auto;
 }
 
-.search-in-pannel {
-  width: 100%;
+.generate-btn-wrapper {
+  display: flex;
+  flex-direction: row;
 }

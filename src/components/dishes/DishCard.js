@@ -19,6 +19,8 @@ const DishCard = ({
   handleDishFavorite,
   handleDishUnfavorite,
   handleDishMinusClick,
+  handleDishLock,
+  handleDishUnlock,
   onLoginNeeded,
   isEditMode,
   clickedDish,
@@ -67,12 +69,26 @@ const DishCard = ({
     handleDishMinusClick();
   };
 
+  const onUnLockClick = e => {
+    e.stopPropagation();
+    handleDishUnlock();
+  };
+
+  const onLockClick = e => {
+    e.stopPropagation();
+    handleDishLock();
+  };
+
   return (
     <div
       className={classNames("dish-card", {
         "card-with-margin": dishListEnum === DishListEnum.GENERATE_MENU_LIST
       })}
-      onClick={() => onClick(dish.id)}
+      onClick={() => {
+        if (onClick) {
+          onClick(dish.id);
+        }
+      }}
     >
       <span
         className={classNames("dish-card-menu", {
@@ -96,6 +112,28 @@ const DishCard = ({
           "local-dish": dish.isLocal
         })}
       >
+        {dishListEnum === DishListEnum.NO_LIST && isEditMode && (
+          <div className="lock-dish">
+            {dish.locked && handleDishLock && (
+              <span onClick={e => onUnLockClick(e)}>
+                <span className="fa-stack fa-xs">
+                  <i className="fa fa-circle fa-stack-2x lock-background"></i>
+                  <i className="far fa-circle fa-stack-2x lock-border"></i>
+                  <i className="fa fa-lock fa-stack-1x"></i>
+                </span>
+              </span>
+            )}
+            {!dish.locked && handleDishUnlock && (
+              <span onClick={e => onLockClick(e)}>
+                <span className="fa-stack fa-xs">
+                  <i className="fa fa-circle fa-stack-2x lock-background"></i>
+                  <i className="far fa-circle fa-stack-2x lock-border"></i>
+                  <i className="fa fa-lock-open fa-stack-1x"></i>
+                </span>
+              </span>
+            )}
+          </div>
+        )}
         {(dish.imageUrl || dish.localImageUrl) && (
           <Card.Img
             variant="top"
