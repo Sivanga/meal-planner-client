@@ -678,6 +678,7 @@ const GenerateMenu = props => {
               <SearchComponent
                 onSearch={value => onSearch(value)}
                 onSearchClear={onSearchClear}
+                isFullLength={true}
               />
               {/* Searching */}
               {isSearchMode && !props.searchReceived && (

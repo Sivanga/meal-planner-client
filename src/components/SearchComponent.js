@@ -1,7 +1,7 @@
 import React from "react";
 import { MDBCol, MDBIcon } from "mdbreact";
 
-const SearcComponent = ({ onSearch, onSearchClear }) => {
+const SearcComponent = ({ onSearch, onSearchClear, isFullLength }) => {
   const formInput = React.createRef();
 
   const onSearchClick = value => {
@@ -12,7 +12,7 @@ const SearcComponent = ({ onSearch, onSearchClear }) => {
   };
 
   return (
-    <MDBCol sm="4" className="mx-auto">
+    <MDBCol sm={isFullLength ? "12" : "4"} className="mx-auto">
       <form
         className="form-inline mt-4 mb-4"
         onSubmit={e => e.preventDefault()}
