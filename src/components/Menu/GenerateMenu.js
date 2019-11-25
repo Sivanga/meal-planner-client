@@ -15,7 +15,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import TableDroppable from "./TableDroppable";
 import PanelDroppable, { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { getContainerStyle } from "./Helpers";
-import { Redirect } from "react-router-dom";
+import { Redirect, Prompt } from "react-router-dom";
 import Burger from "@animated-burgers/burger-arrow";
 import {
   MDBBtn,
@@ -100,6 +100,8 @@ const GenerateMenu = props => {
   const [isEditMode, setIsEditMode] = useState(
     initialRandomDishes ? false : true
   );
+
+  const [blockLeave, setBlockLeave] = useState(isEditMode ? true : false);
 
   /**
    * Show dishes panel
@@ -395,7 +397,8 @@ const GenerateMenu = props => {
 
     props.setMenu(menu, auth.authState.user.uid);
 
-    setSaveModalShow(false);
+    setSaveModalShow(false); // Hide the modal
+    setBlockLeave(false); // Alow to leave the page after edit is done
 
     history.push("/myFavorites", {
       activeView: "ACTIVE_VIEW_MENUS"
@@ -413,7 +416,6 @@ const GenerateMenu = props => {
   }
 
   const onSearch = query => {
-    console.log("onSearch");
     setIsSearchMode(true);
     props.searchAllDishes(auth.authState.user.uid, query);
   };
@@ -501,6 +503,12 @@ const GenerateMenu = props => {
 
   return (
     <>
+      <Prompt
+        when={blockLeave}
+        message={location =>
+          `Are you sure you want to leave before saving changes?`
+        }
+      />
       <SaveModal />
       <DragDropContext
         onDragEnd={result => onDragEnd(result)}
@@ -525,7 +533,10 @@ const GenerateMenu = props => {
         {!isEditMode && (
           <Button
             className="meal-plan-btn generate-btn "
-            onClick={() => setIsEditMode(true)}
+            onClick={() => {
+              setIsEditMode(true);
+              setBlockLeave(true);
+            }}
           >
             EDIT
           </Button>
