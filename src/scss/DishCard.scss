@@ -86,3 +86,26 @@
     color: white;
   }
 }
+
+.close-extra-dish {
+  position: absolute;
+  right: 0;
+
+  .close-background {
+    color: white;
+  }
+}
+
+.small-card {
+  width: 100px;
+  margin-top: 0.5rem;
+  border: dashed blue 1px;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+  @media screen and (min-width: 1024px) {
+    margin-left: 100px;
+  }
+}

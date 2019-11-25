@@ -4,7 +4,7 @@ Dish card that are presented in a sliding panel (for example in GenerateMenu cla
 property. Using beautiful-react-dnd for dragging will misplace this item and therefor a prtal is needed:
 https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/patterns/using-a-portal.md */
 
-import React, { useEffect } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import DishCard, { DishListEnum } from "./DishCard";
 

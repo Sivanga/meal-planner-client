@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Collapse, Button } from "react-bootstrap";
+import { Card, Collapse, Button, Dropdown } from "react-bootstrap";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import "../../scss/DishCard.scss";
@@ -8,12 +8,14 @@ export const DishListEnum = {
   MY_FAVORITES_LIST: 1,
   PUBLIC_LIST: 2,
   NO_LIST: 3,
-  GENERATE_MENU_LIST: 4
+  GENERATE_MENU_LIST: 4,
+  EXTRA_DISH_INFO: 5
 };
 
 const DishCard = ({
   dishListEnum,
   dish,
+  menus,
   index,
   currentUid,
   handleDishFavorite,
@@ -25,7 +27,9 @@ const DishCard = ({
   isEditMode,
   clickedDish,
   onClick,
-  onDishEditClick
+  onDishEditClick,
+  onDishAddToMenuClick,
+  handleCloseExtraDishClick
 }) => {
   /**
    * Show recipe for chosen card
@@ -79,10 +83,35 @@ const DishCard = ({
     handleDishLock();
   };
 
+  const onCloseExtraDishClick = e => {
+    e.stopPropagation();
+    handleCloseExtraDishClick();
+  };
+
+  const handleAddToMenu = (eventKey, event) => {
+    console.log("handleAddToMenu  eventKey: ", eventKey, " event: ", event);
+    event.stopPropagation();
+    onDishAddToMenuClick(dish, eventKey);
+  };
+
+  const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+    <span
+      href=""
+      ref={ref}
+      onClick={e => {
+        e.preventDefault();
+        onClick(e);
+      }}
+    >
+      {children}
+    </span>
+  ));
+
   return (
     <div
       className={classNames("dish-card", {
-        "card-with-margin": dishListEnum === DishListEnum.GENERATE_MENU_LIST
+        "card-with-margin": dishListEnum === DishListEnum.GENERATE_MENU_LIST,
+        "small-card": dishListEnum === DishListEnum.EXTRA_DISH_INFO
       })}
       onClick={() => {
         if (onClick) {
@@ -105,13 +134,33 @@ const DishCard = ({
           >
             Edit
           </li>
+          {menus && (
+            <li>
+              <Dropdown
+                onSelect={(eventKey, event) => handleAddToMenu(eventKey, event)}
+              >
+                <Dropdown.Toggle as={CustomToggle} id="dropdown">
+                  Add to menu
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <Dropdown.Item eventKey={"createNew"}>
+                    + Create New
+                  </Dropdown.Item>
+                  {menus.map(menu => {
+                    return (
+                      <Dropdown.Item eventKey={menu.id}>
+                        {menu.name}
+                      </Dropdown.Item>
+                    );
+                  })}
+                </Dropdown.Menu>
+              </Dropdown>
+            </li>
+          )}
         </ul>
       </span>
-      <Card
-        className={classNames({
-          "local-dish": dish.isLocal
-        })}
-      >
+      <Card>
         {dishListEnum === DishListEnum.NO_LIST && isEditMode && (
           <div className="lock-dish">
             {dish.locked && handleDishLock && (
@@ -134,6 +183,16 @@ const DishCard = ({
             )}
           </div>
         )}
+        {dishListEnum === DishListEnum.EXTRA_DISH_INFO && (
+          <span
+            className="close-extra-dish fa-stack fa-xs"
+            onClick={e => onCloseExtraDishClick(e)}
+          >
+            <i className="fa fa-circle fa-stack-2x close-background"></i>
+            <i className="far fa-circle fa-stack-2x lock-border"></i>
+            <i className="fa fa-times fa-stack-1x"></i>
+          </span>
+        )}
         {(dish.imageUrl || dish.localImageUrl) && (
           <Card.Img
             variant="top"
@@ -144,83 +203,92 @@ const DishCard = ({
         {dish.isLocal && <i className="fas fa-spinner fa-pulse"></i>}
         <Card.Body>
           <Card.Title>{dish.name}</Card.Title>
-          {dishListEnum !== DishListEnum.NO_LIST && (
-            <>
-              {dish.meals && (
-                <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
-                  {dish.meals.map((meal, index) => (
-                    <li key={index} className="badge badge-pill badge-primary">
-                      {meal.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {dish.tags && (
-                <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
-                  {dish.tags.map(tag => (
-                    <li key={tag.id} className="badge badge-pill badge-primary">
-                      {tag.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {dish.link && (
-                <a
-                  href={dish.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="dishLink"
-                  onClick={e => e.stopPropagation()}
-                >
-                  {dish.link}
-                </a>
-              )}
-
-              <div className="card-footer-container">
-                <span
-                  className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more bc-white"
-                  style={{ visibility: dish.recipe ? "visible" : "hidden" }}
-                  onClick={e => {
-                    handleExpandCard(e, index);
-                  }}
-                  aria-controls="recipe"
-                  aria-expanded={expandCardsArray[index] === true}
-                >
-                  {expandCardsArray[index] === true ? "READ LESS" : "READ MORE"}
-                </span>
-
-                {/** Show unfavorite icon for my favorite or public dishes that were favorite by current user */}
-                {(dishListEnum === DishListEnum.MY_FAVORITES_LIST ||
-                  (dishListEnum === DishListEnum.PUBLIC_LIST &&
-                    dish.favoriteUsers &&
-                    dish.favoriteUsers.indexOf(currentUid) !== -1)) && (
-                  <span
-                    onClick={e => {
-                      e.stopPropagation();
-                      setShowDeletOverlay(true);
-                    }}
+          {dishListEnum !== DishListEnum.NO_LIST &&
+            dishListEnum !== DishListEnum.EXTRA_DISH_INFO && (
+              <>
+                {dish.meals && (
+                  <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
+                    {dish.meals.map((meal, index) => (
+                      <li
+                        key={index}
+                        className="badge badge-pill badge-primary"
+                      >
+                        {meal.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {dish.tags && (
+                  <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
+                    {dish.tags.map(tag => (
+                      <li
+                        key={tag.id}
+                        className="badge badge-pill badge-primary"
+                      >
+                        {tag.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {dish.link && (
+                  <a
+                    href={dish.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="dishLink"
+                    onClick={e => e.stopPropagation()}
                   >
-                    <i className="fas fa-heart fa-sm"></i>
-                  </span>
+                    {dish.link}
+                  </a>
                 )}
 
-                {/** Show favorite icon for public dishes that aren't already favorite by the user
-                 */}
-                {dishListEnum === DishListEnum.PUBLIC_LIST &&
-                  dish.favoriteUsers &&
-                  dish.favoriteUsers.indexOf(currentUid) === -1 && (
+                <div className="card-footer-container">
+                  <span
+                    className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more bc-white"
+                    style={{ visibility: dish.recipe ? "visible" : "hidden" }}
+                    onClick={e => {
+                      handleExpandCard(e, index);
+                    }}
+                    aria-controls="recipe"
+                    aria-expanded={expandCardsArray[index] === true}
+                  >
+                    {expandCardsArray[index] === true
+                      ? "READ LESS"
+                      : "READ MORE"}
+                  </span>
+
+                  {/** Show unfavorite icon for my favorite or public dishes that were favorite by current user */}
+                  {(dishListEnum === DishListEnum.MY_FAVORITES_LIST ||
+                    (dishListEnum === DishListEnum.PUBLIC_LIST &&
+                      dish.favoriteUsers &&
+                      dish.favoriteUsers.indexOf(currentUid) !== -1)) && (
                     <span
                       onClick={e => {
                         e.stopPropagation();
-                        favoriteDish(dish);
+                        setShowDeletOverlay(true);
                       }}
                     >
-                      <i className="far fa-heart fa-sm"></i>
+                      <i className="fas fa-heart fa-sm"></i>
                     </span>
                   )}
-              </div>
-            </>
-          )}
+
+                  {/** Show favorite icon for public dishes that aren't already favorite by the user
+                   */}
+                  {dishListEnum === DishListEnum.PUBLIC_LIST &&
+                    dish.favoriteUsers &&
+                    dish.favoriteUsers.indexOf(currentUid) === -1 && (
+                      <span
+                        onClick={e => {
+                          e.stopPropagation();
+                          favoriteDish(dish);
+                        }}
+                      >
+                        <i className="far fa-heart fa-sm"></i>
+                      </span>
+                    )}
+                </div>
+              </>
+            )}
 
           {dishListEnum === DishListEnum.NO_LIST && isEditMode && (
             <span onClick={e => onMinusClick(e)}>
@@ -267,7 +335,8 @@ DishCard.propTypes = {
     DishListEnum.MY_FAVORITES_LIST,
     DishListEnum.PUBLIC_LIST,
     DishListEnum.NO_LIST,
-    DishListEnum.GENERATE_MENU_LIST
+    DishListEnum.GENERATE_MENU_LIST,
+    DishListEnum.EXTRA_DISH_INFO
   ]),
   currentUid: PropTypes.string,
   onLoginNeeded: PropTypes.func

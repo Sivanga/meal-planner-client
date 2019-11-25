@@ -8,11 +8,13 @@ import "../../scss/DishesList.scss";
 
 const DishesList = ({
   dishes,
+  menus,
   handleDishRemove,
   handleDishFavorite,
   dishListEnum,
   currentUid,
-  onDishEditClick
+  onDishEditClick,
+  onDishAddToMenuClick
 }) => {
   /**
    * Show/ hide login alert
@@ -38,6 +40,7 @@ const DishesList = ({
           <DishCard
             key={index}
             dish={dish}
+            menus={menus}
             index={index}
             onLoginNeeded={() => setShowLoginAlert(true)}
             handleDishUnfavorite={id => handleDishRemove(id)}
@@ -47,6 +50,9 @@ const DishesList = ({
             clickedDish={clickedDish}
             onClick={id => setClickedDish(id)}
             onDishEditClick={dish => onDishEditClick(dish)}
+            onDishAddToMenuClick={(dish, menuId) =>
+              onDishAddToMenuClick(dish, menuId)
+            }
           />
         ))}
       </CardColumns>

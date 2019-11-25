@@ -4,11 +4,12 @@ import {
   updateDish,
   removeDish,
   fetchDishes,
+  fetchMenus,
   searchPrivateDishes,
   clearSearchPrivateDishes
 } from "../../store/actions/Actions";
 import EditDishModal from "../dishes/EditDishModal";
-
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import "../../scss/Dishes.scss";
@@ -20,6 +21,7 @@ import SearchComponent from "../SearchComponent";
 const mapStateToProps = state => {
   return {
     dishes: state.dishes.dishes,
+    privateMenus: state.menus.menus,
     dataReceived: state.dishes.privateDishesDataReceived,
     searchReceived: state.dishes.privateDishesSearchReceived,
     searchResult: state.dishes.privateDishesSearchResult
@@ -31,6 +33,7 @@ const mapDispatchToProps = dispatch => ({
   updateDish: (dish, uid) => dispatch(updateDish(dish, uid)),
   removeDish: (id, uid) => dispatch(removeDish(id, uid)),
   fetchDishes: uid => dispatch(fetchDishes(uid)),
+  fetchMenus: uid => dispatch(fetchMenus(uid)),
   searchPrivateDishes: (uid, query) =>
     dispatch(searchPrivateDishes(uid, query)),
   clearSearchPrivateDishes: () => dispatch(clearSearchPrivateDishes())
@@ -39,16 +42,21 @@ const mapDispatchToProps = dispatch => ({
 const FavoriteDishes = ({
   auth,
   fetchDishes,
+  fetchMenus,
   searchPrivateDishes,
   addDish,
   updateDish,
   removeDish,
   dishes,
+  privateMenus,
   dataReceived,
   searchReceived,
   searchResult,
   clearSearchPrivateDishes
 }) => {
+  /** Used to redirect to specific menu after chossing add dish to a menu */
+  let history = useHistory();
+
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
 
@@ -65,7 +73,8 @@ const FavoriteDishes = ({
   useEffect(() => {
     if (!auth.authState.user) return;
     fetchDishes(auth.authState.user.uid);
-  }, [auth, fetchDishes]);
+    fetchMenus(auth.authState.user.uid);
+  }, [auth, fetchDishes, fetchMenus]);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -90,6 +99,22 @@ const FavoriteDishes = ({
     clearSearchPrivateDishes();
   };
 
+  const handleAddToMenuClick = (dish, menuId) => {
+    // Redirect to wanted menu and send the dish as extraDish info
+    const chosenMenu = privateMenus.find(menu => menu.id === menuId);
+    if (!chosenMenu) {
+      history.push("/menu/newMenu", {
+        extraDishInfo: dish
+      });
+      return;
+    }
+
+    history.push("/menu/generate", {
+      menuData: chosenMenu,
+      extraDishInfo: dish
+    });
+  };
+
   /**
    * If there's no logged in user, show message
    */
@@ -98,7 +123,6 @@ const FavoriteDishes = ({
       <div className="center-text">Please log in to see your favorites!</div>
     );
   }
-
   /**
    * If dishes data is still loading, show message
    */
@@ -109,7 +133,7 @@ const FavoriteDishes = ({
   /**
    * No dishes saved for user
    */
-  if (dishes.length === 0)
+  if (dataReceived && dishes.length === 0)
     return (
       <>
         <div className="empty-dishes">
@@ -159,6 +183,7 @@ const FavoriteDishes = ({
       )}
       <DishesList
         dishes={isSearchMode ? searchResult : dishes}
+        menus={privateMenus}
         handleDishRemove={id => handleDishRemove(id)}
         dishListEnum={DishListEnum.MY_FAVORITES_LIST}
         currentUid={currentUid}
@@ -166,6 +191,9 @@ const FavoriteDishes = ({
         onSearchClear={() => onSearchClear()}
         onDishEditClick={dish =>
           setShowEditDishModal({ show: true, dish: dish })
+        }
+        onDishAddToMenuClick={(dish, menuId) =>
+          handleAddToMenuClick(dish, menuId)
         }
       />
       <ImportDish addDish={dish => onDishAdd(dish)} />

@@ -9,6 +9,7 @@ import {
   setMenu,
   clearSearchAllDishes
 } from "../../store/actions/Actions";
+import DishCard, { DishListEnum } from "../dishes/DishCard";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
@@ -17,6 +18,8 @@ import PanelDroppable, { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { getContainerStyle } from "./Helpers";
 import { Redirect, Prompt } from "react-router-dom";
 import Burger from "@animated-burgers/burger-arrow";
+import { Droppable, Draggable } from "react-beautiful-dnd";
+
 import {
   MDBBtn,
   MDBModal,
@@ -52,6 +55,9 @@ const mapDispatchToProps = dispatch => ({
   clearSearchAllDishes: () => dispatch(clearSearchAllDishes())
 });
 
+const EXTRA_DISH_DROPPABLE_ID = "EXTRA_DISH_DROPPABLE_ID";
+const EXTRA_DISH_DRAGGABLE_ID = "EXTRA_DISH_DRAGGABLE_ID";
+
 const GenerateMenu = props => {
   /** Used to redirect to menus list after saving the menu */
   let history = useHistory();
@@ -64,10 +70,12 @@ const GenerateMenu = props => {
   /**
   Get from history the Random dishes array if exist - this data comes from clicking an existing menu
   Get from history days and meal - this data comes from previous page - menu template
+  Get from history extraDishInfo to add to menu
    */
   var initialRandomDishes = null;
   var days = null;
   var meals = null;
+  var extraDishInfoInitial = null;
   if (props.location && props.location.state && props.location.state.menuData) {
     if (props.location.state.menuData.days) {
       days = props.location.state.menuData.days;
@@ -90,7 +98,17 @@ const GenerateMenu = props => {
         });
       }
     }
+    if (
+      props.location &&
+      props.location.state &&
+      props.location.state.extraDishInfo
+    ) {
+      extraDishInfoInitial = props.location.state.extraDishInfo;
+    }
   }
+
+  /** Used to hold dish info when adding dish into a menu  */
+  const [extraDishInfo, setExtraDishInfo] = useState(extraDishInfoInitial);
 
   /** Random dishes */
   const [randomDishes, setRandomDishes] = useState(initialRandomDishes);
@@ -98,7 +116,7 @@ const GenerateMenu = props => {
   /** IsEditMode - if initialRandomDishes exist it means the menu was opened for viewing from existing menu
   Otherwise this is a newly created menu */
   const [isEditMode, setIsEditMode] = useState(
-    initialRandomDishes ? false : true
+    initialRandomDishes && !extraDishInfo ? false : true
   );
 
   const [blockLeave, setBlockLeave] = useState(isEditMode ? true : false);
@@ -271,8 +289,22 @@ const GenerateMenu = props => {
     // Can't drop to a disabled day
     if (!days[destination.index].enabled) return;
 
-    // Dropped from panel dishes
+    // Drop from extra dish
+    if (source.droppableId === EXTRA_DISH_DROPPABLE_ID) {
+      // Replcae with current table dish
+      const destinationArray = [...randomDishes[destination.droppableId]];
+      destinationArray.splice(destination.index, 1, extraDishInfo);
+      // Set result
+      const result = {
+        ...randomDishes,
+        [destination.droppableId]: destinationArray
+      };
+      setRandomDishes(result);
+      setExtraDishInfo(null);
+      return;
+    }
     if (source.droppableId === PANEL_DROPPABLE_ID) {
+      // Dropped from panel dishes
       // Get the wanted dish
       var dish;
       if (isSearchMode) {
@@ -398,7 +430,6 @@ const GenerateMenu = props => {
     props.setMenu(menu, auth.authState.user.uid);
 
     setSaveModalShow(false); // Hide the modal
-    setBlockLeave(false); // Alow to leave the page after edit is done
 
     history.push("/myFavorites", {
       activeView: "ACTIVE_VIEW_MENUS"
@@ -423,6 +454,10 @@ const GenerateMenu = props => {
   const onSearchClear = () => {
     setIsSearchMode(false);
     props.clearSearchAllDishes();
+  };
+
+  const handleCloseExtraDishClick = () => {
+    setExtraDishInfo(null);
   };
 
   /**
@@ -491,7 +526,9 @@ const GenerateMenu = props => {
         </MDBModalBody>
         <MDBModalFooter>
           <MDBBtn
-            onClick={() => onDoneClick(menuShareState, menuNameState)}
+            onClick={() => {
+              onDoneClick(menuShareState, menuNameState);
+            }}
             className="generate-btn"
           >
             SAVE
@@ -518,7 +555,10 @@ const GenerateMenu = props => {
           <div className="generate-btn-wrapper">
             <Button
               className="meal-plan-btn generate-btn "
-              onClick={() => setSaveModalShow(true)}
+              onClick={() => {
+                setBlockLeave(false); // Alow to leave the page after edit is done
+                setSaveModalShow(true);
+              }}
             >
               DONE
             </Button>
@@ -540,6 +580,41 @@ const GenerateMenu = props => {
           >
             EDIT
           </Button>
+        )}
+
+        {/* Allow dragging the extra dish info */}
+        {extraDishInfo && (
+          <div className="extra-dish-droppable">
+            <Droppable
+              droppableId={EXTRA_DISH_DROPPABLE_ID}
+              isDropDisabled={true}
+            >
+              {(droppableProvided, snapshot) => (
+                <div
+                  ref={droppableProvided.innerRef}
+                  {...droppableProvided.droppableProps}
+                  {...droppableProvided.droppablePlaceholder}
+                >
+                  <Draggable draggableId={EXTRA_DISH_DRAGGABLE_ID} index={0}>
+                    {(draggebleProvided, draggebleSnapshot) => (
+                      <div
+                        ref={draggebleProvided.innerRef}
+                        {...draggebleProvided.draggableProps}
+                        {...draggebleProvided.dragHandleProps}
+                      >
+                        <DishCard
+                          dish={extraDishInfo}
+                          dishListEnum={DishListEnum.EXTRA_DISH_INFO}
+                          handleCloseExtraDishClick={handleCloseExtraDishClick}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                  {droppableProvided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </div>
         )}
         <div id="menuContainer" className="generateMenuContainer">
           <div className="generateMenuTableContainer">

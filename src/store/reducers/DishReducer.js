@@ -101,7 +101,7 @@ function publicDishes(state = [], action) {
   }
 }
 
-function publicDishesDataReceived(state = {}, action) {
+function publicDishesDataReceived(state = false, action) {
   switch (action.type) {
     case PUBLIC_DISHES_DATA_RECEIVED:
       return Object.assign({}, state, {
@@ -113,7 +113,7 @@ function publicDishesDataReceived(state = {}, action) {
   }
 }
 
-function privateDishesDataReceived(state = {}, action) {
+function privateDishesDataReceived(state = false, action) {
   switch (action.type) {
     case PRIVATE_DISHES_DATA_RECEIVED:
       return action.payload;
