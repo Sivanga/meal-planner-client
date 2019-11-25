@@ -8,12 +8,15 @@ import {
   PRIVATE_DISHES_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA,
+  CLEAR_SEARCH_PRIVATE_DISHES,
   SEARCH_PUBLIC_DISHES,
+  CLEAR_SEARCH_PUBLIC_DISHES,
   SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES,
   SEARCH_ALL_DISHES_RECEIVED,
-  SEARCH_ALL_DISHES
+  SEARCH_ALL_DISHES,
+  CLEAR_SEARCH_ALL_DISHES
 } from "../constants/Action-types";
 
 function dishes(state = [], action) {
@@ -49,10 +52,16 @@ function searchDishes(state = [], action) {
   switch (action.type) {
     case SEARCH_FAVORITE_DATA:
       return action.payload;
+    case CLEAR_SEARCH_PRIVATE_DISHES:
+      return [];
     case SEARCH_PUBLIC_DISHES:
       return action.payload;
+    case CLEAR_SEARCH_PUBLIC_DISHES:
+      return [];
     case SEARCH_ALL_DISHES:
       return action.payload;
+    case CLEAR_SEARCH_ALL_DISHES:
+      return [];
     case ADD_DISH_TO_FAVORITE:
     case REMOVE_DISH_FROM_FAVORITE:
       // Update the search result with this dish state
@@ -107,10 +116,7 @@ function publicDishesDataReceived(state = {}, action) {
 function privateDishesDataReceived(state = {}, action) {
   switch (action.type) {
     case PRIVATE_DISHES_DATA_RECEIVED:
-      return Object.assign({}, state, {
-        privateDishesDataReceived: action.payload
-      });
-
+      return action.payload;
     default:
       return state;
   }
@@ -120,6 +126,8 @@ function privateDishesSearchReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_FAVORITE_DATA_RECEIVED:
       return action.payload;
+    case CLEAR_SEARCH_PRIVATE_DISHES:
+      return false;
     default:
       return state;
   }
@@ -129,6 +137,8 @@ function publicDishesSearchDataReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_PUBLIC_DATA_RECEIVED:
       return action.payload;
+    case CLEAR_SEARCH_PUBLIC_DISHES:
+      return false;
     default:
       return state;
   }
@@ -138,6 +148,8 @@ function allDishesSearchReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_ALL_DISHES_RECEIVED:
       return action.payload;
+    case CLEAR_SEARCH_ALL_DISHES:
+      return false;
     default:
       return state;
   }

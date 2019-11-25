@@ -3,7 +3,8 @@ import {
   removeMenu,
   fetchMenus,
   addMenuToFavorites,
-  searchPrivateMenus
+  searchPrivateMenus,
+  clearSearchMenus
 } from "../../store/actions/Actions";
 import { MenuListEnum } from "../Menu/MenuItem";
 import { connect } from "react-redux";
@@ -24,7 +25,8 @@ const mapDispatchToProps = dispatch => ({
   removeMenu: (id, uid) => dispatch(removeMenu(id, uid)),
   fetchMenus: uid => dispatch(fetchMenus(uid)),
   addToFavorites: (menu, uid) => dispatch(addMenuToFavorites(menu, uid)),
-  searchPrivateMenus: (uid, query) => dispatch(searchPrivateMenus(uid, query))
+  searchPrivateMenus: (uid, query) => dispatch(searchPrivateMenus(uid, query)),
+  clearSearchMenus: () => dispatch(clearSearchMenus())
 });
 
 const FavoriteMenus = ({
@@ -36,7 +38,8 @@ const FavoriteMenus = ({
   menus,
   dataReceived,
   searchReceived,
-  searchResult
+  searchResult,
+  clearSearchMenus
 }) => {
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
@@ -84,6 +87,7 @@ const FavoriteMenus = ({
 
   const onSearchClear = () => {
     setIsSearchMode(false);
+    clearSearchMenus();
   };
 
   if (!menus || menus.length === 0) {

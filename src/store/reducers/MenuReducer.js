@@ -7,7 +7,8 @@ import {
   SEARCH_FAVORITE_MENUS_RECEIVED,
   SEARCH_FAVORITE_MENUS,
   SEARCH_PUBLIC_MENUS_RECEIVED,
-  SEARCH_PUBLIC_MENUS
+  SEARCH_PUBLIC_MENUS,
+  CLEAR_SEARCH_MENUS
 } from "../constants/Action-types";
 import { combineReducers } from "redux";
 
@@ -70,6 +71,8 @@ function searchMenus(state = [], action) {
       return action.payload;
     case SEARCH_PUBLIC_MENUS:
       return action.payload;
+    case CLEAR_SEARCH_MENUS:
+      return [];
     default:
       return state;
   }
@@ -79,6 +82,8 @@ function privateMenusSearchReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_FAVORITE_MENUS_RECEIVED:
       return action.payload;
+    case CLEAR_SEARCH_MENUS:
+      return false;
     default:
       return state;
   }
@@ -88,6 +93,8 @@ function publicMenusSearchReceived(state = false, action) {
   switch (action.type) {
     case SEARCH_PUBLIC_MENUS_RECEIVED:
       return action.payload;
+    case CLEAR_SEARCH_MENUS:
+      return false;
     default:
       return state;
   }

@@ -7,13 +7,16 @@ import {
   REMOVE_DISH_FROM_FAVORITE,
   PRIVATE_DISHES_DATA_RECEIVED,
   SEARCH_FAVORITE_DATA_RECEIVED,
+  CLEAR_SEARCH_PRIVATE_DISHES,
   SEARCH_FAVORITE_DATA,
   SEARCH_PUBLIC_DISHES,
+  CLEAR_SEARCH_PUBLIC_DISHES,
   SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES,
   SEARCH_ALL_DISHES,
-  SEARCH_ALL_DISHES_RECEIVED
+  SEARCH_ALL_DISHES_RECEIVED,
+  CLEAR_SEARCH_ALL_DISHES
 } from "../constants/Action-types";
 import {
   databaseRef,
@@ -46,7 +49,7 @@ export const addDish = (payload, uid) => async dispatch => {
   if (!payload.imageFile) {
     return pushToDb(payload, uid);
   }
-  
+
   // First upload dish image to storage
   // Then update the image url of the dish and set to db
   const storageRefChild = storageRef(uid).child(
@@ -200,6 +203,10 @@ export const searchPrivateDishes = (uid, query) => async dispatch => {
     });
 };
 
+export const clearSearchPrivateDishes = () => async dispatch => {
+  dispatch({ type: CLEAR_SEARCH_PRIVATE_DISHES });
+};
+
 export const searchPublicDishes = (uid, query) => async dispatch => {
   const search = firebase.functions().httpsCallable("searchPublicDishes");
   search({ query: query, uid: uid })
@@ -223,8 +230,13 @@ export const searchPublicDishes = (uid, query) => async dispatch => {
     });
 };
 
+export const clearSearchPublicDishes = () => async dispatch => {
+  dispatch({
+    type: CLEAR_SEARCH_PUBLIC_DISHES
+  });
+};
+
 export const searchAllDishes = (uid, query) => async dispatch => {
-  console.log("searchAllDishes ");
   const search = firebase.functions().httpsCallable("searchAllDishes");
   search({ query: query, uid: uid })
     .then(result => {
@@ -246,6 +258,10 @@ export const searchAllDishes = (uid, query) => async dispatch => {
       });
     });
 };
+
+export const clearSearchAllDishes = () => async dispatch => {
+  dispatch({type: CLEAR_SEARCH_ALL_DISHES})
+}
 
 /**
  * Fetch all public dishes

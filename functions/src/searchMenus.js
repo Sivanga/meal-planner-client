@@ -216,7 +216,11 @@ exports.searchPrivateMenus = functions.https.onCall((data, context) => {
       { ignore: [404] },
       (err, result) => {
         if (result) console.log(result);
-        if (result.body.hits) {
+        if (
+          result.body.hits &&
+          result.body.hits.hits &&
+          result.body.hits.hits.length > 0
+        ) {
           console.log(
             "result.body.hits.hits[0].inner_hits.menus.hits.hits: ",
             result.body.hits.hits[0].inner_hits.menus.hits.hits
@@ -228,6 +232,8 @@ exports.searchPrivateMenus = functions.https.onCall((data, context) => {
           });
 
           resolve(menusToReturn);
+        } else {
+          resolve([]);
         }
         if (err) {
           reject(err);

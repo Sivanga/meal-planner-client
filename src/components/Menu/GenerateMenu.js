@@ -6,7 +6,8 @@ import {
   fetchDishes,
   fetchPublicDishes,
   searchAllDishes,
-  setMenu
+  setMenu,
+  clearSearchAllDishes
 } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
@@ -34,8 +35,7 @@ import SearchComponent from "../SearchComponent";
 const mapStateToProps = state => {
   return {
     favoriteDishes: state.dishes.dishes,
-    favoriteDataReceived:
-      state.dishes.privateDishesDataReceived.privateDishesDataReceived,
+    favoriteDataReceived: state.dishes.privateDishesDataReceived,
     publicDishes: state.dishes.publicDishes,
     publicDataReceived:
       state.dishes.publicDishesDataReceived.publicDishesDataReceived,
@@ -48,7 +48,8 @@ const mapDispatchToProps = dispatch => ({
   fetchDishes: uid => dispatch(fetchDishes(uid)),
   fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
-  searchAllDishes: (uid, query) => dispatch(searchAllDishes(uid, query))
+  searchAllDishes: (uid, query) => dispatch(searchAllDishes(uid, query)),
+  clearSearchAllDishes: () => dispatch(clearSearchAllDishes())
 });
 
 const GenerateMenu = props => {
@@ -409,6 +410,7 @@ const GenerateMenu = props => {
 
   const onSearchClear = () => {
     setIsSearchMode(false);
+    props.clearSearchAllDishes();
   };
 
   /**

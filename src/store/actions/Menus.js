@@ -7,7 +7,8 @@ import {
   SEARCH_FAVORITE_MENUS,
   SEARCH_FAVORITE_MENUS_RECEIVED,
   SEARCH_PUBLIC_MENUS_RECEIVED,
-  SEARCH_PUBLIC_MENUS
+  SEARCH_PUBLIC_MENUS,
+  CLEAR_SEARCH_MENUS
 } from "../constants/Action-types";
 import { menusDbRef, publicMenusDbRef, databaseRef } from "../../firebase";
 import * as firebase from "firebase/app";
@@ -164,4 +165,8 @@ export const searchPublicMenus = (uid, query) => async dispatch => {
         payload: []
       });
     });
+};
+
+export const clearSearchMenus = () => async dispatch => {
+  dispatch({ type: CLEAR_SEARCH_MENUS });
 };

@@ -4,7 +4,8 @@ import {
   fetchPublicDishes,
   addToFavorites,
   removeDish,
-  searchPublicDishes
+  searchPublicDishes,
+  clearSearchPublicDishes
 } from "../../store/actions/Actions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -20,8 +21,7 @@ const mapStateToProps = state => {
     publicDishes: state.dishes.publicDishes,
     dataReceived:
       state.dishes.publicDishesDataReceived.publicDishesDataReceived,
-    searchReceived:
-      state.dishes.publicDishesDataReceived.publicDishesDataReceived,
+    searchReceived: state.dishes.publicDishesSearchDataReceived,
     searchResult: state.dishes.publicDishesSearchResult
   };
 };
@@ -31,7 +31,8 @@ const mapDispatchToProps = dispatch => ({
   fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
   addToFavorites: (dish, uid) => dispatch(addToFavorites(dish, uid)),
   removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid)),
-  searchPublicDishes: (uid, query) => dispatch(searchPublicDishes(uid, query))
+  searchPublicDishes: (uid, query) => dispatch(searchPublicDishes(uid, query)),
+  clearSearchPublicDishes: () => dispatch(clearSearchPublicDishes())
 });
 
 const Dishes = ({
@@ -43,7 +44,8 @@ const Dishes = ({
   addDish,
   addToFavorites,
   removeFromFavorites,
-  searchPublicDishes
+  searchPublicDishes,
+  clearSearchPublicDishes
 }) => {
   /**
    * Auth hook to get update for changes from auth provider
@@ -88,6 +90,7 @@ const Dishes = ({
 
   const onSearchClear = () => {
     setIsSearchMode(false);
+    clearSearchPublicDishes();
   };
 
   /**

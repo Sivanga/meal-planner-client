@@ -7,7 +7,8 @@ import {
   removeMenu,
   fetchPublicMenus,
   addMenuToFavorites,
-  searchPublicMenus
+  searchPublicMenus,
+  clearSearchMenus
 } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
 import SearchComponent from "../SearchComponent";
@@ -25,7 +26,8 @@ const mapDispatchToProps = dispatch => ({
   removeFromFavorites: (id, uid) => dispatch(removeMenu(id, uid)),
   addToFavorites: (menu, uid) => dispatch(addMenuToFavorites(menu, uid)),
   fetchPublicMenus: uid => dispatch(fetchPublicMenus(uid)),
-  searchPublicMenus: (uid, query) => dispatch(searchPublicMenus(uid, query))
+  searchPublicMenus: (uid, query) => dispatch(searchPublicMenus(uid, query)),
+  clearSearchMenus: () => dispatch(clearSearchMenus())
 });
 
 function Menu({
@@ -36,7 +38,8 @@ function Menu({
   dataReceived,
   searchResult,
   searchReceived,
-  searchPublicMenus
+  searchPublicMenus,
+  clearSearchMenus
 }) {
   /**
    * Auth hook to get update for changes from auth provider
@@ -77,6 +80,7 @@ function Menu({
 
   const onSearchClear = () => {
     setIsSearchMode(false);
+    clearSearchMenus();
   };
 
   /**

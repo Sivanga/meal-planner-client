@@ -4,7 +4,8 @@ import {
   updateDish,
   removeDish,
   fetchDishes,
-  searchPrivateDishes
+  searchPrivateDishes,
+  clearSearchPrivateDishes
 } from "../../store/actions/Actions";
 import EditDishModal from "../dishes/EditDishModal";
 
@@ -19,8 +20,7 @@ import SearchComponent from "../SearchComponent";
 const mapStateToProps = state => {
   return {
     dishes: state.dishes.dishes,
-    dataReceived:
-      state.dishes.privateDishesDataReceived.privateDishesDataReceived,
+    dataReceived: state.dishes.privateDishesDataReceived,
     searchReceived: state.dishes.privateDishesSearchReceived,
     searchResult: state.dishes.privateDishesSearchResult
   };
@@ -31,7 +31,9 @@ const mapDispatchToProps = dispatch => ({
   updateDish: (dish, uid) => dispatch(updateDish(dish, uid)),
   removeDish: (id, uid) => dispatch(removeDish(id, uid)),
   fetchDishes: uid => dispatch(fetchDishes(uid)),
-  searchPrivateDishes: (uid, query) => dispatch(searchPrivateDishes(uid, query))
+  searchPrivateDishes: (uid, query) =>
+    dispatch(searchPrivateDishes(uid, query)),
+  clearSearchPrivateDishes: () => dispatch(clearSearchPrivateDishes())
 });
 
 const FavoriteDishes = ({
@@ -44,7 +46,8 @@ const FavoriteDishes = ({
   dishes,
   dataReceived,
   searchReceived,
-  searchResult
+  searchResult,
+  clearSearchPrivateDishes
 }) => {
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
@@ -84,6 +87,7 @@ const FavoriteDishes = ({
 
   const onSearchClear = () => {
     setIsSearchMode(false);
+    clearSearchPrivateDishes();
   };
 
   /**
@@ -151,9 +155,7 @@ const FavoriteDishes = ({
       )}
       {/* No search result to show */}
       {isSearchMode && searchReceived && searchResult.length === 0 && (
-        <div className="center-text">
-          Couldn't find what you've search for
-        </div>
+        <div className="center-text">Couldn't find what you've search for</div>
       )}
       <DishesList
         dishes={isSearchMode ? searchResult : dishes}
