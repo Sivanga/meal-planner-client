@@ -191,11 +191,21 @@ const GenerateMenu = props => {
   };
 
   const findDishesForMeal = (dishes, meal) => {
-    return dishes.filter(dish =>
+    var dishesToReturn = dishes.filter(dish =>
       dish.meals.some(
         currMeal => currMeal.name.toUpperCase() === meal.name.toUpperCase()
       )
     );
+
+    // Return dishes for meal if found any
+    if (dishesToReturn.length > 0) {
+      return dishesToReturn;
+    }
+
+    // Otherwise - didn't find dish for this specific meal, return all dishes
+    else {
+      return dishes;
+    }
   };
 
   /** Recompute all unlocked dishes
