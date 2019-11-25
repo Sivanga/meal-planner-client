@@ -12,7 +12,7 @@ $panel-width-small: 10rem;
   overflow: hidden;
   width: 100vw;
   position: relative;
-  padding-top: 2rem;
+  padding-top: 2.5rem;
 }
 
 // Table
@@ -87,6 +87,7 @@ li {
 
 .collection-container {
   overflow: scroll;
+  height: 600px;
 }
 
 .attribute {
@@ -144,7 +145,7 @@ li {
 .burger-wrapper {
   position: absolute;
   right: 1rem;
-  top: -0.5rem;
+  top: 0rem;
   z-index: 2;
   display: flex;
 
@@ -203,10 +204,7 @@ li {
 }
 
 .random-btn {
-  position: fixed;
-  left: 50%;
-  z-index: 9;
-  translate: transform(-50%, -50%);
+  margin: auto;
 }
 
 .generate-btn-wrapper {
