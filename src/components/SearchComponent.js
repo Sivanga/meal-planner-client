@@ -12,7 +12,7 @@ const SearcComponent = ({ onSearch, onSearchClear }) => {
   };
 
   return (
-    <MDBCol md="4" className="mx-auto">
+    <MDBCol sm="6" className="mx-auto">
       <form
         className="form-inline mt-4 mb-4"
         onSubmit={e => e.preventDefault()}
