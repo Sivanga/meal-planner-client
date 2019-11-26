@@ -38,7 +38,7 @@ const createDishesEnryForUser = (uid, dish, resolve, reject) => {
 const updateDishForUser = (uid, change, resolve, reject) => {
   // Add dish
   if (change.after.val()) {
-    console.log("UID: ", uid, " found, update new dish for user");
+    console.log("UID: ", uid, " found, update dish for user");
 
     esClient.update(
       {
@@ -48,7 +48,14 @@ const updateDishForUser = (uid, change, resolve, reject) => {
 
         body: {
           script: {
-            source: `ctx._source.dishes.add(params.dish)`,
+            source: `def found_dish = ctx._source.dishes.find(currDish -> currDish.id == params.dish.id); 
+            if (found_dish != null) { 
+              for (change in params.dish.entrySet()) {
+                found_dish[change.getKey()] = change.getValue()
+              }
+            } else { 
+              ctx._source.dishes.add(params.dish)
+            }`,
             params: {
               dish: change.after.val()
             }

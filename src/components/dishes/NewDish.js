@@ -39,20 +39,7 @@ const NewDish = props => {
   const auth = useAuth();
 
   /** Dish state */
-  const [dish, setDish] = useState({
-    id: props.dish && props.dish.id ? props.dish.id : "",
-    name: props.dish && props.dish.name ? props.dish.name : "",
-    localImageUrl:
-      props.dish && props.dish.localImageUrl ? props.dish.localImageUrl : "",
-    imageUrl: props.dish && props.dish.imageUrl ? props.dish.imageUrl : "",
-    imageFile: "",
-    recipe: props.dish && props.dish.recipe ? props.dish.recipe : "",
-    meals: props.dish && props.dish.meals ? props.dish.meals : [],
-    tags: props.dish && props.dish.tags ? props.dish.tags : [],
-    sharePublic:
-      props.dish && "sharePublic" in props.dish ? props.dish.sharePublic : true,
-    link: props.dish && props.dish.link ? props.dish.link : ""
-  });
+  const [dish, setDish] = useState(props.dish);
 
   const [validated, setValidated] = useState(false);
 
@@ -319,11 +306,18 @@ const NewDish = props => {
           <Form.Check
             className="dish-public-share"
             type="checkbox"
-            checked={dish.sharePublic}
+            checked={
+              dish && dish.hasOwnProperty("sharePublic")
+                ? dish.sharePublic
+                : true
+            }
             onChange={e =>
               setDish({
                 ...dish,
-                sharePublic: !dish.sharePublic
+                sharePublic:
+                  dish && dish.hasOwnProperty("sharePublic")
+                    ? !dish.sharePublic
+                    : false
               })
             }
           ></Form.Check>
