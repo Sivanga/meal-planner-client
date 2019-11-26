@@ -89,7 +89,6 @@ const DishCard = ({
   };
 
   const handleAddToMenu = (eventKey, event) => {
-    console.log("handleAddToMenu  eventKey: ", eventKey, " event: ", event);
     event.stopPropagation();
     onDishAddToMenuClick(dish, eventKey);
   };
@@ -122,18 +121,21 @@ const DishCard = ({
       <span
         className={classNames("dish-card-menu", {
           show:
-            dishListEnum === DishListEnum.MY_FAVORITES_LIST &&
+            (dishListEnum === DishListEnum.MY_FAVORITES_LIST ||
+              dishListEnum === DishListEnum.PUBLIC_LIST) &&
             clickedDish === dish.id
         })}
       >
         <ul className="dish-card-menu-list">
-          <li
-            onClick={() => {
-              onDishEditClick(dish);
-            }}
-          >
-            Edit
-          </li>
+          {dishListEnum === DishListEnum.MY_FAVORITES_LIST && (
+            <li
+              onClick={() => {
+                onDishEditClick(dish);
+              }}
+            >
+              Edit
+            </li>
+          )}
           {menus && (
             <li>
               <Dropdown

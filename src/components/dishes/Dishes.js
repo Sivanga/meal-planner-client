@@ -4,10 +4,12 @@ import {
   fetchPublicDishes,
   addToFavorites,
   removeDish,
+  fetchMenus,
   searchPublicDishes,
   clearSearchPublicDishes
 } from "../../store/actions/Actions";
 import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
@@ -22,13 +24,15 @@ const mapStateToProps = state => {
     dataReceived:
       state.dishes.publicDishesDataReceived.publicDishesDataReceived,
     searchReceived: state.dishes.publicDishesSearchDataReceived,
-    searchResult: state.dishes.publicDishesSearchResult
+    searchResult: state.dishes.publicDishesSearchResult,
+    privateMenus: state.menus.menus
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
   fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
+  fetchMenus: uid => dispatch(fetchMenus(uid)),
   addToFavorites: (dish, uid) => dispatch(addToFavorites(dish, uid)),
   removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid)),
   searchPublicDishes: (uid, query) => dispatch(searchPublicDishes(uid, query)),
@@ -41,12 +45,16 @@ const Dishes = ({
   searchReceived,
   searchResult,
   fetchPublicDishes,
+  fetchMenus,
+  privateMenus,
   addDish,
   addToFavorites,
   removeFromFavorites,
   searchPublicDishes,
   clearSearchPublicDishes
 }) => {
+  /** Used to redirect to specific menu after choosing add dish to a menu */
+  let history = useHistory();
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -65,7 +73,8 @@ const Dishes = ({
       uid = auth.authState.user.uid;
     }
     fetchPublicDishes(uid);
-  }, [auth]);
+    fetchMenus(uid);
+  }, [auth, fetchPublicDishes, fetchMenus]);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -91,6 +100,26 @@ const Dishes = ({
   const onSearchClear = () => {
     setIsSearchMode(false);
     clearSearchPublicDishes();
+  };
+
+  const handleAddToMenuClick = (dish, menuId) => {
+    // Add public dish under this user
+    addToFavorites(dish, auth.authState.user.uid);
+
+    // Redirect to wanted menu and send the dish as extraDish info
+    const chosenMenu = privateMenus.find(menu => menu.id === menuId);
+    if (!chosenMenu) {
+      history.push("/menu/newMenu", {
+        extraDishInfo: dish
+      });
+      return;
+    }
+
+    // If wanted menu wasn't found, create a new one
+    history.push("/menu/generate", {
+      menuData: chosenMenu,
+      extraDishInfo: dish
+    });
   };
 
   /**
@@ -129,10 +158,14 @@ const Dishes = ({
         )}
       <DishesList
         dishes={isSearchMode ? searchResult : publicDishes}
+        menus={privateMenus}
         dishListEnum={DishListEnum.PUBLIC_LIST}
         currentUid={currentUid}
         handleDishFavorite={(dish, uid) => handleDishFavorite(dish, uid)}
         handleDishRemove={id => handleDishUnfavorite(id)}
+        onDishAddToMenuClick={(dish, menuId) =>
+          handleAddToMenuClick(dish, menuId)
+        }
       />
       <ImportDish addDish={dish => onDishAdd(dish)} />
     </>

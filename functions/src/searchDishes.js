@@ -139,7 +139,11 @@ exports.indexPublicDishesToElastic = functions.database
   .onWrite((change, context) => {
     return new Promise((resolve, reject) => {
       if (change.after.val()) {
-        console.log("Adding dish: ", context.params.dishId, " to public");
+        console.log(
+          "Adding/ Editing dish: ",
+          context.params.dishId,
+          " in public_dishes"
+        );
         esClient.index(
           {
             id: context.params.dishId,
@@ -182,6 +186,7 @@ exports.indexPublicDishesToElastic = functions.database
 /** elastic - search in "dishes" index */
 exports.searchPrivateDishes = functions.https.onCall((data, context) => {
   // callback API
+  console.log("Search for ", data.query, " in dishes");
   return new Promise((resolve, reject) => {
     esClient.search(
       {
@@ -221,15 +226,12 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
       (err, result) => {
         if (result) console.log(result);
         if (result.body.hits) {
-          console.log(
-            "result.body.hits.hits[0].inner_hits.dishes.hits.hits: ",
-            result.body.hits.hits[0].inner_hits.dishes.hits.hits
-          );
-
           var dishesToReturn = [];
-          result.body.hits.hits[0].inner_hits.dishes.hits.hits.map(result => {
-            return dishesToReturn.push(result._source);
-          });
+          if (result.body.hits.hits[0]) {
+            result.body.hits.hits[0].inner_hits.dishes.hits.hits.map(result => {
+              return dishesToReturn.push(result._source);
+            });
+          }
 
           resolve(dishesToReturn);
         }
@@ -245,6 +247,7 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
 
 /** elastic - search in "public_dishes" index */
 exports.searchPublicDishes = functions.https.onCall((data, context) => {
+  console.log("Search for ", data.query, " in public_dishes");
   // callback API
   return new Promise((resolve, reject) => {
     esClient.search(
@@ -293,6 +296,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
 
 /** elastic - search in both "dishes" and "public_dishes" index */
 exports.searchAllDishes = functions.https.onCall((data, context) => {
+  console.log("Search for ", data.query, " in all dishes");
   // callback API
   return new Promise((resolve, reject) => {
     esClient.msearch(

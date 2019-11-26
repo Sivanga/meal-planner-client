@@ -54,7 +54,7 @@ const FavoriteDishes = ({
   searchResult,
   clearSearchPrivateDishes
 }) => {
-  /** Used to redirect to specific menu after chossing add dish to a menu */
+  /** Used to redirect to specific menu after choosing add dish to a menu */
   let history = useHistory();
 
   /** Used to determine if to show results from searchResult object */
@@ -109,6 +109,7 @@ const FavoriteDishes = ({
       return;
     }
 
+    // If wanted menu wasn't found, create a new one
     history.push("/menu/generate", {
       menuData: chosenMenu,
       extraDishInfo: dish
