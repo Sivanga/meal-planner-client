@@ -14,4 +14,9 @@
   @media (min-width: 769px) {
     column-count: 5;
   }
+
+  .card {
+    display: inline-block;
+    width: 100%;
+  }
 }

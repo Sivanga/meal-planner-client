@@ -143,11 +143,11 @@ const DishCard = ({
                   className="add-to-menu-dropdown-btn"
                 >
                   <Dropdown.Item eventKey={"createNew"}>
-                    + Create New
+                    + Create New Menu
                   </Dropdown.Item>
                   {menus.map(menu => {
                     return (
-                      <Dropdown.Item eventKey={menu.id}>
+                      <Dropdown.Item key={menu.id} eventKey={menu.id}>
                         {menu.name
                           ? menu.name
                           : new Date(menu.date).toLocaleDateString("en-EN")}
