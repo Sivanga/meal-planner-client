@@ -109,3 +109,16 @@
     margin-left: 100px;
   }
 }
+
+.add-to-menu-dropdown-btn {
+  .btn-primary,
+  .btn-primary.dropdown-toggle:hover:hover,
+  .btn-primary.dropdown-toggle:active,
+  .btn-primary.dropdown-toggle:focus {
+    background-color: rgba(0, 0, 0, 0) !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+}

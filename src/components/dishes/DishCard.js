@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Card, Collapse, Button, Dropdown } from "react-bootstrap";
+import {
+  Card,
+  Collapse,
+  Button,
+  Dropdown,
+  ButtonToolbar,
+  DropdownButton
+} from "react-bootstrap";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import "../../scss/DishCard.scss";
@@ -93,19 +100,6 @@ const DishCard = ({
     onDishAddToMenuClick(dish, eventKey);
   };
 
-  const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-    <span
-      href=""
-      ref={ref}
-      onClick={e => {
-        e.preventDefault();
-        onClick(e);
-      }}
-    >
-      {children}
-    </span>
-  ));
-
   return (
     <div
       className={classNames("dish-card", {
@@ -138,26 +132,30 @@ const DishCard = ({
           )}
           {menus && (
             <li>
-              <Dropdown
-                onSelect={(eventKey, event) => handleAddToMenu(eventKey, event)}
-              >
-                <Dropdown.Toggle as={CustomToggle} id="dropdown">
-                  Add to menu
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
+              <ButtonToolbar>
+                <DropdownButton
+                  drop="right"
+                  title="Add to menu"
+                  id="dropdown"
+                  onSelect={(eventKey, event) =>
+                    handleAddToMenu(eventKey, event)
+                  }
+                  className="add-to-menu-dropdown-btn"
+                >
                   <Dropdown.Item eventKey={"createNew"}>
                     + Create New
                   </Dropdown.Item>
                   {menus.map(menu => {
                     return (
                       <Dropdown.Item eventKey={menu.id}>
-                        {menu.name}
+                        {menu.name
+                          ? menu.name
+                          : new Date(menu.date).toLocaleDateString("en-EN")}
                       </Dropdown.Item>
                     );
                   })}
-                </Dropdown.Menu>
-              </Dropdown>
+                </DropdownButton>
+              </ButtonToolbar>
             </li>
           )}
         </ul>

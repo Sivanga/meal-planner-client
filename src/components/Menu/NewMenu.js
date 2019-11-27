@@ -8,6 +8,13 @@ const NewMenu = props => {
    */
   const [menuData, setMenuData] = useState(null);
 
+  /** Used to hold extraDishInfo data and pass to generate menu*/
+  const [extraDishInfo] = useState(
+    props.location && props.location.state && props.location.state.extraDishInfo
+      ? props.location.state.extraDishInfo
+      : null
+  );
+
   /**
    * After menu template has been chosen, set the menu data to be generated
    * @param {days, meals} param0 which days and meals user chose to genereate the menu
@@ -29,7 +36,8 @@ const NewMenu = props => {
           to={{
             pathname: "/menu/generate",
             state: {
-              menuData: menuData
+              menuData: menuData,
+              extraDishInfo: extraDishInfo
             }
           }}
         />
