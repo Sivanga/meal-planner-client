@@ -6,7 +6,8 @@ import {
   fetchDishes,
   fetchMenus,
   searchPrivateDishes,
-  clearSearchPrivateDishes
+  clearSearchPrivateDishes,
+  END_PAGINATION
 } from "../../store/actions/Actions";
 import EditDishModal from "../dishes/EditDishModal";
 import { useHistory } from "react-router-dom";
@@ -17,6 +18,7 @@ import DishesList from "../dishes/DishesList";
 import { DishListEnum } from "../dishes/DishCard";
 import ImportDish from "../dishes/ImportDish";
 import SearchComponent from "../SearchComponent";
+import { Button } from "react-bootstrap";
 
 const mapStateToProps = state => {
   return {
@@ -32,7 +34,7 @@ const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
   updateDish: (dish, uid) => dispatch(updateDish(dish, uid)),
   removeDish: (id, uid) => dispatch(removeDish(id, uid)),
-  fetchDishes: uid => dispatch(fetchDishes(uid)),
+  fetchDishes: (uid, next) => dispatch(fetchDishes(uid, next)),
   fetchMenus: uid => dispatch(fetchMenus(uid)),
   searchPrivateDishes: (uid, query) =>
     dispatch(searchPrivateDishes(uid, query)),
@@ -116,6 +118,10 @@ const FavoriteDishes = ({
     });
   };
 
+  const onNextPage = () => {
+    fetchDishes(auth.authState.user.uid, dataReceived.next);
+  };
+
   /**
    * If there's no logged in user, show message
    */
@@ -127,14 +133,14 @@ const FavoriteDishes = ({
   /**
    * If dishes data is still loading, show message
    */
-  if (!dataReceived) {
+  if (!dataReceived.received) {
     return <div className="center-text">Loading...</div>;
   }
 
   /**
    * No dishes saved for user
    */
-  if (dataReceived && dishes.length === 0)
+  if (dataReceived.received && dishes.length === 0)
     return (
       <>
         <div className="empty-dishes">
@@ -197,6 +203,13 @@ const FavoriteDishes = ({
           handleAddToMenuClick(dish, menuId)
         }
       />
+      {dataReceived &&
+        dataReceived.next &&
+        dataReceived.next !== END_PAGINATION && (
+          <Button className="meal-plan-btn" type="button" onClick={onNextPage}>
+            More
+          </Button>
+        )}
       <ImportDish addDish={dish => onDishAdd(dish)} />
     </>
   );
@@ -204,7 +217,7 @@ const FavoriteDishes = ({
 
 FavoriteDishes.propTypes = {
   dishes: PropTypes.arrayOf(PropTypes.object),
-  dataReceived: PropTypes.bool
+  dataReceived: PropTypes.object
 };
 
 const FavoriteDishesList = connect(

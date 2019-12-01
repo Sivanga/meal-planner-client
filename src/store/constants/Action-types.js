@@ -1,5 +1,6 @@
 // Dishes
 export const FETCH_DISHES = "FETCH_DISHES";
+export const FETCH_DISHES_NEXT_PAGE = "FETCH_DISHES_NEXT_PAGE";
 export const ADD_DISH = "ADD_DISH";
 export const UPDATE_DISH = "UPDATE_DISH";
 export const REMOVE_DISH = "REMOVE_DISH";

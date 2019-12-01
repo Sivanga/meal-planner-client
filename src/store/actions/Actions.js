@@ -29,6 +29,8 @@ import * as firebase from "firebase/app";
 export * from "./Meals";
 export * from "./Menus";
 
+export const END_PAGINATION = "END_PAGINATION";
+
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
  */
@@ -168,15 +170,53 @@ export const removeDish = (payload, uid) => async dispatch => {
 /**
  * Fetch list of dishes and observe for changes.
  * Dispatch action FETCH_DISHES on chahnge.
+ * prevNext - holds the key of the last result, this will be used for the next page.
+ * Empty "prevNext" indicates the first fetch
  */
-export const fetchDishes = uid => async dispatch => {
+export const fetchDishes = (uid, prevNext) => async dispatch => {
   if (!uid) {
     noAuthError("addDish");
     return;
   }
-  dishesDbRef(uid).on("value", snapshot => {
-    dispatch({ type: PRIVATE_DISHES_DATA_RECEIVED, payload: true });
-    dispatch({ type: FETCH_DISHES, payload: snapshot.val() || {} });
+
+  var ref = dishesDbRef(uid).orderByKey();
+  if (prevNext) ref = ref.endAt(prevNext);
+  ref.limitToLast(11).on("value", snapshot => {
+    // Get the first key, this will be used to fetch the next page.
+    // We get the First key and not last because firebase only retrieve data in asc order,
+    // we will reverse the data in client side
+    var firstKey;
+    var dishes = [];
+
+    // Got a full page, means there are more docs to fetch for next page
+    if (snapshot.numChildren() === 11) {
+      firstKey = Object.keys(snapshot.val())[0];
+    }
+    // This is the last page
+    else {
+      firstKey = END_PAGINATION;
+    }
+    snapshot.forEach(dish => {
+      dishes.push(dish.val());
+    });
+
+    // If there are more documents for next page, remove the first one,
+    // We only use it's key for fetching the next page
+    if (firstKey !== END_PAGINATION) dishes.splice(0, 1);
+
+    console.log("firstKey: ", firstKey, " dishes: ", dishes);
+
+    dispatch({
+      type: PRIVATE_DISHES_DATA_RECEIVED,
+      payload: {
+        received: true,
+        next: firstKey
+      }
+    });
+    dispatch({
+      type: FETCH_DISHES,
+      payload: dishes
+    });
   });
 };
 
@@ -260,8 +300,8 @@ export const searchAllDishes = (uid, query) => async dispatch => {
 };
 
 export const clearSearchAllDishes = () => async dispatch => {
-  dispatch({type: CLEAR_SEARCH_ALL_DISHES})
-}
+  dispatch({ type: CLEAR_SEARCH_ALL_DISHES });
+};
 
 /**
  * Fetch all public dishes

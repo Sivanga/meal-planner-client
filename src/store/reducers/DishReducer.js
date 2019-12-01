@@ -35,14 +35,14 @@ function dishes(state = [], action) {
       dishesCopy[foundIndex] = action.payload;
       return dishesCopy;
     case FETCH_DISHES:
-      // // Create new state for updated dishes array
-      // // Give each dish it's backend generated id for future reference
-      var newDishes = [];
+      // Give each dish it's backend generated id for future reference
+      // Append dishes to previos array
+      var dishesCopy = [...state];
       Object.keys(action.payload).map(key => {
         action.payload[key].id = key;
-        return newDishes.unshift(action.payload[key]);
+        return dishesCopy.unshift(action.payload[key]);
       });
-      return newDishes;
+      return dishesCopy;
     default:
       return state;
   }
@@ -113,7 +113,10 @@ function publicDishesDataReceived(state = false, action) {
   }
 }
 
-function privateDishesDataReceived(state = false, action) {
+function privateDishesDataReceived(
+  state = { received: false, next: null },
+  action
+) {
   switch (action.type) {
     case PRIVATE_DISHES_DATA_RECEIVED:
       return action.payload;
