@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import {
   addDish,
   fetchPublicDishes,
+  cleanUpFetchPublicDishesListener,
   addToFavorites,
   removeDish,
   fetchMenus,
   searchPublicDishes,
-  clearSearchPublicDishes
+  clearSearchPublicDishes,
+  END_PAGINATION
 } from "../../store/actions/Actions";
+import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -21,8 +24,7 @@ import SearchComponent from "../SearchComponent";
 const mapStateToProps = state => {
   return {
     publicDishes: state.dishes.publicDishes,
-    dataReceived:
-      state.dishes.publicDishesDataReceived.publicDishesDataReceived,
+    dataReceived: state.dishes.publicDishesDataReceived,
     searchReceived: state.dishes.publicDishesSearchDataReceived,
     searchResult: state.dishes.publicDishesSearchResult,
     privateMenus: state.menus.menus
@@ -31,7 +33,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
-  fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
+  fetchPublicDishes: (uid, next) => dispatch(fetchPublicDishes(uid, next)),
+  cleanUpFetchPublicDishesListener: () =>
+    dispatch(cleanUpFetchPublicDishesListener()),
   fetchMenus: uid => dispatch(fetchMenus(uid)),
   addToFavorites: (dish, uid) => dispatch(addToFavorites(dish, uid)),
   removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid)),
@@ -45,6 +49,7 @@ const Dishes = ({
   searchReceived,
   searchResult,
   fetchPublicDishes,
+  cleanUpFetchPublicDishesListener,
   fetchMenus,
   privateMenus,
   addDish,
@@ -74,6 +79,11 @@ const Dishes = ({
     }
     fetchPublicDishes(uid);
     fetchMenus(uid);
+
+    // Clean up listener
+    return () => {
+      cleanUpFetchPublicDishesListener();
+    };
   }, [auth, fetchPublicDishes, fetchMenus]);
 
   const onDishAdd = dish => {
@@ -122,10 +132,14 @@ const Dishes = ({
     });
   };
 
+  const onNextPage = () => {
+    fetchPublicDishes(auth.authState.user.uid, dataReceived.next);
+  };
+
   /**
    * If dishes data is still loading, show message
    */
-  if (!dataReceived) {
+  if (dataReceived && !dataReceived.received) {
     return <div className="center-text">Loading...</div>;
   }
 
@@ -167,6 +181,13 @@ const Dishes = ({
           handleAddToMenuClick(dish, menuId)
         }
       />
+      {dataReceived &&
+        dataReceived.next &&
+        dataReceived.next !== END_PAGINATION && (
+          <Button className="meal-plan-btn" type="button" onClick={onNextPage}>
+            More
+          </Button>
+        )}
       <ImportDish addDish={dish => onDishAdd(dish)} />
     </>
   );

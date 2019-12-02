@@ -14,6 +14,7 @@ import {
   SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES,
+  CLEAR_PUBLIC_DISHES,
   SEARCH_ALL_DISHES_RECEIVED,
   SEARCH_ALL_DISHES,
   CLEAR_SEARCH_ALL_DISHES
@@ -86,28 +87,27 @@ function searchDishes(state = [], action) {
 }
 function publicDishes(state = [], action) {
   switch (action.type) {
+    case CLEAR_PUBLIC_DISHES:
+      return [];
     case FETCH_PUBLIC_DISHES:
-      var publicDishes = [];
-      Object.keys(action.payload.publicDishes).map(key => {
-        action.payload.publicDishes[key].id = key;
-        // Return only public dishes that aren't the current user's
-        if (action.payload.publicDishes[key].ownerUid !== action.payload.uid) {
-          publicDishes.push(action.payload.publicDishes[key]);
-        }
+      var dishesCopy = [...state];
+      Object.keys(action.payload).map(key => {
+        action.payload[key].id = key;
+        dishesCopy.unshift(action.payload[key]);
       });
-      return publicDishes;
+      return dishesCopy;
     default:
       return state;
   }
 }
 
-function publicDishesDataReceived(state = false, action) {
+function publicDishesDataReceived(
+  state = { received: false, next: null },
+  action
+) {
   switch (action.type) {
     case PUBLIC_DISHES_DATA_RECEIVED:
-      return Object.assign({}, state, {
-        publicDishesDataReceived: action.payload
-      });
-
+      return action.payload;
     default:
       return state;
   }

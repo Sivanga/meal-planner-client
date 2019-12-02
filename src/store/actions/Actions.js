@@ -14,6 +14,7 @@ import {
   SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES,
+  CLEAR_PUBLIC_DISHES,
   SEARCH_ALL_DISHES,
   SEARCH_ALL_DISHES_RECEIVED,
   CLEAR_SEARCH_ALL_DISHES
@@ -30,6 +31,7 @@ export * from "./Meals";
 export * from "./Menus";
 
 export const END_PAGINATION = "END_PAGINATION";
+const PAGINATION_SIZE = 10;
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
@@ -170,18 +172,20 @@ export const removeDish = (payload, uid) => async dispatch => {
 /**
  * Fetch list of dishes and observe for changes.
  * Dispatch action FETCH_DISHES on chahnge.
- * prevNext - holds the key of the last result, this will be used for the next page.
- * Empty "prevNext" indicates the first fetch
+ * prevNextPage
+  - holds the key of the last result, this will be used for the next page.
+ * Empty "prevNextPage
+ " indicates the first fetch
  */
-export const fetchDishes = (uid, prevNext) => async dispatch => {
+export const fetchDishes = (uid, prevNextPage) => async dispatch => {
   if (!uid) {
     noAuthError("addDish");
     return;
   }
 
   var ref = dishesDbRef(uid).orderByKey();
-  if (prevNext) ref = ref.endAt(prevNext);
-  ref.limitToLast(11).on("value", snapshot => {
+  if (prevNextPage) ref = ref.endAt(prevNextPage);
+  ref.limitToLast(PAGINATION_SIZE).on("value", snapshot => {
     // Get the first key, this will be used to fetch the next page.
     // We get the First key and not last because firebase only retrieve data in asc order,
     // we will reverse the data in client side
@@ -189,7 +193,7 @@ export const fetchDishes = (uid, prevNext) => async dispatch => {
     var dishes = [];
 
     // Got a full page, means there are more docs to fetch for next page
-    if (snapshot.numChildren() === 11) {
+    if (snapshot.numChildren() === PAGINATION_SIZE) {
       firstKey = Object.keys(snapshot.val())[0];
     }
     // This is the last page
@@ -203,8 +207,6 @@ export const fetchDishes = (uid, prevNext) => async dispatch => {
     // If there are more documents for next page, remove the first one,
     // We only use it's key for fetching the next page
     if (firstKey !== END_PAGINATION) dishes.splice(0, 1);
-
-    console.log("firstKey: ", firstKey, " dishes: ", dishes);
 
     dispatch({
       type: PRIVATE_DISHES_DATA_RECEIVED,
@@ -303,19 +305,57 @@ export const clearSearchAllDishes = () => async dispatch => {
   dispatch({ type: CLEAR_SEARCH_ALL_DISHES });
 };
 
+export const cleanUpFetchPublicDishesListener = () => async dispatch => {
+  publicDishesDbRef().off();
+};
+
 /**
  * Fetch all public dishes
  * @param {current user id} uid
  */
-export const fetchPublicDishes = uid => async dispatch => {
-  var ref = publicDishesDbRef();
-  ref.orderByChild("ownerUid").on("value", snapshot => {
-    var payload = {
-      publicDishes: snapshot.val() || {},
-      uid: uid
-    };
-    dispatch({ type: FETCH_PUBLIC_DISHES, payload: payload });
-    dispatch({ type: PUBLIC_DISHES_DATA_RECEIVED, payload: true });
+export const fetchPublicDishes = (uid, prevNextPage) => async dispatch => {
+  // If prevNextPage is empty, the first page is being requested
+  // Clear previous results
+  if (!prevNextPage) {
+    dispatch({
+      type: CLEAR_PUBLIC_DISHES
+    });
+  }
+  var ref = publicDishesDbRef().orderByKey();
+  if (prevNextPage) ref = ref.endAt(prevNextPage);
+  ref.limitToLast(PAGINATION_SIZE).on("value", snapshot => {
+    var firstKey;
+    var dishes = [];
+
+    // Got a full page, means there are more docs to fetch for next page
+    if (snapshot.numChildren() === PAGINATION_SIZE) {
+      firstKey = Object.keys(snapshot.val())[0];
+    }
+    // This is the last page
+    else {
+      firstKey = END_PAGINATION;
+    }
+
+    // Return only public dishes that aren't the current user's
+    snapshot.forEach(dish => {
+      var dishVal = dish.val();
+      if (dishVal.ownerUid !== uid) {
+        dishes.push(dish.val());
+      }
+    });
+    if (firstKey !== END_PAGINATION) dishes.splice(0, 1);
+
+    dispatch({
+      type: FETCH_PUBLIC_DISHES,
+      payload: dishes
+    });
+    dispatch({
+      type: PUBLIC_DISHES_DATA_RECEIVED,
+      payload: {
+        received: true,
+        next: firstKey
+      }
+    });
   });
 };
 
