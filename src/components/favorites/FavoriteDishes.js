@@ -70,7 +70,8 @@ const FavoriteDishes = ({
   /** Show editDishModal */
   const [showEditDishModal, setShowEditDishModal] = useState({
     show: false,
-    dish: null
+    dish: null,
+    edit: false
   });
 
   /**
@@ -94,7 +95,7 @@ const FavoriteDishes = ({
   };
 
   const onDishEdit = dish => {
-    setShowEditDishModal({ show: false, dish: null });
+    setShowEditDishModal({ show: false, dish: null, edit: false });
     updateDish(dish, auth.authState.user.uid);
   };
 
@@ -182,6 +183,7 @@ const FavoriteDishes = ({
             setShowEditDishModal({ show: false, dish: null })
           }
           onDishEdit={dish => onDishEdit(dish)}
+          edit={showEditDishModal.edit}
         />
       )}
       {/* Show search only if there's dishes */}
@@ -208,7 +210,10 @@ const FavoriteDishes = ({
         onSearch={query => onSearch(query)}
         onSearchClear={() => onSearchClear()}
         onDishEditClick={dish =>
-          setShowEditDishModal({ show: true, dish: dish })
+          setShowEditDishModal({ show: true, dish: dish, edit: true })
+        }
+        onDishViewClick={dish =>
+          setShowEditDishModal({ show: true, dish: dish, edit: false })
         }
         onDishAddToMedataReceivednuClick={(dish, menuId) =>
           handleAddToMenuClick(dish, menuId)

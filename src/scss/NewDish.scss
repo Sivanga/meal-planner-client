@@ -70,6 +70,7 @@ img {
 .meal-pill {
   background-color: white !important;
   color: $dark-text-color !important;
+  margin-right: 0.5em;
 
   &.active {
     background-color: $primary !important;

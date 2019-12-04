@@ -34,7 +34,8 @@
   color: antiquewhite;
 }
 
-.badge-primary {
+.badge-meals,
+.badge-tags {
   background-color: $primary !important;
   margin-right: 0.5em;
   margin-bottom: 0.5em;
@@ -82,7 +83,7 @@
 .btn-modal {
   color: white;
   background-color: $primary !important;
-font-size: 0.9rem !important;
+  font-size: 0.9rem !important;
   padding: 0.3rem !important;
   border-color: $primary;
   &:hover,

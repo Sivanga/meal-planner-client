@@ -331,7 +331,7 @@ const NewDish = props => {
         </Col>
       </Form.Group>
       <Button variant="outline" type="submit" className="btn-new-dish">
-        Add
+        {props.edit ? "Add" : "Close"}
       </Button>
     </Form>
   );

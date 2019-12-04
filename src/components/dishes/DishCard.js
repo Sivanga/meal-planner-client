@@ -35,6 +35,7 @@ const DishCard = ({
   clickedDish,
   onClick,
   onDishEditClick,
+  onDishViewClick,
   onDishAddToMenuClick,
   handleCloseExtraDishClick
 }) => {
@@ -121,13 +122,20 @@ const DishCard = ({
         })}
       >
         <ul className="dish-card-menu-list">
+          <li
+            onClick={() => {
+              onDishViewClick(dish);
+            }}
+          >
+            View
+          </li>
           {dishListEnum === DishListEnum.MY_FAVORITES_LIST && (
             <li
               onClick={() => {
                 onDishEditClick(dish);
               }}
             >
-              Open/Edit
+              Edit
             </li>
           )}
           {menus && (
@@ -209,10 +217,7 @@ const DishCard = ({
                 {dish.meals && (
                   <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
                     {dish.meals.map((meal, index) => (
-                      <li
-                        key={index}
-                        className="badge badge-pill badge-primary"
-                      >
+                      <li key={index} className="badge badge-pill badge-meals">
                         {meal.name}
                       </li>
                     ))}
@@ -221,10 +226,7 @@ const DishCard = ({
                 {dish.tags && (
                   <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
                     {dish.tags.map(tag => (
-                      <li
-                        key={tag.id}
-                        className="badge badge-pill badge-primary"
-                      >
+                      <li key={tag.id} className="badge badge-pill badge-tags">
                         {tag.name}
                       </li>
                     ))}

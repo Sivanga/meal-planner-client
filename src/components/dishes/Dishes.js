@@ -10,6 +10,7 @@ import {
   clearSearchPublicDishes,
   END_PAGINATION
 } from "../../store/actions/Actions";
+import EditDishModal from "../dishes/EditDishModal";
 import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -69,6 +70,13 @@ const Dishes = ({
 
   /** Used to determine if to use search result */
   const [isSearchMode, setIsSearchMode] = useState(false);
+
+  /** Show editDishModal */
+  const [showEditDishModal, setShowEditDishModal] = useState({
+    show: false,
+    dish: null,
+    edit: false
+  });
 
   /**
    * Fetch dishes in first render.
@@ -156,6 +164,16 @@ const Dishes = ({
 
   return (
     <>
+      {showEditDishModal.show && (
+        <EditDishModal
+          show={showEditDishModal.show}
+          dish={showEditDishModal.dish}
+          onEditDishHide={() =>
+            setShowEditDishModal({ show: false, dish: null })
+          }
+          edit={false}
+        />
+      )}
       <SearchComponent
         onSearch={value => {
           onSearch(value);
@@ -183,6 +201,9 @@ const Dishes = ({
         handleDishRemove={id => handleDishUnfavorite(id)}
         onDishAddToMenuClick={(dish, menuId) =>
           handleAddToMenuClick(dish, menuId)
+        }
+        onDishViewClick={dish =>
+          setShowEditDishModal({ show: true, dish: dish, edit: false })
         }
       />
       {dataReceived &&

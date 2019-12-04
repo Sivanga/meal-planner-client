@@ -40,8 +40,7 @@ const mapStateToProps = state => {
     favoriteDishes: state.dishes.dishes,
     favoriteDataReceived: state.dishes.privateDishesDataReceived,
     publicDishes: state.dishes.publicDishes,
-    publicDataReceived:
-      state.dishes.publicDishesDataReceived.publicDishesDataReceived,
+    publicDataReceived: state.dishes.publicDishesDataReceived,
     searchReceived: state.dishes.allDishesSearchReceived,
     searchResult: state.dishes.allDishesSearchResult
   };
