@@ -5,6 +5,7 @@ import {
   removeDish,
   fetchDishes,
   fetchMenus,
+  cleanUpFetchMenusListener,
   searchPrivateDishes,
   clearSearchPrivateDishes,
   END_PAGINATION
@@ -25,6 +26,7 @@ const mapStateToProps = state => {
     dishes: state.dishes.dishes,
     privateMenus: state.menus.menus,
     dataReceived: state.dishes.privateDishesDataReceived,
+    menuDataReceived: state.menus.privateMenusDataReceived,
     searchReceived: state.dishes.privateDishesSearchReceived,
     searchResult: state.dishes.privateDishesSearchResult
   };
@@ -36,6 +38,7 @@ const mapDispatchToProps = dispatch => ({
   removeDish: (id, uid) => dispatch(removeDish(id, uid)),
   fetchDishes: (uid, next) => dispatch(fetchDishes(uid, next)),
   fetchMenus: uid => dispatch(fetchMenus(uid)),
+  cleanUpFetchMenusListener: uid => dispatch(cleanUpFetchMenusListener(uid)),
   searchPrivateDishes: (uid, query) =>
     dispatch(searchPrivateDishes(uid, query)),
   clearSearchPrivateDishes: () => dispatch(clearSearchPrivateDishes())
@@ -45,6 +48,7 @@ const FavoriteDishes = ({
   auth,
   fetchDishes,
   fetchMenus,
+  cleanUpFetchMenusListener,
   searchPrivateDishes,
   addDish,
   updateDish,
@@ -52,6 +56,7 @@ const FavoriteDishes = ({
   dishes,
   privateMenus,
   dataReceived,
+  menuDataReceived,
   searchReceived,
   searchResult,
   clearSearchPrivateDishes
@@ -74,9 +79,15 @@ const FavoriteDishes = ({
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-    fetchDishes(auth.authState.user.uid);
-    fetchMenus(auth.authState.user.uid);
-  }, [auth, fetchDishes, fetchMenus]);
+    const uid = auth.authState.user.uid;
+    if (!dataReceived.received) fetchDishes(uid);
+    if (!menuDataReceived) fetchMenus(uid);
+
+    // Clean up listener
+    return () => {
+      cleanUpFetchMenusListener(uid);
+    };
+  }, [auth, dataReceived, menuDataReceived]);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);

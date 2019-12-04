@@ -1,15 +1,19 @@
 import {
   FETCH_PRIVATE_MENUS,
   FETCH_PUBLIC_MENUS,
+  ADD_MENU_TO_FAVORITE,
+  REMOVE_MENU_FROM_FAVORITE,
   PRIVATE_MENUS_DATA_RECIEVED,
   PUBLIC_MENUS_DATA_RECIEVED,
   SET_MENU,
+  REMOVE_MENU,
   SEARCH_FAVORITE_MENUS,
   SEARCH_FAVORITE_MENUS_RECEIVED,
   SEARCH_PUBLIC_MENUS_RECEIVED,
   SEARCH_PUBLIC_MENUS,
   CLEAR_SEARCH_MENUS
 } from "../constants/Action-types";
+import { PAGINATION_SIZE, getNextKey, getArrayFromSnapshot } from "./Actions";
 import { menusDbRef, publicMenusDbRef, databaseRef } from "../../firebase";
 import * as firebase from "firebase/app";
 
@@ -45,13 +49,18 @@ export const setMenu = (payload, uid) => async dispatch => {
  * Remove menu.
  */
 export const removeMenu = (payload, uid) => async dispatch => {
+  // Remove the menu locally
+  dispatch({
+    type: REMOVE_MENU,
+    payload: payload
+  });
+
   // Remove the menu under current user
   menusDbRef(uid)
     .child(payload)
     .remove();
 
   var ref = publicMenusDbRef();
-
   return ref
     .child(`${payload}`)
     .once("value")
@@ -69,7 +78,15 @@ export const removeMenu = (payload, uid) => async dispatch => {
         favoriteUsers = favoriteUsers.filter(function(id) {
           return id !== uid;
         });
-        ref.child(`${payload}/`).update({ favoriteUsers: favoriteUsers });
+        ref.child(`${payload}/`).update({
+          favoriteUsers: favoriteUsers
+        });
+
+        // This is usuful to update search result as elasticsearch doesn't refresh frequently
+        dispatch({
+          type: REMOVE_MENU_FROM_FAVORITE,
+          payload: { menuId: payload, favoriteUsers }
+        });
       }
     });
 };
@@ -77,27 +94,63 @@ export const removeMenu = (payload, uid) => async dispatch => {
 /**
  * Fetch private menus
  */
-export const fetchMenus = uid => async dispatch => {
-  menusDbRef(uid).on("value", snapshot => {
-    dispatch({ type: PRIVATE_MENUS_DATA_RECIEVED, payload: true });
-    dispatch({ type: FETCH_PRIVATE_MENUS, payload: snapshot.val() || {} });
+export const fetchMenus = (uid, prevNextPage) => async dispatch => {
+  var ref = menusDbRef(uid).orderByKey();
+  if (prevNextPage) ref = ref.endAt(prevNextPage);
+  ref.limitToLast(PAGINATION_SIZE).once("value", snapshot => {
+    var nextKey = getNextKey(snapshot);
+    var menus = getArrayFromSnapshot(snapshot, nextKey);
+
+    dispatch({
+      type: PRIVATE_MENUS_DATA_RECIEVED,
+      payload: {
+        received: true,
+        next: nextKey
+      }
+    });
+    dispatch({
+      type: FETCH_PRIVATE_MENUS,
+      payload: menus
+    });
   });
+};
+
+export const cleanUpFetchMenusListener = uid => async dispatch => {
+  menusDbRef(uid).off();
 };
 
 /**
  * Fetch all public menus
  * @param {current user id} uid
  */
-export const fetchPublicMenus = uid => async dispatch => {
-  var ref = publicMenusDbRef();
-  ref.orderByChild("ownerUid").on("value", snapshot => {
-    var payload = {
-      publicMenus: snapshot.val() || {},
-      uid: uid
-    };
-    dispatch({ type: FETCH_PUBLIC_MENUS, payload: payload });
-    dispatch({ type: PUBLIC_MENUS_DATA_RECIEVED, payload: true });
+export const fetchPublicMenus = (uid, prevNextPage) => async dispatch => {
+  console.log("fetchPublicMenus prevNextPage: ", prevNextPage);
+  var ref = publicMenusDbRef().orderByKey();
+  if (prevNextPage) ref = ref.endAt(prevNextPage);
+  ref.limitToLast(PAGINATION_SIZE).once("value", snapshot => {
+    var nextKey = getNextKey(snapshot);
+    var menus = getArrayFromSnapshot(snapshot, nextKey);
+
+    // Return only public menus that aren't the current user's
+    menus = menus.filter(menu => menu.ownerUid !== uid);
+
+    dispatch({
+      type: FETCH_PUBLIC_MENUS,
+      payload: menus
+    });
+    dispatch({
+      type: PUBLIC_MENUS_DATA_RECIEVED,
+      payload: {
+        received: true,
+        next: nextKey
+      }
+    });
   });
+};
+
+/** Clean up listener for public menus */
+export const cleanupListenerPublicMenus = uid => async => {
+  publicMenusDbRef().off();
 };
 
 export const addMenuToFavorites = (menu, uid) => async dispatch => {
@@ -116,6 +169,12 @@ export const addMenuToFavorites = (menu, uid) => async dispatch => {
       var favoriteUsers = menuToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
       ref.child(`${menu.id}/`).update({ favoriteUsers: favoriteUsers });
+
+      // This is usuful to update search result as elasticsearch doesn't refresh frequently
+      dispatch({
+        type: ADD_MENU_TO_FAVORITE,
+        payload: { menuId: menu.id, favoriteUsers }
+      });
     });
 };
 

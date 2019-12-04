@@ -67,18 +67,14 @@ const NewDish = props => {
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-    props.fetchMeals(auth.authState.user.uid);
-  }, []);
-
-  /**
-   * After the saved meals are fetched, set the result into local meals
-   */
-  useEffect(() => {
-    // If data already recieved set it to state
-    if (props.dataReceived && props.meals && props.meals.length > 0) {
-      setMeals(props.meals);
+    if (!props.dataReceived) {
+      props.fetchMeals(auth.authState.user.uid);
+    } else {
+      if (props.meals && props.meals.length > 0) {
+        setMeals(props.meals);
+      }
     }
-  }, [props.dataReceived, props.meals]);
+  }, [auth, props.dataReceived]);
 
   /** Create a ref for a File Uploader in order to not use it's default input **/
   let fileUploaderInput = React.createRef();

@@ -127,7 +127,7 @@ const DishCard = ({
                 onDishEditClick(dish);
               }}
             >
-              Edit
+              Open/Edit
             </li>
           )}
           {menus && (

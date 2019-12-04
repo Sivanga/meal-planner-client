@@ -1,5 +1,6 @@
 import {
   FETCH_DISHES,
+  CLEAR_PRIVATE_DISHES,
   ADD_DISH,
   UPDATE_DISH,
   REMOVE_DISH,
@@ -31,18 +32,12 @@ export * from "./Meals";
 export * from "./Menus";
 
 export const END_PAGINATION = "END_PAGINATION";
-const PAGINATION_SIZE = 10;
+export const PAGINATION_SIZE = 20;
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
  */
 export const addDish = (payload, uid) => async dispatch => {
-  // Add the dish locally
-  dispatch({
-    type: ADD_DISH,
-    payload: payload
-  });
-
   // Add to backend if there's authenticated user
   if (!uid) {
     noAuthError("addDish");
@@ -51,7 +46,7 @@ export const addDish = (payload, uid) => async dispatch => {
 
   // Dishes without images can be push in db as is
   if (!payload.imageFile) {
-    return pushToDb(payload, uid);
+    return pushToDb(payload, uid, dispatch);
   }
 
   // First upload dish image to storage
@@ -62,8 +57,34 @@ export const addDish = (payload, uid) => async dispatch => {
   storageRefChild.put(payload.imageFile).then(function(snapshot) {
     storageRefChild.getDownloadURL().then(url => {
       payload.imageUrl = url;
-      pushToDb(payload, uid);
+      pushToDb(payload, uid, dispatch);
     });
+  });
+};
+
+const pushToDb = (dish, uid, dispatch) => {
+  dish.ownerUid = uid;
+
+  // Get a ref for a new dish
+  var newDishKey = dishesDbRef(uid).push().key;
+  var updates = {};
+
+  // Push the dish under current user
+  dish.id = newDishKey;
+  updates["/dishes/" + uid + "/" + newDishKey] = dish;
+
+  // If dish is public, push to public dishes table
+  if (dish.sharePublic) {
+    dish.favoriteUsers = [uid];
+    updates["/publicDishes/" + newDishKey] = dish;
+  }
+
+  databaseRef.update(updates);
+
+  // Add the dish locally
+  dispatch({
+    type: ADD_DISH,
+    payload: dish
   });
 };
 
@@ -106,26 +127,6 @@ const setToDb = (dish, uid) => {
       .child(dish.id)
       .set(dish);
   }
-};
-
-const pushToDb = (dish, uid) => {
-  dish.ownerUid = uid;
-
-  // Get a ref for a new dish
-  var newDishKey = dishesDbRef(uid).push().key;
-  var updates = {};
-
-  // Push the dish under current user
-  dish.id = newDishKey;
-  updates["/dishes/" + uid + "/" + newDishKey] = dish;
-
-  // If dish is public, push to public dishes table
-  if (dish.sharePublic) {
-    dish.favoriteUsers = [uid];
-    updates["/publicDishes/" + newDishKey] = dish;
-  }
-
-  databaseRef.update(updates);
 };
 
 /**
@@ -183,36 +184,27 @@ export const fetchDishes = (uid, prevNextPage) => async dispatch => {
     return;
   }
 
+  // If prevNextPage is empty, the first page is being requested
+  // Clear previous results
+  if (!prevNextPage) {
+    dispatch({
+      type: CLEAR_PRIVATE_DISHES
+    });
+  }
+
   var ref = dishesDbRef(uid).orderByKey();
   if (prevNextPage) ref = ref.endAt(prevNextPage);
-  ref.limitToLast(PAGINATION_SIZE).on("value", snapshot => {
-    // Get the first key, this will be used to fetch the next page.
-    // We get the First key and not last because firebase only retrieve data in asc order,
-    // we will reverse the data in client side
-    var firstKey;
-    var dishes = [];
 
-    // Got a full page, means there are more docs to fetch for next page
-    if (snapshot.numChildren() === PAGINATION_SIZE) {
-      firstKey = Object.keys(snapshot.val())[0];
-    }
-    // This is the last page
-    else {
-      firstKey = END_PAGINATION;
-    }
-    snapshot.forEach(dish => {
-      dishes.push(dish.val());
-    });
-
-    // If there are more documents for next page, remove the first one,
-    // We only use it's key for fetching the next page
-    if (firstKey !== END_PAGINATION) dishes.splice(0, 1);
+  // Fetch data once
+  ref.limitToLast(PAGINATION_SIZE).once("value", snapshot => {
+    var nextKey = getNextKey(snapshot);
+    var dishes = getArrayFromSnapshot(snapshot, nextKey);
 
     dispatch({
       type: PRIVATE_DISHES_DATA_RECEIVED,
       payload: {
         received: true,
-        next: firstKey
+        next: nextKey
       }
     });
     dispatch({
@@ -220,6 +212,34 @@ export const fetchDishes = (uid, prevNextPage) => async dispatch => {
       payload: dishes
     });
   });
+};
+
+export const getNextKey = snapshot => {
+  // Get the next key, this will be used to fetch the next page.
+  // We get the First key and not last because firebase only retrieve data in asc order,
+  // we will reverse the data in client side
+  var nextKey = END_PAGINATION;
+
+  // if we got a full page it means there are more docs to fetch for next page
+  if (snapshot.numChildren() === PAGINATION_SIZE) {
+    nextKey = Object.keys(snapshot.val())[0];
+  }
+  return nextKey;
+};
+
+export const getArrayFromSnapshot = (snapshot, nextKey) => {
+  // Give each item it's backend generated id for future reference
+  var items = [];
+  snapshot.forEach(item => {
+    var itemVal = item.val();
+    itemVal.id = item.key;
+    items.unshift(itemVal);
+  });
+
+  // If there are more documents for next page, remove the last item,
+  // We only use it's key for fetching the next page and we won't show it
+  if (nextKey !== END_PAGINATION) items.pop();
+  return items;
 };
 
 export const searchPrivateDishes = (uid, query) => async dispatch => {
@@ -323,27 +343,12 @@ export const fetchPublicDishes = (uid, prevNextPage) => async dispatch => {
   }
   var ref = publicDishesDbRef().orderByKey();
   if (prevNextPage) ref = ref.endAt(prevNextPage);
-  ref.limitToLast(PAGINATION_SIZE).on("value", snapshot => {
-    var firstKey;
-    var dishes = [];
-
-    // Got a full page, means there are more docs to fetch for next page
-    if (snapshot.numChildren() === PAGINATION_SIZE) {
-      firstKey = Object.keys(snapshot.val())[0];
-    }
-    // This is the last page
-    else {
-      firstKey = END_PAGINATION;
-    }
+  ref.limitToLast(PAGINATION_SIZE).once("value", snapshot => {
+    var nextKey = getNextKey(snapshot);
+    var dishes = getArrayFromSnapshot(snapshot, nextKey);
 
     // Return only public dishes that aren't the current user's
-    snapshot.forEach(dish => {
-      var dishVal = dish.val();
-      if (dishVal.ownerUid !== uid) {
-        dishes.push(dish.val());
-      }
-    });
-    if (firstKey !== END_PAGINATION) dishes.splice(0, 1);
+    dishes = dishes.filter(dish => dish.ownerUid !== uid);
 
     dispatch({
       type: FETCH_PUBLIC_DISHES,
@@ -353,7 +358,7 @@ export const fetchPublicDishes = (uid, prevNextPage) => async dispatch => {
       type: PUBLIC_DISHES_DATA_RECEIVED,
       payload: {
         received: true,
-        next: firstKey
+        next: nextKey
       }
     });
   });

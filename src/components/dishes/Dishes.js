@@ -27,7 +27,8 @@ const mapStateToProps = state => {
     dataReceived: state.dishes.publicDishesDataReceived,
     searchReceived: state.dishes.publicDishesSearchDataReceived,
     searchResult: state.dishes.publicDishesSearchResult,
-    privateMenus: state.menus.menus
+    privateMenus: state.menus.menus,
+    privateMenusDataReceived: state.menus.privateMenusDataReceived
   };
 };
 
@@ -52,6 +53,7 @@ const Dishes = ({
   cleanUpFetchPublicDishesListener,
   fetchMenus,
   privateMenus,
+  privateMenusDataReceived,
   addDish,
   addToFavorites,
   removeFromFavorites,
@@ -77,14 +79,16 @@ const Dishes = ({
     if (auth.authState.user && auth.authState.user.uid) {
       uid = auth.authState.user.uid;
     }
-    fetchPublicDishes(uid);
-    fetchMenus(uid);
+    if (!dataReceived.received) fetchPublicDishes(uid);
+    if (!privateMenusDataReceived.received) {
+      fetchMenus(uid);
+    }
 
     // Clean up listener
     return () => {
       cleanUpFetchPublicDishesListener();
     };
-  }, [auth, fetchPublicDishes, fetchMenus]);
+  }, [auth, dataReceived, privateMenusDataReceived]);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);

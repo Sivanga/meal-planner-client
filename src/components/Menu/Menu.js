@@ -6,10 +6,13 @@ import { connect } from "react-redux";
 import {
   removeMenu,
   fetchPublicMenus,
+  cleanupListenerPublicMenus,
   addMenuToFavorites,
   searchPublicMenus,
-  clearSearchMenus
+  clearSearchMenus,
+  END_PAGINATION
 } from "../../store/actions/Actions";
+import { Button } from "react-bootstrap";
 import { useAuth } from "../auth/UseAuth";
 import SearchComponent from "../SearchComponent";
 
@@ -25,7 +28,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   removeFromFavorites: (id, uid) => dispatch(removeMenu(id, uid)),
   addToFavorites: (menu, uid) => dispatch(addMenuToFavorites(menu, uid)),
-  fetchPublicMenus: uid => dispatch(fetchPublicMenus(uid)),
+  fetchPublicMenus: (uid, nextPage) =>
+    dispatch(fetchPublicMenus(uid, nextPage)),
+  cleanupListenerPublicMenus: uid => dispatch(cleanupListenerPublicMenus(uid)),
   searchPublicMenus: (uid, query) => dispatch(searchPublicMenus(uid, query)),
   clearSearchMenus: () => dispatch(clearSearchMenus())
 });
@@ -33,6 +38,7 @@ const mapDispatchToProps = dispatch => ({
 function Menu({
   publicMenus,
   fetchPublicMenus,
+  cleanupListenerPublicMenus,
   addToFavorites,
   removeFromFavorites,
   dataReceived,
@@ -58,8 +64,12 @@ function Menu({
     if (auth.authState.user && auth.authState.user.uid) {
       uid = auth.authState.user.uid;
     }
-    fetchPublicMenus(uid);
-  }, [auth, fetchPublicMenus]);
+    if (!dataReceived) fetchPublicMenus(uid);
+
+    return () => {
+      cleanupListenerPublicMenus(uid);
+    };
+  }, [auth, dataReceived]);
 
   const handleMenuFavorite = (menu, uid) => {
     addToFavorites(menu, uid);
@@ -81,6 +91,10 @@ function Menu({
   const onSearchClear = () => {
     setIsSearchMode(false);
     clearSearchMenus();
+  };
+
+  const onNextPage = () => {
+    fetchPublicMenus(auth.authState.user.uid, dataReceived.next);
   };
 
   /**
@@ -116,6 +130,13 @@ function Menu({
         menuListEnum={MenuListEnum.PUBLIC_LIST}
         currentUid={currentUid}
       />
+      {dataReceived &&
+        dataReceived.next &&
+        dataReceived.next !== END_PAGINATION && (
+          <Button className="meal-plan-btn" type="button" onClick={onNextPage}>
+            More
+          </Button>
+        )}
       <CreateNewMenu />
     </>
   );

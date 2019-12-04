@@ -1,5 +1,6 @@
 import {
   FETCH_DISHES,
+  CLEAR_PRIVATE_DISHES,
   ADD_DISH,
   UPDATE_DISH,
   REMOVE_DISH,
@@ -36,14 +37,16 @@ function dishes(state = [], action) {
       dishesCopy[foundIndex] = action.payload;
       return dishesCopy;
     case FETCH_DISHES:
-      // Give each dish it's backend generated id for future reference
       // Append dishes to previos array
       var dishesCopy = [...state];
-      Object.keys(action.payload).map(key => {
-        action.payload[key].id = key;
-        return dishesCopy.unshift(action.payload[key]);
+      return dishesCopy.concat(action.payload);
+    case REMOVE_DISH:
+      // Remove dish from the local state
+      return [...state].filter(dish => {
+        return dish.id !== action.payload;
       });
-      return dishesCopy;
+    case CLEAR_PRIVATE_DISHES:
+      return [];
     default:
       return state;
   }
@@ -77,7 +80,7 @@ function searchDishes(state = [], action) {
       return state;
     case REMOVE_DISH:
       // Update the search result with this dish state
-      return state.filter(dish => {
+      return [...state].filter(dish => {
         return dish.id !== action.payload;
       });
 
@@ -90,12 +93,21 @@ function publicDishes(state = [], action) {
     case CLEAR_PUBLIC_DISHES:
       return [];
     case FETCH_PUBLIC_DISHES:
+      // Append dishes to previos array
       var dishesCopy = [...state];
-      Object.keys(action.payload).map(key => {
-        action.payload[key].id = key;
-        dishesCopy.unshift(action.payload[key]);
+      return dishesCopy.concat(action.payload);
+    case REMOVE_DISH_FROM_FAVORITE:
+    case ADD_DISH_TO_FAVORITE:
+      // Update dish in local state
+      var index = state.findIndex(dish => {
+        return dish.id === action.payload.dishId;
       });
-      return dishesCopy;
+      if (index > -1) {
+        var stateCopy = [...state];
+        stateCopy[index].favoriteUsers = action.payload.favoriteUsers;
+        return stateCopy;
+      }
+      return state;
     default:
       return state;
   }

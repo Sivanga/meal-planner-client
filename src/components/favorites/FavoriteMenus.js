@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
   removeMenu,
   fetchMenus,
+  cleanUpFetchMenusListener,
   addMenuToFavorites,
   searchPrivateMenus,
-  clearSearchMenus
+  clearSearchMenus,
+  END_PAGINATION
 } from "../../store/actions/Actions";
+import { Button } from "react-bootstrap";
 import { MenuListEnum } from "../Menu/MenuItem";
 import { connect } from "react-redux";
 import MenuList from "../Menu/MenuList";
@@ -23,7 +26,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   removeMenu: (id, uid) => dispatch(removeMenu(id, uid)),
-  fetchMenus: uid => dispatch(fetchMenus(uid)),
+  fetchMenus: (uid, nextPage) => dispatch(fetchMenus(uid, nextPage)),
+  cleanUpFetchMenusListener: uid => dispatch(cleanUpFetchMenusListener(uid)),
   addToFavorites: (menu, uid) => dispatch(addMenuToFavorites(menu, uid)),
   searchPrivateMenus: (uid, query) => dispatch(searchPrivateMenus(uid, query)),
   clearSearchMenus: () => dispatch(clearSearchMenus())
@@ -50,8 +54,15 @@ const FavoriteMenus = ({
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-    fetchMenus(auth.authState.user.uid);
-  }, [auth, fetchMenus]);
+
+    const uid = auth.authState.user.uid;
+    if (!dataReceived) fetchMenus(auth.authState.user.uid);
+
+    // Clean up listener
+    return () => {
+      cleanUpFetchMenusListener(uid);
+    };
+  }, [auth, dataReceived]);
 
   const handleMenuRemove = id => {
     removeMenu(id, auth.authState.user.uid);
@@ -88,6 +99,10 @@ const FavoriteMenus = ({
   const onSearchClear = () => {
     setIsSearchMode(false);
     clearSearchMenus();
+  };
+
+  const onNextPage = () => {
+    fetchMenus(auth.authState.user.uid, dataReceived.next);
   };
 
   if (!menus || menus.length === 0) {
@@ -130,6 +145,13 @@ const FavoriteMenus = ({
         menuListEnum={MenuListEnum.MY_FAVORITES_LIST}
         currentUid={currentUid}
       />
+      {dataReceived &&
+        dataReceived.next &&
+        dataReceived.next !== END_PAGINATION && (
+          <Button className="meal-plan-btn" type="button" onClick={onNextPage}>
+            More
+          </Button>
+        )}
       <CreateNewMenu />
     </>
   );

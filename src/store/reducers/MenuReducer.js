@@ -1,5 +1,8 @@
 import {
   SET_MENU,
+  REMOVE_MENU,
+  REMOVE_MENU_FROM_FAVORITE,
+  ADD_MENU_TO_FAVORITE,
   FETCH_PUBLIC_MENUS,
   FETCH_PRIVATE_MENUS,
   PRIVATE_MENUS_DATA_RECIEVED,
@@ -16,15 +19,12 @@ function menus(state = [], action) {
   switch (action.type) {
     case SET_MENU:
       return [action.payload, ...state];
+    case REMOVE_MENU:
+      return [...state].filter(menu => menu.id !== action.payload);
     case FETCH_PRIVATE_MENUS:
-      // Give each menu it's backend generated id for future reference
-      var newMenus = [];
-      Object.keys(action.payload).map(key => {
-        action.payload[key].id = key;
-
-        return newMenus.unshift(action.payload[key]);
-      });
-      return newMenus;
+      // Append menus to previos array
+      var menusCopy = [...state];
+      return menusCopy.concat(action.payload);
     default:
       return state;
   }
@@ -33,15 +33,21 @@ function menus(state = [], action) {
 function publicMenus(state = [], action) {
   switch (action.type) {
     case FETCH_PUBLIC_MENUS:
-      var publicMenus = [];
-      Object.keys(action.payload.publicMenus).map(key => {
-        action.payload.publicMenus[key].id = key;
-        // Return only public dishes that aren't the current user's
-        if (action.payload.publicMenus[key].ownerUid !== action.payload.uid) {
-          publicMenus.push(action.payload.publicMenus[key]);
-        }
+      // Append dishes to previos array
+      var menuCopy = [...state];
+      return menuCopy.concat(action.payload);
+    case ADD_MENU_TO_FAVORITE:
+    case REMOVE_MENU_FROM_FAVORITE:
+      // Update menu in local state
+      var index = state.findIndex(menu => {
+        return menu.id === action.payload.menuId;
       });
-      return publicMenus;
+      if (index > -1) {
+        var stateCopy = [...state];
+        stateCopy[index].favoriteUsers = action.payload.favoriteUsers;
+        return stateCopy;
+      }
+      return state;
     default:
       return state;
   }
@@ -100,7 +106,7 @@ function publicMenusSearchReceived(state = false, action) {
   }
 }
 
-const MealsReducer = combineReducers({
+const MenuReducer = combineReducers({
   menus,
   publicMenus,
   privateMenusDataReceived,
@@ -110,4 +116,4 @@ const MealsReducer = combineReducers({
   publicMenusSearchReceived
 });
 
-export default MealsReducer;
+export default MenuReducer;
