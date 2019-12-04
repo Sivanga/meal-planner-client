@@ -188,10 +188,6 @@ const TemplateMenu = props => {
    * @param {onBlur} event
    */
   const onMealChange = (event, index) => {
-    console.log(
-      "onMealChange. event.currentTarget.textContent: ",
-      event.currentTarget.textContent
-    );
     const newMealText = event.currentTarget.textContent;
     const newMeal = { ...meals[index] };
     newMeal.name = newMealText;

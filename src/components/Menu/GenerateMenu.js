@@ -146,11 +146,11 @@ const GenerateMenu = props => {
     if (!auth.authState.user) return;
 
     // Fetch private and public dishes
-    if (!props.favoriteDataReceived) {
+    if (!props.favoriteDataReceived.received) {
       props.fetchDishes(auth.authState.user.uid);
     }
 
-    if (!props.publicDataReceived) {
+    if (!props.publicDataReceived.received) {
       props.fetchPublicDishes(auth.authState.user.uid);
     }
 

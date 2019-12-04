@@ -124,7 +124,6 @@ export const cleanUpFetchMenusListener = uid => async dispatch => {
  * @param {current user id} uid
  */
 export const fetchPublicMenus = (uid, prevNextPage) => async dispatch => {
-  console.log("fetchPublicMenus prevNextPage: ", prevNextPage);
   var ref = publicMenusDbRef().orderByKey();
   if (prevNextPage) ref = ref.endAt(prevNextPage);
   ref.limitToLast(PAGINATION_SIZE).once("value", snapshot => {
