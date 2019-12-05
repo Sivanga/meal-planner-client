@@ -2,7 +2,7 @@
 
 $panel-width-large: 15rem;
 $panel-width-medium: 13rem;
-$panel-width-small: 10rem;
+$panel-width-small: 12rem;
 
 .mealDisabled {
   background: rgba($primary-dark, 0.5);
@@ -12,7 +12,7 @@ $panel-width-small: 10rem;
   overflow: hidden;
   width: 100vw;
   position: relative;
-  padding-top: 2.5rem;
+  padding-top: 0.5rem;
 }
 
 // Table
@@ -29,7 +29,7 @@ $panel-width-small: 10rem;
   bottom: 0;
   right: 0;
   width: $panel-width-small;
-  margin-top: 1.9rem;
+  margin-top: 0.4rem;
   transform: translate(100%);
   transition: 0.3s ease-out;
   background: white;
@@ -124,19 +124,24 @@ li {
   display: grid;
   width: 250%;
   font-size: 0.5rem;
+}
 
-  @media screen and (min-width: 425px) {
+@media screen and (min-width: 425px) {
+  .item-container,
+  .filters-and-search {
     width: 190%;
   }
-
-  @media screen and (min-width: 425px) {
-    width: 190%;
-  }
-  @media screen and (min-width: 768px) {
+}
+@media screen and (min-width: 768px) {
+  .item-container,
+  .filters-and-search {
     width: 100%;
   }
+}
 
-  @media screen and (min-width: 1024px) {
+@media screen and (min-width: 1024px) {
+  .item-container,
+  .filters-and-search {
     padding-right: 130px;
     padding-left: 100px;
   }
@@ -148,6 +153,7 @@ li {
   top: 0rem;
   z-index: 2;
   display: flex;
+  font-size: 1rem;
 
   @media screen and (min-width: 425px) {
     right: 1.5rem;
@@ -155,21 +161,6 @@ li {
 
   @media screen and (min-width: 1024px) {
     right: 8rem;
-  }
-
-  .burger .burger-lines,
-  .burger .burger-lines:after,
-  .burger .burger-lines:before {
-    background-color: black;
-    font-size: 8px;
-  }
-
-  &::before {
-    content: "More dishes: ";
-    // justify-self: center;
-    font-size: 1.3rem;
-    padding-top: 0.1rem;
-    margin-right: 0.6rem;
   }
 }
 
@@ -181,6 +172,25 @@ li {
 
 .search-in-pannel {
   width: 100%;
+}
+
+.filters-and-search {
+  display: flex;
+  flex-direction: row;
+  font-size: 0.9rem;
+
+  .filters {
+    flex-grow: 1;
+  }
+
+  .panel-handle {
+    transform: translate(0%);
+    transition: 0.2s ease-out;
+    &.is-open {
+      transform: translate(-310%);
+      transition: 0.2s ease-out;
+    }
+  }
 }
 
 .meal-plan-btn,

@@ -1,5 +1,6 @@
 import React from "react";
 import { MDBCol, MDBIcon } from "mdbreact";
+import classNames from "classnames";
 
 const SearcComponent = ({ onSearch, onSearchClear, isFullLength }) => {
   const formInput = React.createRef();
@@ -14,7 +15,7 @@ const SearcComponent = ({ onSearch, onSearchClear, isFullLength }) => {
   return (
     <MDBCol sm={isFullLength ? "12" : "4"} className="mx-auto">
       <form
-        className="form-inline mt-4 mb-4"
+        className={classNames("form-inline", { "mt-4 mb-4": !isFullLength })}
         onSubmit={e => e.preventDefault()}
       >
         <MDBIcon

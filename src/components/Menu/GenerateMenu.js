@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Button } from "mdbreact";
 import classNames from "classnames";
+import Panel from "./Panel";
 import {
   fetchDishes,
   fetchPublicDishes,
@@ -14,7 +15,7 @@ import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import TableDroppable from "./TableDroppable";
-import PanelDroppable, { PANEL_DROPPABLE_ID } from "./PanelDroppable";
+import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { getContainerStyle } from "./Helpers";
 import { Redirect, Prompt } from "react-router-dom";
 import Burger from "@animated-burgers/burger-arrow";
@@ -33,7 +34,6 @@ import { useHistory } from "react-router-dom";
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
 import "../../scss/GenerateMenu.scss";
-import SearchComponent from "../SearchComponent";
 
 const mapStateToProps = state => {
   return {
@@ -395,7 +395,7 @@ const GenerateMenu = props => {
     setRandomDishes(randomDishesCopy);
   };
 
-  const onDoneClick = (menuShareState, menuNameState) => {
+  const onSaveClick = (menuShareState, menuNameState) => {
     // Generate menu preview
     var images = [];
     for (var i = 0; i < days.length; i++) {
@@ -526,7 +526,7 @@ const GenerateMenu = props => {
         <MDBModalFooter>
           <MDBBtn
             onClick={() => {
-              onDoneClick(menuShareState, menuNameState);
+              onSaveClick(menuShareState, menuNameState);
             }}
             className="generate-btn"
           >
@@ -559,7 +559,7 @@ const GenerateMenu = props => {
                 setSaveModalShow(true);
               }}
             >
-              DONE
+              Save
             </Button>
             <MDBBtn
               className="generate-btn random-btn"
@@ -579,6 +579,17 @@ const GenerateMenu = props => {
           >
             EDIT
           </Button>
+        )}
+        {isEditMode && (
+          <div className="filters-and-search">
+            <div className="filters">+ Filters</div>
+            <div
+              className={classNames("panel-handle", { "is-open": showPanel })}
+              onClick={() => setShowPanel(!showPanel)}
+            >
+              + Search
+            </div>
+          </div>
         )}
 
         {/* Allow dragging the extra dish info */}
@@ -637,17 +648,6 @@ const GenerateMenu = props => {
                     {day.day}
                   </div>
                 ))}
-
-                {/* Panl handle at the end of the table head */}
-                {isEditMode && (
-                  <div className="burger-wrapper">
-                    <Burger
-                      direction="right"
-                      isOpen={showPanel}
-                      onClick={() => setShowPanel(!showPanel)}
-                    />
-                  </div>
-                )}
               </li>
 
               {/* Meals */}
@@ -674,26 +674,15 @@ const GenerateMenu = props => {
             <div
               className={classNames("panel-wrap", showPanel ? "show" : "hide")}
             >
-              <SearchComponent
-                onSearch={value => onSearch(value)}
+              <Panel
+                onSearch={onSearch}
                 onSearchClear={onSearchClear}
-                isFullLength={true}
-              />
-              {/* Searching */}
-              {isSearchMode && !props.searchReceived && (
-                <div className="center-text">Searching...</div>
-              )}
-              {/* No search result to show */}
-              {isSearchMode &&
-                props.searchReceived &&
-                props.searchResult.length === 0 && (
-                  <div className="center-text">
-                    Couldn't find what you've search for.
-                  </div>
-                )}
-              <PanelDroppable
-                dishes={isSearchMode ? props.searchResult : allDishes}
+                isSearchMode={isSearchMode}
+                searchReceived={props.searchReceived}
+                searchResult={props.searchResult}
+                allDishes={allDishes}
                 isEditMode={isEditMode}
+                onPanelClose={() => setShowPanel(false)}
               />
             </div>
           </div>
