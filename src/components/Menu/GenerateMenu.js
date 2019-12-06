@@ -18,7 +18,6 @@ import TableDroppable from "./TableDroppable";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { getContainerStyle } from "./Helpers";
 import { Redirect, Prompt } from "react-router-dom";
-import Burger from "@animated-burgers/burger-arrow";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import {
@@ -28,7 +27,7 @@ import {
   MDBModalHeader,
   MDBModalFooter
 } from "mdbreact";
-import { Form, Row, Col } from "react-bootstrap";
+import { Form, Row, Col, Collapse } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
@@ -138,6 +137,9 @@ const GenerateMenu = props => {
 
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
+
+  /** Filter view open/close state */
+  const [isFilterViewOpen, setIsFilterViewOpen] = useState(false);
 
   /**
    * Fetch private and public dishes. Compute random dishes after all data is received
@@ -582,7 +584,16 @@ const GenerateMenu = props => {
         )}
         {isEditMode && (
           <div className="filters-and-search">
-            <div className="filters">+ Filters</div>
+            <div
+              className="filters"
+              onClick={() => setIsFilterViewOpen(!isFilterViewOpen)}
+            >
+              + Filters
+              {console.log("isFilterViewOpen: ", isFilterViewOpen)}
+              <Collapse in={isFilterViewOpen}>
+                <div>All filters</div>
+              </Collapse>
+            </div>
             <div
               className={classNames("panel-handle", { "is-open": showPanel })}
               onClick={() => setShowPanel(!showPanel)}

@@ -132,7 +132,12 @@ const NewDish = props => {
     setValidated(true);
 
     if (isValid) {
+      // Set selected meals
       dish.meals = selectedMeals;
+
+      // Set share public if not already defind
+      if (!dish.hasOwnProperty("sharePublic")) dish.sharePublic = true;
+
       props.onDishAdded(dish);
     }
   };

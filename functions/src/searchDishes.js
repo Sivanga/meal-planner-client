@@ -204,7 +204,9 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
               must: [
                 {
                   match: { _id: data.uid }
-                },
+                }
+              ],
+              should: [
                 {
                   nested: {
                     query: {
@@ -214,14 +216,24 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
                           "dishes.name^3",
                           "dishes.link",
                           "dishes.recipe",
-                          "dishes.tags.name",
                           "dishes.meals.name"
                         ],
                         type: "phrase_prefix"
                       }
                     },
                     path: "dishes",
-                    inner_hits: {}
+                    inner_hits: { name: "searchText" } // Search as text in all fields
+                  }
+                },
+                {
+                  nested: {
+                    query: {
+                      match: {
+                        "dishes.tags.name": data.query
+                      }
+                    },
+                    path: "dishes",
+                    inner_hits: { name: "searchTags" } // Search in keyword tags
                   }
                 }
               ]
@@ -235,9 +247,16 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
         if (result.body.hits) {
           var dishesToReturn = [];
           if (result.body.hits.hits[0]) {
-            result.body.hits.hits[0].inner_hits.dishes.hits.hits.map(result => {
-              return dishesToReturn.push(result._source);
-            });
+            result.body.hits.hits[0].inner_hits.searchText.hits.hits.map(
+              result => {
+                return dishesToReturn.push(result._source);
+              }
+            );
+            result.body.hits.hits[0].inner_hits.searchTags.hits.hits.map(
+              result => {
+                return dishesToReturn.push(result._source);
+              }
+            );
           }
 
           resolve(dishesToReturn);
@@ -260,17 +279,23 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
     esClient.search(
       {
         index: "public_dishes",
-        type: "_doc",
         body: {
           query: {
             bool: {
-              must: {
-                multi_match: {
-                  query: data.query,
-                  type: "phrase_prefix",
-                  fields: ["name", "link", "recipe", "tags.name", "meals.name"]
+              should: [
+                {
+                  multi_match: {
+                    query: data.query,
+                    type: "phrase_prefix",
+                    fields: ["name", "link", "recipe", "meals.name"]
+                  }
+                },
+                {
+                  match: {
+                    "tags.name": data.query
+                  }
                 }
-              },
+              ],
               must_not: {
                 match: { ownerUid: data.uid ? data.uid : "dummy" } // If there's no connected user, return all public result of all users
               }
@@ -289,14 +314,15 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
           resolve(dishesToReturn);
         }
         if (err) {
-          console.log(" err: ", err);
-
+          console.log(" err: ");
+          console.log(err);
           reject(err);
         }
       }
     );
   }).catch(err => {
-    console.log("catch err: ", err);
+    console.log("catch err: ");
+    console.log(err);
     reject(err);
   });
 });
@@ -313,8 +339,8 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
           {
             query: {
               bool: {
-                must: [
-                  { match: { _id: data.uid } },
+                must: [{ match: { _id: data.uid } }],
+                should: [
                   {
                     nested: {
                       query: {
@@ -324,14 +350,24 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                             "dishes.name^3",
                             "dishes.link",
                             "dishes.recipe",
-                            "dishes.tags.name",
                             "dishes.meals.name"
                           ],
                           type: "phrase_prefix"
                         }
                       },
                       path: "dishes",
-                      inner_hits: {}
+                      inner_hits: { name: "searchText" }
+                    }
+                  },
+                  {
+                    nested: {
+                      query: {
+                        match: {
+                          "dishes.tags.name": data.query
+                        }
+                      },
+                      path: "dishes",
+                      inner_hits: { name: "searchTags" } // Search in keyword tags
                     }
                   }
                 ]
@@ -342,13 +378,20 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
           {
             query: {
               bool: {
-                must: {
-                  multi_match: {
-                    query: data.query,
-                    type: "phrase_prefix",
-                    fields: ["name", "link", "recipe", "tags", "meals"]
+                should: [
+                  {
+                    multi_match: {
+                      query: data.query,
+                      type: "phrase_prefix",
+                      fields: ["name", "link", "recipe", "meals"]
+                    }
+                  },
+                  {
+                    match: {
+                      "tags.name": data.query
+                    }
                   }
-                },
+                ],
                 must_not: [
                   { match: { ownerUid: data.uid } },
                   { match: { favoriteUsers: data.uid } }
@@ -366,7 +409,13 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
           var dishesArray = [];
           if (result.body.responses[0].hits.hits[0]) {
             dishesArray =
-              result.body.responses[0].hits.hits[0].inner_hits.dishes.hits.hits;
+              result.body.responses[0].hits.hits[0].inner_hits.searchText.hits
+                .hits;
+
+            dishesArray = dishesArray.concat(
+              result.body.responses[0].hits.hits[0].inner_hits.searchTags.hits
+                .hits
+            );
           }
           var publidDishesArray = dishesArray.concat(
             result.body.responses[1].hits.hits

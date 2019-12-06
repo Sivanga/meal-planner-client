@@ -1,3 +1,6 @@
+// General
+export const LOG_OUT = "LOG_OUT";
+
 // Dishes
 export const FETCH_DISHES = "FETCH_DISHES";
 export const CLEAR_PRIVATE_DISHES = "CLEAR_PRIVATE_DISHES";

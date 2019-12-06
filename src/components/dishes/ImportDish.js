@@ -165,7 +165,7 @@ const ImportDish = ({ addDish }) => {
           <Modal.Title className="w-100 m-auto">Add new dish</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <NewDish onDishAdded={dish => onDishAdd(dish)} dish={dishFromUrl} />
+          <NewDish onDishAdded={dish => onDishAdd(dish)} dish={dishFromUrl} edit={true}/>
         </Modal.Body>
       </Modal>
       <i

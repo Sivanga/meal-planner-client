@@ -1,11 +1,17 @@
 import React from "react";
 import { Button } from "mdbreact";
+import { logout } from "../store/actions/Actions";
 import firebase, { authProviders } from "../firebase";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import "../scss/Login.scss";
 import { useAuth } from "./auth/UseAuth";
+import { connect } from "react-redux";
 
-const Login = () => {
+const mapDispatchToProps = dispatch => ({
+  logout: (dish, uid) => dispatch(logout())
+});
+
+const Login = ({ logout }) => {
   var uiConfig = {
     callbacks: {
       signInSuccessWithAuthResult: () => false
@@ -33,7 +39,10 @@ const Login = () => {
           <p>Hello {auth.authState.user.displayName}!</p>
           <Button
             className="login-btn"
-            onClick={() => firebase.auth().signOut()}
+            onClick={() => {
+              logout();
+              firebase.auth().signOut();
+            }}
           >
             Sign-out
           </Button>
@@ -43,4 +52,8 @@ const Login = () => {
   );
 };
 
-export default Login;
+const LoginComponent = connect(
+  null,
+  mapDispatchToProps
+)(Login);
+export default LoginComponent;
