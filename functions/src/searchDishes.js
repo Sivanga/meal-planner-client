@@ -193,7 +193,7 @@ exports.indexPublicDishesToElastic = functions.database
 /** elastic - search in "dishes" index */
 exports.searchPrivateDishes = functions.https.onCall((data, context) => {
   // callback API
-  console.log("Search for ", data.query, " in dishes");
+  console.log("Search for ", data.query, " in dishes. filters: ", data.filters);
   return new Promise((resolve, reject) => {
     esClient.search(
       {
@@ -210,30 +210,30 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
                 {
                   nested: {
                     query: {
-                      multi_match: {
-                        query: data.query,
-                        fields: [
-                          "dishes.name^3",
-                          "dishes.link",
-                          "dishes.recipe",
-                          "dishes.meals.name"
-                        ],
-                        type: "phrase_prefix"
+                      bool: {
+                        should: [
+                          {
+                            multi_match: {
+                              query: data.query,
+                              fields: [
+                                "dishes.name^3",
+                                "dishes.link",
+                                "dishes.recipe",
+                                "dishes.meals.name"
+                              ],
+                              type: "phrase_prefix"
+                            }
+                          },
+                          {
+                            term: {
+                              "dishes.tags.name": data.query
+                            }
+                          }
+                        ]
                       }
                     },
                     path: "dishes",
-                    inner_hits: { name: "searchText" } // Search as text in all fields
-                  }
-                },
-                {
-                  nested: {
-                    query: {
-                      match: {
-                        "dishes.tags.name": data.query
-                      }
-                    },
-                    path: "dishes",
-                    inner_hits: { name: "searchTags" } // Search in keyword tags
+                    inner_hits: { size: 30 } // Search as text in all fields
                   }
                 }
               ]
@@ -247,16 +247,9 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
         if (result.body.hits) {
           var dishesToReturn = [];
           if (result.body.hits.hits[0]) {
-            result.body.hits.hits[0].inner_hits.searchText.hits.hits.map(
-              result => {
-                return dishesToReturn.push(result._source);
-              }
-            );
-            result.body.hits.hits[0].inner_hits.searchTags.hits.hits.map(
-              result => {
-                return dishesToReturn.push(result._source);
-              }
-            );
+            result.body.hits.hits[0].inner_hits.dishes.hits.hits.map(result => {
+              return dishesToReturn.push(result._source);
+            });
           }
 
           resolve(dishesToReturn);
@@ -291,7 +284,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
                   }
                 },
                 {
-                  match: {
+                  term: {
                     "tags.name": data.query
                   }
                 }
@@ -327,9 +320,90 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
   });
 });
 
+// Get most popular tags
+exports.getPopularTags = functions.https.onCall((data, context) => {
+  // callback API
+  return new Promise((resolve, reject) => {
+    esClient.msearch(
+      {
+        body: [
+          { index: "dishes" },
+          {
+            query: {
+              match_all: {}
+            },
+            aggs: {
+              dishes: {
+                nested: {
+                  path: "dishes"
+                },
+                aggs: {
+                  popular_tags: {
+                    term: {
+                      field: "dishes.tags.name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          { index: "public_dishes" },
+          {
+            query: {
+              match_all: {}
+            },
+            aggs: {
+              popular_tags: {
+                term: {
+                  field: "tags.name"
+                }
+              }
+            }
+          }
+        ]
+      },
+      { ignore: [404] },
+      (err, result) => {
+        if (result) {
+          console.log(result);
+
+          var tagsArray = [];
+          if (
+            result.body.responses[0].aggregations.dishes.popular_tags.buckets
+          ) {
+            tagsArray =
+              result.body.responses[0].aggregations.dishes.popular_tags.buckets;
+          }
+
+          if (result.body.responses[1].aggregations.popular_tags.buckets) {
+            tagsArray.concat(
+              result.body.responses[1].aggregations.popular_tags.buckets
+            );
+          }
+          console.log("tagsArray: ", tagsArray);
+
+          resolve(tagsArray);
+        }
+
+        if (err) {
+          console.log(err);
+          reject(err);
+        }
+      }
+    );
+  }).catch(err => {
+    console.log("catch err: ", err);
+    reject(err);
+  });
+});
+
 /** elastic - search in both "dishes" and "public_dishes" index */
 exports.searchAllDishes = functions.https.onCall((data, context) => {
-  console.log("Search for ", data.query, " in all dishes");
+  console.log("Search for ", data.query, " in all dishes. tags: ", data.tags);
+  if (data.tags && data.tags.length > 0) {
+    return searchFilteredDishes(data);
+  }
+  console.log("data.uid: ", data.uid, " data.query: ", data.query);
   // callback API
   return new Promise((resolve, reject) => {
     esClient.msearch(
@@ -344,30 +418,31 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                   {
                     nested: {
                       query: {
-                        multi_match: {
-                          query: data.query,
-                          fields: [
-                            "dishes.name^3",
-                            "dishes.link",
-                            "dishes.recipe",
-                            "dishes.meals.name"
-                          ],
-                          type: "phrase_prefix"
+                        bool: {
+                          should: [
+                            {
+                              multi_match: {
+                                query: data.query,
+                                fields: [
+                                  "dishes.name^3",
+                                  "dishes.link",
+                                  "dishes.recipe",
+                                  "dishes.meals.name"
+                                ],
+                                type: "phrase_prefix"
+                              }
+                            },
+                            {
+                              term: {
+                                "dishes.tags.name": data.query
+                              }
+                            }
+                          ]
                         }
                       },
+
                       path: "dishes",
-                      inner_hits: { name: "searchText" }
-                    }
-                  },
-                  {
-                    nested: {
-                      query: {
-                        match: {
-                          "dishes.tags.name": data.query
-                        }
-                      },
-                      path: "dishes",
-                      inner_hits: { name: "searchTags" } // Search in keyword tags
+                      inner_hits: { size: 30 } // Search in keyword tags
                     }
                   }
                 ]
@@ -404,30 +479,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
       { ignore: [404] },
       (err, result) => {
         if (result) {
-          console.log(result);
-
-          var dishesArray = [];
-          if (result.body.responses[0].hits.hits[0]) {
-            dishesArray =
-              result.body.responses[0].hits.hits[0].inner_hits.searchText.hits
-                .hits;
-
-            dishesArray = dishesArray.concat(
-              result.body.responses[0].hits.hits[0].inner_hits.searchTags.hits
-                .hits
-            );
-          }
-          var publidDishesArray = dishesArray.concat(
-            result.body.responses[1].hits.hits
-          );
-
-          var dishesToReturn = [];
-          publidDishesArray.map(result => {
-            return dishesToReturn.push(result._source);
-          });
-          console.log("dishesToReturn: ", dishesToReturn);
-
-          resolve(dishesToReturn);
+          handleAllDishesResult(err, result, resolve, reject);
         }
 
         if (err) {
@@ -441,3 +493,169 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
     reject(err);
   });
 });
+
+const searchFilteredDishes = (data, context) => {
+  if (data.query) {
+    console.log("searchFilteredDishes with query: ", data.query);
+    return new Promise((resolve, reject) => {
+      esClient.msearch(
+        {
+          body: [
+            { index: "dishes" },
+            {
+              query: {
+                bool: {
+                  must: [
+                    {
+                      match: { _id: data.uid }
+                    },
+                    {
+                      nested: {
+                        query: {
+                          bool: {
+                            must: [
+                              {
+                                terms: {
+                                  "dishes.tags.name": data.tags
+                                }
+                              },
+                              {
+                                multi_match: {
+                                  query: data.query,
+                                  fields: [
+                                    "dishes.name^3",
+                                    "dishes.link",
+                                    "dishes.recipe",
+                                    "dishes.meals.name"
+                                  ],
+                                  type: "phrase_prefix"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        path: "dishes",
+                        inner_hits: { size: 30 } // Search in keyword tags
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            { index: "public_dishes" },
+            {
+              query: {
+                bool: {
+                  should: [
+                    {
+                      multi_match: {
+                        query: data.query,
+                        type: "phrase_prefix",
+                        fields: ["name", "link", "recipe", "meals"]
+                      }
+                    }
+                  ],
+                  must_not: [
+                    { match: { ownerUid: data.uid } },
+                    { match: { favoriteUsers: data.uid } }
+                  ],
+                  must: {
+                    terms: {
+                      "tags.name": data.tags
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        { ignore: [404] },
+        (err, result) => {
+          handleAllDishesResult(err, result, resolve, reject);
+        }
+      );
+    }).catch(err => {
+      reject(err);
+    });
+  } else {
+    console.log("searchFilteredDishes without query");
+    return new Promise((resolve, reject) => {
+      esClient.msearch(
+        {
+          body: [
+            { index: "dishes" },
+            {
+              query: {
+                bool: {
+                  must: [
+                    {
+                      match: { _id: data.uid }
+                    },
+                    {
+                      nested: {
+                        query: {
+                          terms: {
+                            "dishes.tags.name": data.tags
+                          }
+                        },
+                        path: "dishes",
+                        inner_hits: { size: 30 } // Search in keyword tags
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            { index: "public_dishes" },
+            {
+              query: {
+                bool: {
+                  must_not: [
+                    { match: { ownerUid: data.uid } },
+                    { match: { favoriteUsers: data.uid } }
+                  ],
+                  must: {
+                    terms: {
+                      "tags.name": data.tags
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        { ignore: [404] },
+        (err, result) => {
+          handleAllDishesResult(err, result, resolve, reject);
+        }
+      );
+    }).catch(err => {
+      reject(err);
+    });
+  }
+};
+
+const handleAllDishesResult = (err, result, resolve, reject) => {
+  if (result) console.log(result);
+  var dishes = [];
+
+  if (result.body.responses && result.body.responses[0].hits.hits[0]) {
+    dishes = dishes.concat(
+      result.body.responses[0].hits.hits[0].inner_hits.dishes.hits.hits
+    );
+  }
+  if (result.body.responses && result.body.responses[1].hits.hits) {
+    dishes = dishes.concat(result.body.responses[1].hits.hits);
+  }
+
+  var dishesToReturn = [];
+  dishes.map(result => {
+    return dishesToReturn.push(result._source);
+  });
+
+  resolve(dishesToReturn);
+
+  if (err) {
+    reject(err);
+  }
+};

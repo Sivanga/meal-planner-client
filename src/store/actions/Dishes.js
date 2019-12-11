@@ -18,7 +18,8 @@ import {
   CLEAR_PUBLIC_DISHES,
   SEARCH_ALL_DISHES,
   SEARCH_ALL_DISHES_RECEIVED,
-  CLEAR_SEARCH_ALL_DISHES
+  CLEAR_SEARCH_ALL_DISHES,
+  POPULAR_TAGS
 } from "../constants/Action-types";
 import {
   databaseRef,
@@ -35,12 +36,6 @@ export const PAGINATION_SIZE = 20;
  * Add dish to backend. Update list will be invoked by fetchDishes observer
  */
 export const addDish = (payload, uid) => async dispatch => {
-  // Add to backend if there's authenticated user
-  if (!uid) {
-    noAuthError("addDish");
-    return;
-  }
-
   // Dishes without images can be push in db as is
   if (!payload.imageFile) {
     return pushToDb(payload, uid, dispatch);
@@ -172,14 +167,16 @@ export const removeDish = (payload, uid) => async dispatch => {
  * Dispatch action FETCH_DISHES on chahnge.
  * prevNextPage
   - holds the key of the last result, this will be used for the next page.
- * Empty "prevNextPage
- " indicates the first fetch
+ * Empty "prevNextPage" indicates the first fetch
+ * filters - if exist, send the request to elastic search to filter dishes
  */
-export const fetchDishes = (uid, prevNextPage) => async dispatch => {
-  if (!uid) {
-    noAuthError("addDish");
-    return;
+export const fetchDishes = (uid, filters, prevNextPage) => async dispatch => {
+  if (filters && Object.keys(filters).length > 0) {
+    console.log("calling searchPrivateDishes");
+    return dispatch(searchPrivateDishes(uid, "", filters));
   }
+
+  console.log("Continue with firebase");
 
   // If prevNextPage is empty, the first page is being requested
   // Clear previous results
@@ -239,10 +236,12 @@ export const getArrayFromSnapshot = (snapshot, nextKey) => {
   return items;
 };
 
-export const searchPrivateDishes = (uid, query) => async dispatch => {
+export const searchPrivateDishes = (uid, query, filters) => async dispatch => {
+  console.log("searchPrivateDishes");
   const search = firebase.functions().httpsCallable("searchPrivateDishes");
-  search({ query: query, uid: uid })
+  search({ query: query, uid: uid, filters: filters })
     .then(result => {
+      console.log(result);
       dispatch({
         type: SEARCH_FAVORITE_DATA,
         payload: result.data
@@ -295,9 +294,10 @@ export const clearSearchPublicDishes = () => async dispatch => {
   });
 };
 
-export const searchAllDishes = (uid, query) => async dispatch => {
+export const searchAllDishes = (uid, query, tags) => async dispatch => {
+  console.log("searchAllDishes. query: ", query);
   const search = firebase.functions().httpsCallable("searchAllDishes");
-  search({ query: query, uid: uid })
+  search({ query: query, uid: uid, tags: tags })
     .then(result => {
       dispatch({
         type: SEARCH_ALL_DISHES,
@@ -330,7 +330,11 @@ export const cleanUpFetchPublicDishesListener = () => async dispatch => {
  * Fetch all public dishes
  * @param {current user id} uid
  */
-export const fetchPublicDishes = (uid, prevNextPage) => async dispatch => {
+export const fetchPublicDishes = (
+  uid,
+  filters,
+  prevNextPage
+) => async dispatch => {
   // If prevNextPage is empty, the first page is being requested
   // Clear previous results
   if (!prevNextPage) {
@@ -386,8 +390,17 @@ export const addToFavorites = (dish, uid) => async dispatch => {
     });
 };
 
-const noAuthError = methodName => {
-  console.error(
-    methodName + " No auth found. User should login for this action"
-  );
+export const getPopularTags = () => async dispatch => {
+  const popularTags = firebase.functions().httpsCallable("getPopularTags");
+  popularTags().then(result => {
+    console.log("popularTags: ", result);
+    var tags = [];
+    result.data.map(tag => {
+      return tags.push(tag.key);
+    });
+    dispatch({
+      type: POPULAR_TAGS,
+      payload: tags
+    });
+  });
 };

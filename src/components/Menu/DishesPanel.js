@@ -3,7 +3,7 @@ import SearchComponent from "../SearchComponent";
 import PanelDroppable from "./PanelDroppable";
 import "../../scss/Panel.scss";
 
-const Panel = ({
+const DishesPanel = ({
   onSearch,
   onSearchClear,
   isSearchMode,
@@ -39,4 +39,4 @@ const Panel = ({
   );
 };
 
-export default Panel;
+export default DishesPanel;

@@ -18,7 +18,8 @@ import {
   CLEAR_PUBLIC_DISHES,
   SEARCH_ALL_DISHES_RECEIVED,
   SEARCH_ALL_DISHES,
-  CLEAR_SEARCH_ALL_DISHES
+  CLEAR_SEARCH_ALL_DISHES,
+  POPULAR_TAGS
 } from "../constants/Action-types";
 
 function dishes(state = [], action) {
@@ -170,6 +171,15 @@ function allDishesSearchReceived(state = false, action) {
   }
 }
 
+function popularTags(state = [], action) {
+  switch (action.type) {
+    case POPULAR_TAGS:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
 export default function DishReducer(state = {}, action) {
   return {
     dishes: dishes(state.dishes, action),
@@ -202,6 +212,7 @@ export default function DishReducer(state = {}, action) {
       state.allDishesSearchReceived,
       action
     ),
-    allDishesSearchResult: searchDishes(state.allDishesSearchResult, action)
+    allDishesSearchResult: searchDishes(state.allDishesSearchResult, action),
+    popularTags: popularTags(state.popularTags, action)
   };
 }

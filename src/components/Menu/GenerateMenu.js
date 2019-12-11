@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Button } from "mdbreact";
 import classNames from "classnames";
-import Panel from "./Panel";
+import DishesPanel from "./DishesPanel";
 import {
   fetchDishes,
   fetchPublicDishes,
   searchAllDishes,
   setMenu,
-  clearSearchAllDishes
+  clearSearchAllDishes,
+  getPopularTags
 } from "../../store/actions/Actions";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
+import FiltersPanel from "./FiltersPanel";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
@@ -21,13 +22,14 @@ import { Redirect, Prompt } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import {
+  Button,
   MDBBtn,
   MDBModal,
   MDBModalBody,
   MDBModalHeader,
   MDBModalFooter
 } from "mdbreact";
-import { Form, Row, Col, Collapse } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
@@ -41,16 +43,21 @@ const mapStateToProps = state => {
     publicDishes: state.dishes.publicDishes,
     publicDataReceived: state.dishes.publicDishesDataReceived,
     searchReceived: state.dishes.allDishesSearchReceived,
-    searchResult: state.dishes.allDishesSearchResult
+    searchResult: state.dishes.allDishesSearchResult,
+    suggestedFilters: state.dishes.popularTags
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  fetchDishes: uid => dispatch(fetchDishes(uid)),
-  fetchPublicDishes: uid => dispatch(fetchPublicDishes(uid)),
+  fetchDishes: (uid, selectedFilters) =>
+    dispatch(fetchDishes(uid, selectedFilters)),
+  fetchPublicDishes: (uid, selectedFilters) =>
+    dispatch(fetchPublicDishes(uid, selectedFilters)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
-  searchAllDishes: (uid, query) => dispatch(searchAllDishes(uid, query)),
-  clearSearchAllDishes: () => dispatch(clearSearchAllDishes())
+  searchAllDishes: (uid, query, selectedFilters) =>
+    dispatch(searchAllDishes(uid, query, selectedFilters)),
+  clearSearchAllDishes: () => dispatch(clearSearchAllDishes()),
+  getPopularTags: uid => dispatch(getPopularTags(uid))
 });
 
 const EXTRA_DISH_DROPPABLE_ID = "EXTRA_DISH_DROPPABLE_ID";
@@ -74,15 +81,19 @@ const GenerateMenu = props => {
   var days = null;
   var meals = null;
   var extraDishInfoInitial = null;
+  var initialSelectedFilters = [];
+
+  // Get menu data
   if (props.location && props.location.state && props.location.state.menuData) {
-    if (props.location.state.menuData.days) {
-      days = props.location.state.menuData.days;
+    const menuData = props.location.state.menuData;
+    if (menuData.days) {
+      days = menuData.days;
     }
-    if (props.location.state.menuData.meals) {
-      meals = props.location.state.menuData.meals;
+    if (menuData.meals) {
+      meals = menuData.meals;
     }
-    if (props.location.state.menuData.dishes) {
-      initialRandomDishes = props.location.state.menuData.dishes;
+    if (menuData.dishes) {
+      initialRandomDishes = menuData.dishes;
 
       // initialRandomDishes can arrive with undefined valus from backend, change it to empty array
       if (meals) {
@@ -96,13 +107,22 @@ const GenerateMenu = props => {
         });
       }
     }
-    if (
-      props.location &&
-      props.location.state &&
-      props.location.state.extraDishInfo
-    ) {
-      extraDishInfoInitial = props.location.state.extraDishInfo;
+    if (menuData.meals) {
+      meals = menuData.meals;
     }
+
+    if (menuData.selectedFilters) {
+      initialSelectedFilters = menuData.selectedFilters;
+    }
+  }
+
+  // Get extra dish info
+  if (
+    props.location &&
+    props.location.state &&
+    props.location.state.extraDishInfo
+  ) {
+    extraDishInfoInitial = props.location.state.extraDishInfo;
   }
 
   /** Used to hold dish info when adding dish into a menu  */
@@ -138,22 +158,37 @@ const GenerateMenu = props => {
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
 
+  /** Used to determine if to show results from searchResult object */
+  const [isFilterMode, setIsFilterMode] = useState(false);
+
   /** Filter view open/close state */
   const [isFilterViewOpen, setIsFilterViewOpen] = useState(false);
+
+  /** Use to fetch dishes and search result with selected filters */
+  const [selectedFilters, setSelectedFilters] = useState(
+    initialSelectedFilters
+  );
 
   /**
    * Fetch private and public dishes. Compute random dishes after all data is received
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-
+    console.log(
+      "use effect. props.favoriteDataReceived: ",
+      props.favoriteDataReceived,
+      " props.publicDataReceived: ",
+      props.publicDataReceived
+    );
     // Fetch private and public dishes
     if (!props.favoriteDataReceived.received) {
-      props.fetchDishes(auth.authState.user.uid);
+      props.fetchDishes(auth.authState.user.uid, selectedFilters);
+      return;
     }
 
     if (!props.publicDataReceived.received) {
-      props.fetchPublicDishes(auth.authState.user.uid);
+      props.fetchPublicDishes(auth.authState.user.uid, selectedFilters);
+      return;
     }
 
     // Compute random dishes if both favorite and public dishes received
@@ -163,7 +198,17 @@ const GenerateMenu = props => {
       }
       mergePrivateAndPublic(); // Merge dishes are used in the panel. Merge ony once
     }
-  }, [auth, props.favoriteDataReceived, props.publicDataReceived]);
+
+    // Get popular tags
+    if (props.suggestedFilters.length === 0) {
+      props.getPopularTags();
+    }
+  }, [
+    auth,
+    props.favoriteDataReceived,
+    props.publicDataReceived,
+    props.suggestedFilters
+  ]);
 
   /**
    * Get days and meals from previous page (menu template)
@@ -254,6 +299,23 @@ const GenerateMenu = props => {
   };
 
   const getRandomDish = meal => {
+    var dishes;
+
+    // If isFilterMode, get dishes from search result
+    if (isFilterMode) {
+      dishes = findDishesForMeal(props.searchResult, meal);
+    }
+    // Otherwise get dishes from private + public
+    else {
+      dishes = getDishesFromAll(meal);
+    }
+
+    var randomDish = dishes[Math.floor(Math.random() * dishes.length)];
+    if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
+    return randomDish;
+  };
+
+  const getDishesFromAll = meal => {
     // First find a random dish from favorites that matches this meal
     const mealsFavoriteDishes = findDishesForMeal(props.favoriteDishes, meal);
     var mergedDishes = mealsFavoriteDishes;
@@ -264,10 +326,7 @@ const GenerateMenu = props => {
       mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
     }
 
-    var randomDish =
-      mergedDishes[Math.floor(Math.random() * mergedDishes.length)];
-    if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
-    return randomDish;
+    return mergedDishes;
   };
 
   /**
@@ -447,9 +506,10 @@ const GenerateMenu = props => {
     return array;
   }
 
-  const onSearch = query => {
+  const onSearch = (query, filters = selectedFilters) => {
     setIsSearchMode(true);
-    props.searchAllDishes(auth.authState.user.uid, query);
+    console.log("onSearch filters: ", filters);
+    props.searchAllDishes(auth.authState.user.uid, query, filters);
   };
 
   const onSearchClear = () => {
@@ -459,6 +519,22 @@ const GenerateMenu = props => {
 
   const handleCloseExtraDishClick = () => {
     setExtraDishInfo(null);
+  };
+
+  const handleFilterPanelClose = () => {
+    setIsFilterViewOpen(!isFilterViewOpen);
+  };
+
+  const handleSelectedFilters = selectedFilters => {
+    console.log("selectedFilters: ", selectedFilters);
+    setSelectedFilters(selectedFilters);
+    if (selectedFilters && Object.keys(selectedFilters).length > 0) {
+      setIsFilterMode(true);
+      onSearch("", selectedFilters);
+    } else {
+      setIsFilterMode(false);
+      onSearchClear();
+    }
   };
 
   /**
@@ -554,8 +630,14 @@ const GenerateMenu = props => {
       >
         {isEditMode && (
           <div className="generate-btn-wrapper">
+            <MDBBtn
+              className="generate-btn random-btn"
+              onClick={() => handleRandomClick()}
+            >
+              RANDOM!
+            </MDBBtn>
             <Button
-              className="meal-plan-btn generate-btn "
+              className="meal-plan-btn"
               onClick={() => {
                 setBlockLeave(false); // Alow to leave the page after edit is done
                 setSaveModalShow(true);
@@ -563,12 +645,6 @@ const GenerateMenu = props => {
             >
               Save
             </Button>
-            <MDBBtn
-              className="generate-btn random-btn"
-              onClick={() => handleRandomClick()}
-            >
-              RANDOM!
-            </MDBBtn>
           </div>
         )}
         {!isEditMode && (
@@ -589,16 +665,12 @@ const GenerateMenu = props => {
               onClick={() => setIsFilterViewOpen(!isFilterViewOpen)}
             >
               + Filters
-              {console.log("isFilterViewOpen: ", isFilterViewOpen)}
-              <Collapse in={isFilterViewOpen}>
-                <div>All filters</div>
-              </Collapse>
             </div>
             <div
               className={classNames("panel-handle", { "is-open": showPanel })}
               onClick={() => setShowPanel(!showPanel)}
             >
-              + Search
+              + More Dishes
             </div>
           </div>
         )}
@@ -682,10 +754,18 @@ const GenerateMenu = props => {
                 />
               ))}
             </ol>
+            <FiltersPanel
+              filters={props.suggestedFilters}
+              isFilterViewOpen={isFilterViewOpen}
+              onFiltersPanelClose={() => handleFilterPanelClose()}
+              handleFilterChange={selectedFilters =>
+                handleSelectedFilters(selectedFilters)
+              }
+            />
             <div
               className={classNames("panel-wrap", showPanel ? "show" : "hide")}
             >
-              <Panel
+              <DishesPanel
                 onSearch={onSearch}
                 onSearchClear={onSearchClear}
                 isSearchMode={isSearchMode}

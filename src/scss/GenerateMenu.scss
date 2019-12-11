@@ -79,6 +79,11 @@ $panel-width-small: 12rem;
 ol.collection {
   margin: 0px;
   padding: 0px;
+
+  @media screen and (min-width: 1024px) {
+    padding-right: 100px;
+    padding-left: 100px;
+  }
 }
 
 li {
@@ -127,8 +132,7 @@ li {
 }
 
 @media screen and (min-width: 425px) {
-  .item-container,
-  .filters-and-search {
+  .item-container {
     width: 190%;
   }
 }
@@ -140,27 +144,10 @@ li {
 }
 
 @media screen and (min-width: 1024px) {
-  .item-container,
   .filters-and-search {
-    padding-right: 130px;
+    padding-right: 100px;
     padding-left: 100px;
-  }
-}
-
-.burger-wrapper {
-  position: absolute;
-  right: 1rem;
-  top: 0rem;
-  z-index: 2;
-  display: flex;
-  font-size: 1rem;
-
-  @media screen and (min-width: 425px) {
-    right: 1.5rem;
-  }
-
-  @media screen and (min-width: 1024px) {
-    right: 8rem;
+    width: 100vw;
   }
 }
 
@@ -181,15 +168,6 @@ li {
 
   .filters {
     flex-grow: 1;
-  }
-
-  .panel-handle {
-    transform: translate(0%);
-    transition: 0.2s ease-out;
-    &.is-open {
-      transform: translate(-310%);
-      transition: 0.2s ease-out;
-    }
   }
 }
 
@@ -212,10 +190,6 @@ li {
   @media screen and (min-width: 1024px) {
     margin-left: 100px;
   }
-}
-
-.random-btn {
-  margin: auto;
 }
 
 .generate-btn-wrapper {
