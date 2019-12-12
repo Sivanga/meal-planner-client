@@ -340,7 +340,8 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
                 aggs: {
                   popular_tags: {
                     terms: {
-                      field: "dishes.tags.name"
+                      field: "dishes.tags.name",
+                      size: 5
                     }
                   }
                 }
