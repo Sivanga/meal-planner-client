@@ -1,39 +1,22 @@
-@import "./Variables.scss";
-
-$panel-width-large: 15rem;
-$panel-width-medium: 13rem;
-$panel-width-small: 90%;
-
-.filters-panel {
-  overflow: auto;
-  position: absolute;   
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: $panel-width-small;
-  margin-top: 0.4rem;
-  transform: translate(-100%);
-  transition: 0.3s ease-out;
-  background: white;
-  z-index: 1;
-  border: solid$dark-text-color 2px;
-  padding: 0.2rem;
-
-  &.show {
-    transform: translate(0%);
-  }
-
-  @media only screen and (min-width: 768px) {
-    width: $panel-width-medium;
-  }
-
-  @media only screen and (min-width: 1024px) {
-    width: $panel-width-large;
-  }
+.collapse {
+  width: 200px;
+  height: 200px;
 }
 
-.filters-panel-close-btn {
+.filter {
+  display: inline-block;
+}
+
+.filter-container {
+  padding: 0px;
+  height: auto;
   width: 100%;
-  text-align: end;
-  padding-right: 1rem;
+}
+
+.filter-check {
+  margin-right: 5px;
+
+  .form-check-input {
+    margin-left: -0.9rem;
+  }
 }

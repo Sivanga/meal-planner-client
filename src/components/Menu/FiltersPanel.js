@@ -1,56 +1,58 @@
 import React, { useState } from "react";
-import classNames from "classnames";
 import "../../scss/FiltersPanel.scss";
-import { Form, Alert, Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
+import { Card, Collapse } from "react-bootstrap";
 
 const FiltersPanel = ({
   filters,
-  isFilterViewOpen,
   selectedFilters,
-  handleFilterChange,
-  onFiltersPanelClose
+  removeFilter,
+  applyFilter,
+  handleToggleFilterView
 }) => {
-  /** Hold the selected filters */
-  const [selected, setSelected] = useState(
-    selectedFilters ? selectedFilters : []
-  );
+  /** Is filter view expan or hidden */
+  const [expandFiltersState, setExpandFiltersState] = useState(true);
 
   const handleCheck = (event, targetFilter) => {
-    var newCheckState = event.target.checked;
-    var newState;
-    if (newCheckState) {
-      newState = [...selected, targetFilter];
-      setSelected(newState);
+    if (event.target.checked) {
+      applyFilter(targetFilter);
     } else {
-      newState = [...selected].filter(filter => filter !== targetFilter);
-      setSelected(newState);
+      removeFilter(targetFilter);
     }
-    handleFilterChange(newState);
   };
 
   return (
     <>
-      <div
-        className={classNames("filters-panel", {
-          show: isFilterViewOpen
-        })}
+      <span
+        className="btn btn-flat red-text p-1 my-1 mr-0 ml-1 mml-1 collapsed read-more bc-white"
+        onClick={e => {
+          setExpandFiltersState(!expandFiltersState);
+        }}
+        aria-controls="More filters"
+        aria-expanded={expandFiltersState}
       >
-        <div className="filters-panel-close-btn">
-          <i className="fas fa-arrow-right" onClick={onFiltersPanelClose}></i>
-        </div>
-        {filters.map((filter, index) => {
-          return (
-            <div key={index}>
-              <Form.Check
-                type="checkbox"
-                label={filter}
-                checked={selected.includes(filter)}
-                onChange={e => handleCheck(e, filter)}
-              />
-            </div>
-          );
-        })}
-      </div>
+        {expandFiltersState ? "HIDE FILTERS" : "SHOW FILTERS"}
+      </span>
+      <Collapse in={expandFiltersState} className="filter-container">
+        <Card>
+          <Card.Body>
+            <ul className="filter-container">
+              {filters.map((filter, index) => {
+                return (
+                  <li key={index} className="filter">
+                    <Form.Check
+                      className="filter-check"
+                      type="checkbox"
+                      label={filter}
+                      onChange={e => handleCheck(e, filter)}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </Card.Body>
+        </Card>
+      </Collapse>
     </>
   );
 };

@@ -18,7 +18,7 @@ const createDishesEnryForUser = (uid, dish, resolve, reject) => {
   return esClient.index(
     {
       id: uid,
-      index: "dishes",
+      index: "dishes_v3",
       type: "_doc",
       body: {
         dishes: [dish]
@@ -44,7 +44,7 @@ const updateDishForUser = (uid, change, resolve, reject) => {
       {
         id: uid,
         type: "_doc",
-        index: "dishes",
+        index: "dishes_v3",
 
         body: {
           script: {
@@ -77,7 +77,7 @@ const updateDishForUser = (uid, change, resolve, reject) => {
 
     esClient.update(
       {
-        index: "dishes",
+        index: "dishes_v3",
         type: "_doc",
         id: uid,
         body: {
@@ -108,7 +108,7 @@ exports.indexDishesToElastic = functions.database
     return new Promise((resolve, reject) => {
       esClient.exists(
         {
-          index: "dishes",
+          index: "dishes_v3",
           type: "_doc",
           id: context.params.uid
         },
@@ -155,7 +155,7 @@ exports.indexPublicDishesToElastic = functions.database
           {
             id: context.params.dishId,
             type: "_doc",
-            index: "public_dishes",
+            index: "public_dishes_v3",
             body: change.after.val()
           },
           { ignore: 404 },
@@ -174,7 +174,7 @@ exports.indexPublicDishesToElastic = functions.database
           {
             id: context.params.dishId,
             type: "_doc",
-            index: "public_dishes"
+            index: "public_dishes_v3"
           },
           { ignore: 404 },
           (err, result) => {
@@ -197,7 +197,7 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
   return new Promise((resolve, reject) => {
     esClient.search(
       {
-        index: "dishes",
+        index: "dishes_v3",
         body: {
           query: {
             bool: {
@@ -271,7 +271,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
   return new Promise((resolve, reject) => {
     esClient.search(
       {
-        index: "public_dishes",
+        index: "public_dishes_v3",
         body: {
           query: {
             bool: {
@@ -327,7 +327,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
     esClient.msearch(
       {
         body: [
-          { index: "dishes" },
+          { index: "dishes_v3" },
           {
             query: {
               match_all: {}
@@ -339,7 +339,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
                 },
                 aggs: {
                   popular_tags: {
-                    term: {
+                    terms: {
                       field: "dishes.tags.name"
                     }
                   }
@@ -347,14 +347,14 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
               }
             }
           },
-          { index: "public_dishes" },
+          { index: "public_dishes_v3" },
           {
             query: {
               match_all: {}
             },
             aggs: {
               popular_tags: {
-                term: {
+                terms: {
                   field: "tags.name"
                 }
               }
@@ -409,7 +409,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
     esClient.msearch(
       {
         body: [
-          { index: "dishes" },
+          { index: "dishes_v3" },
           {
             query: {
               bool: {
@@ -449,7 +449,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
               }
             }
           },
-          { index: "public_dishes" },
+          { index: "public_dishes_v3" },
           {
             query: {
               bool: {
@@ -501,7 +501,7 @@ const searchFilteredDishes = (data, context) => {
       esClient.msearch(
         {
           body: [
-            { index: "dishes" },
+            { index: "dishes_v3" },
             {
               query: {
                 bool: {
@@ -542,7 +542,7 @@ const searchFilteredDishes = (data, context) => {
                 }
               }
             },
-            { index: "public_dishes" },
+            { index: "public_dishes_v3" },
             {
               query: {
                 bool: {
@@ -583,7 +583,7 @@ const searchFilteredDishes = (data, context) => {
       esClient.msearch(
         {
           body: [
-            { index: "dishes" },
+            { index: "dishes_v3" },
             {
               query: {
                 bool: {
@@ -606,7 +606,7 @@ const searchFilteredDishes = (data, context) => {
                 }
               }
             },
-            { index: "public_dishes" },
+            { index: "public_dishes_v3" },
             {
               query: {
                 bool: {

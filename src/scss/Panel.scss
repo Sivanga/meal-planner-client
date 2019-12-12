@@ -1,4 +1,13 @@
 .panel-header {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.panel-content {
+  overflow: auto;
+}
+
+.search-header {
   display: flex;
   flex-direction: row;
   padding: 0.3rem;

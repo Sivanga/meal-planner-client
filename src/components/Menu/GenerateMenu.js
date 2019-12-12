@@ -11,7 +11,6 @@ import {
   getPopularTags
 } from "../../store/actions/Actions";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
-import FiltersPanel from "./FiltersPanel";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
@@ -160,9 +159,6 @@ const GenerateMenu = props => {
 
   /** Used to determine if to show results from searchResult object */
   const [isFilterMode, setIsFilterMode] = useState(false);
-
-  /** Filter view open/close state */
-  const [isFilterViewOpen, setIsFilterViewOpen] = useState(false);
 
   /** Use to fetch dishes and search result with selected filters */
   const [selectedFilters, setSelectedFilters] = useState(
@@ -508,32 +504,64 @@ const GenerateMenu = props => {
 
   const onSearch = (query, filters = selectedFilters) => {
     setIsSearchMode(true);
-    console.log("onSearch filters: ", filters);
     props.searchAllDishes(auth.authState.user.uid, query, filters);
   };
 
-  const onSearchClear = () => {
-    setIsSearchMode(false);
-    props.clearSearchAllDishes();
+  const onSearchClear = (filters = selectedFilters) => {
+    // If there's filters are on, search for filters only without a query
+    if (filters) {
+      handleSelectedFilters(filters);
+    }
+
+    // No filters, clear search
+    else {
+      setIsSearchMode(false);
+      props.clearSearchAllDishes();
+    }
   };
 
   const handleCloseExtraDishClick = () => {
     setExtraDishInfo(null);
   };
 
-  const handleFilterPanelClose = () => {
-    setIsFilterViewOpen(!isFilterViewOpen);
+  const applyFilter = filter => {
+    const newState = [...selectedFilters, filter];
+    setSelectedFilters(newState);
+    searchForFilters(newState);
   };
 
-  const handleSelectedFilters = selectedFilters => {
-    console.log("selectedFilters: ", selectedFilters);
-    setSelectedFilters(selectedFilters);
-    if (selectedFilters && Object.keys(selectedFilters).length > 0) {
+  const removeFilter = filter => {
+    const newState = [...selectedFilters].filter(
+      currFilter => currFilter !== filter
+    );
+    setSelectedFilters(newState);
+
+    // If there are filters, search for them
+    if (newState.length > 0) {
+      searchForFilters(newState);
+    }
+
+    // Otherwise clear search
+    else {
+      setIsFilterMode(false);
+      setIsSearchMode(false);
+      props.clearSearchAllDishes();
+    }
+  };
+
+  const searchForFilters = filters => {
+    setIsFilterMode(true);
+    onSearch("", filters);
+  };
+
+  const handleSelectedFilters = filters => {
+    console.log("handleSelectedFilters: ", filters);
+    if (filters && filters.length > 0) {
       setIsFilterMode(true);
-      onSearch("", selectedFilters);
+      onSearch("", filters);
     } else {
       setIsFilterMode(false);
-      onSearchClear();
+      onSearchClear(filters);
     }
   };
 
@@ -659,19 +687,13 @@ const GenerateMenu = props => {
           </Button>
         )}
         {isEditMode && (
-          <div className="filters-and-search">
-            <div
-              className="filters"
-              onClick={() => setIsFilterViewOpen(!isFilterViewOpen)}
-            >
-              + Filters
-            </div>
-            <div
-              className={classNames("panel-handle", { "is-open": showPanel })}
-              onClick={() => setShowPanel(!showPanel)}
-            >
-              + More Dishes
-            </div>
+          <div
+            className={classNames("panel-handle", "filters-and-search", {
+              "is-open": showPanel
+            })}
+            onClick={() => setShowPanel(!showPanel)}
+          >
+            + Search and Filter
           </div>
         )}
 
@@ -754,14 +776,6 @@ const GenerateMenu = props => {
                 />
               ))}
             </ol>
-            <FiltersPanel
-              filters={props.suggestedFilters}
-              isFilterViewOpen={isFilterViewOpen}
-              onFiltersPanelClose={() => handleFilterPanelClose()}
-              handleFilterChange={selectedFilters =>
-                handleSelectedFilters(selectedFilters)
-              }
-            />
             <div
               className={classNames("panel-wrap", showPanel ? "show" : "hide")}
             >
@@ -774,6 +788,9 @@ const GenerateMenu = props => {
                 allDishes={allDishes}
                 isEditMode={isEditMode}
                 onPanelClose={() => setShowPanel(false)}
+                filters={props.suggestedFilters}
+                removeFilter={filter => removeFilter(filter)}
+                applyFilter={filter => applyFilter(filter)}
               />
             </div>
           </div>
