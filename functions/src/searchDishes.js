@@ -18,7 +18,7 @@ const createDishesEnryForUser = (uid, dish, resolve, reject) => {
   return esClient.index(
     {
       id: uid,
-      index: "dishes_v3",
+      index: "dishes_v4",
       type: "_doc",
       body: {
         dishes: [dish]
@@ -44,7 +44,7 @@ const updateDishForUser = (uid, change, resolve, reject) => {
       {
         id: uid,
         type: "_doc",
-        index: "dishes_v3",
+        index: "dishes_v4",
 
         body: {
           script: {
@@ -77,7 +77,7 @@ const updateDishForUser = (uid, change, resolve, reject) => {
 
     esClient.update(
       {
-        index: "dishes_v3",
+        index: "dishes_v4",
         type: "_doc",
         id: uid,
         body: {
@@ -108,7 +108,7 @@ exports.indexDishesToElastic = functions.database
     return new Promise((resolve, reject) => {
       esClient.exists(
         {
-          index: "dishes_v3",
+          index: "dishes_v4",
           type: "_doc",
           id: context.params.uid
         },
@@ -155,7 +155,7 @@ exports.indexPublicDishesToElastic = functions.database
           {
             id: context.params.dishId,
             type: "_doc",
-            index: "public_dishes_v3",
+            index: "public_dishes_v4",
             body: change.after.val()
           },
           { ignore: 404 },
@@ -174,7 +174,7 @@ exports.indexPublicDishesToElastic = functions.database
           {
             id: context.params.dishId,
             type: "_doc",
-            index: "public_dishes_v3"
+            index: "public_dishes_v4"
           },
           { ignore: 404 },
           (err, result) => {
@@ -197,7 +197,7 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
   return new Promise((resolve, reject) => {
     esClient.search(
       {
-        index: "dishes_v3",
+        index: "dishes_v4",
         body: {
           query: {
             bool: {
@@ -218,7 +218,7 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
                               fields: [
                                 "dishes.name^3",
                                 "dishes.link",
-                                "dishes.recipe",
+                                "dishes.ingredient",
                                 "dishes.meals.name"
                               ],
                               type: "phrase_prefix"
@@ -271,7 +271,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
   return new Promise((resolve, reject) => {
     esClient.search(
       {
-        index: "public_dishes_v3",
+        index: "public_dishes_v4",
         body: {
           query: {
             bool: {
@@ -280,7 +280,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
                   multi_match: {
                     query: data.query,
                     type: "phrase_prefix",
-                    fields: ["name", "link", "recipe", "meals.name"]
+                    fields: ["name", "link", "ingredient", "meals.name"]
                   }
                 },
                 {
@@ -327,7 +327,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
     esClient.msearch(
       {
         body: [
-          { index: "dishes_v3" },
+          { index: "dishes_v4" },
           {
             query: {
               match_all: {}
@@ -347,7 +347,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
               }
             }
           },
-          { index: "public_dishes_v3" },
+          { index: "public_dishes_v4" },
           {
             query: {
               match_all: {}
@@ -409,7 +409,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
     esClient.msearch(
       {
         body: [
-          { index: "dishes_v3" },
+          { index: "dishes_v4" },
           {
             query: {
               bool: {
@@ -426,7 +426,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                                 fields: [
                                   "dishes.name^3",
                                   "dishes.link",
-                                  "dishes.recipe",
+                                  "dishes.ingredient",
                                   "dishes.meals.name"
                                 ],
                                 type: "phrase_prefix"
@@ -449,7 +449,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
               }
             }
           },
-          { index: "public_dishes_v3" },
+          { index: "public_dishes_v4" },
           {
             query: {
               bool: {
@@ -458,7 +458,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                     multi_match: {
                       query: data.query,
                       type: "phrase_prefix",
-                      fields: ["name", "link", "recipe", "meals"]
+                      fields: ["name", "link", "ingredient", "meals"]
                     }
                   },
                   {
@@ -501,7 +501,7 @@ const searchFilteredDishes = (data, context) => {
       esClient.msearch(
         {
           body: [
-            { index: "dishes_v3" },
+            { index: "dishes_v4" },
             {
               query: {
                 bool: {
@@ -525,7 +525,7 @@ const searchFilteredDishes = (data, context) => {
                                   fields: [
                                     "dishes.name^3",
                                     "dishes.link",
-                                    "dishes.recipe",
+                                    "dishes.ingredient",
                                     "dishes.meals.name"
                                   ],
                                   type: "phrase_prefix"
@@ -542,7 +542,7 @@ const searchFilteredDishes = (data, context) => {
                 }
               }
             },
-            { index: "public_dishes_v3" },
+            { index: "public_dishes_v4" },
             {
               query: {
                 bool: {
@@ -551,7 +551,7 @@ const searchFilteredDishes = (data, context) => {
                       multi_match: {
                         query: data.query,
                         type: "phrase_prefix",
-                        fields: ["name", "link", "recipe", "meals"]
+                        fields: ["name", "link", "ingredient", "meals"]
                       }
                     }
                   ],
@@ -583,7 +583,7 @@ const searchFilteredDishes = (data, context) => {
       esClient.msearch(
         {
           body: [
-            { index: "dishes_v3" },
+            { index: "dishes_v4" },
             {
               query: {
                 bool: {
@@ -606,7 +606,7 @@ const searchFilteredDishes = (data, context) => {
                 }
               }
             },
-            { index: "public_dishes_v3" },
+            { index: "public_dishes_v4" },
             {
               query: {
                 bool: {

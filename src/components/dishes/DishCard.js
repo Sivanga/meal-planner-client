@@ -40,7 +40,7 @@ const DishCard = ({
   handleCloseExtraDishClick
 }) => {
   /**
-   * Show recipe for chosen card
+   * Show ingredients for chosen card
    */
   const [expandCardsArray, setExpandCardsArray] = useState([]);
 
@@ -247,11 +247,13 @@ const DishCard = ({
                 <div className="card-footer-container">
                   <span
                     className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed read-more bc-white"
-                    style={{ visibility: dish.recipe ? "visible" : "hidden" }}
+                    style={{
+                      visibility: dish.ingredient ? "visible" : "hidden"
+                    }}
                     onClick={e => {
                       handleExpandCard(e, index);
                     }}
-                    aria-controls="recipe"
+                    aria-controls="ingredient"
                     aria-expanded={expandCardsArray[index] === true}
                   >
                     {expandCardsArray[index] === true
@@ -299,11 +301,15 @@ const DishCard = ({
           )}
 
           <Collapse in={expandCardsArray[index] === true}>
-            <div id="recipe">{dish.recipe}</div>
+            <div id="ingredient">{dish.ingredient}</div>
           </Collapse>
         </Card.Body>
       </Card>
-      <div className={classNames("deleteOverlay", { show: showDeleteOverlay })}>
+      <div
+        className={classNames("deleteOverlay", {
+          show: showDeleteOverlay
+        })}
+      >
         <span>Unfavorite dish?</span>
         <div>
           <Button

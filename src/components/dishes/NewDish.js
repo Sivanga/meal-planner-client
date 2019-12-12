@@ -283,16 +283,16 @@ const NewDish = props => {
       </Form.Group>
       <Form.Group as={Row} controlId="dishTextArea">
         <Form.Label column sm="2">
-          Recipe
+          Ingredients
         </Form.Label>
         <Col sm="8">
           <Form.Control
             as="textarea"
-            value={dish && dish.recipe ? dish.recipe : ""}
+            value={dish && dish.ingredient ? dish.ingredient : ""}
             onChange={event =>
               setDish({
                 ...dish,
-                recipe: event.target.value
+                ingredient: event.target.value
               })
             }
           />
