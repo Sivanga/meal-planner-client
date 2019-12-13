@@ -4,21 +4,25 @@ $panel-width-large: 15rem;
 $panel-width-medium: 13rem;
 $panel-width-small: 12rem;
 
-.mealDisabled {
-  background: rgba($primary-dark, 0.5);
-}
-
 .generateMenuContainer {
   overflow: hidden;
-  width: 100vw;
+  max-width: 100%;
   position: relative;
   padding-top: 0.5rem;
 }
 
-// Table
 .generateMenuTable {
-  overflow: auto;
+  overflow: scroll;
+  height: 600px;
   padding: 5px;
+}
+
+.wrapper {
+  overflow: auto;
+}
+
+.mealDisabled {
+  background: rgba($primary-dark, 0.5);
 }
 
 // Panel
@@ -52,7 +56,6 @@ $panel-width-small: 12rem;
   }
 
   .col-md-4 {
-    // Search in panel
     min-width: 100%;
     padding: 1rem;
 
@@ -70,14 +73,7 @@ $panel-width-small: 12rem;
   text-align: center;
 }
 
-/** Grid table styles **/
-@import "./Variables.scss";
-
-.wrapper {
-  overflow: auto;
-}
-
-ol.collection {
+ol.generateMenuTable {
   margin: 0px;
   padding: 0px;
 
@@ -91,11 +87,6 @@ li {
   list-style: none;
 }
 
-.collection-container {
-  overflow: scroll;
-  height: 600px;
-}
-
 .attribute {
   border-bottom: 1px solid gray;
   padding: 5px;
@@ -106,7 +97,7 @@ li {
 }
 
 /* Day Header */
-.collection-container > .item-container:first-child > .attribute {
+.generateMenuTable > .item-container:first-child > .attribute {
   background-color: $primary;
   color: white;
   display: flex;
@@ -117,7 +108,7 @@ li {
 }
 
 /* Meal Header */
-.collection-container > .item-container > div:first-child {
+.generateMenuTable > .item-container > div:first-child {
   background-color: $primary;
   color: white;
   font-size: 1.1rem;
@@ -136,11 +127,7 @@ li {
   text-align: end;
   font-size: 0.9rem;
 }
-@media screen and (min-width: 425px) {
-  .item-container {
-    width: 190%;
-  }
-}
+
 @media screen and (min-width: 768px) {
   .item-container,
   .filters-and-search {
@@ -152,7 +139,6 @@ li {
   .filters-and-search {
     padding-right: 100px;
     padding-left: 100px;
-    width: 100vw;
   }
 }
 

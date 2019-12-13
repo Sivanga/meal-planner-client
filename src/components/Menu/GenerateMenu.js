@@ -328,7 +328,8 @@ const GenerateMenu = props => {
   /**
    * Close the panel when drag starts
    */
-  const onDragStart = () => {
+  const onDragStart = e => {
+    console.log("onDragStart:", e);
     setShowPanel(false);
     setShowPlusButton(false);
   };
@@ -654,7 +655,7 @@ const GenerateMenu = props => {
       <SaveModal />
       <DragDropContext
         onDragEnd={result => onDragEnd(result)}
-        onDragStart={() => onDragStart()}
+        onDragStart={e => onDragStart(e)}
       >
         {isEditMode && (
           <div className="generate-btn-wrapper">
@@ -731,68 +732,61 @@ const GenerateMenu = props => {
             </Droppable>
           </div>
         )}
-        <div id="menuContainer" className="generateMenuContainer">
-          <div className="generateMenuTableContainer">
-            <ol className="collection collection-container generateMenuTable">
-              <li
-                className="item item-container"
-                style={getContainerStyle(days)}
-              >
-                <div key="day/meal" className="attribute">
-                  Day/Meal
+        <div className="generateMenuContainer">
+          <ol className="generateMenuTable">
+            <li className="item-container" style={getContainerStyle(days)}>
+              <div key="day/meal" className="attribute">
+                Day/Meal
+              </div>
+              {/* Days headers */}
+              {days.map((day, index) => (
+                <div
+                  id="generated-day"
+                  key={index}
+                  className={classNames("day-column", "attribute", {
+                    dayDisabled: !day.enabled
+                  })}
+                >
+                  {day.day}
                 </div>
-                {/* Days headers */}
-                {days.map((day, index) => (
-                  <div
-                    id="generated-day"
-                    key={index}
-                    className={classNames("day-column", "attribute", {
-                      dayDisabled: !day.enabled
-                    })}
-                  >
-                    {day.day}
-                  </div>
-                ))}
-              </li>
-
-              {/* Meals */}
-              {meals.map((meal, mealIndex) => (
-                <TableDroppable
-                  key={mealIndex}
-                  mealIndex={mealIndex}
-                  meal={meal}
-                  days={days}
-                  randomDishes={randomDishes}
-                  onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
-                  handleDishLock={dayIndex =>
-                    handleDishLock(mealIndex, dayIndex)
-                  }
-                  handleDishUnlock={dayIndex =>
-                    handleDishUnlock(mealIndex, dayIndex)
-                  }
-                  onPlusClick={dayIndex => setShowPanel(true)}
-                  showPlusButton={showPlusButton}
-                  isEditMode={isEditMode}
-                />
               ))}
-            </ol>
-            <div
-              className={classNames("panel-wrap", showPanel ? "show" : "hide")}
-            >
-              <DishesPanel
-                onSearch={onSearch}
-                onSearchClear={onSearchClear}
-                isSearchMode={isSearchMode}
-                searchReceived={props.searchReceived}
-                searchResult={props.searchResult}
-                allDishes={allDishes}
+            </li>
+
+            {/* Meals */}
+            {meals.map((meal, mealIndex) => (
+              <TableDroppable
+                key={mealIndex}
+                mealIndex={mealIndex}
+                meal={meal}
+                days={days}
+                randomDishes={randomDishes}
+                onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
+                handleDishLock={dayIndex => handleDishLock(mealIndex, dayIndex)}
+                handleDishUnlock={dayIndex =>
+                  handleDishUnlock(mealIndex, dayIndex)
+                }
+                onPlusClick={dayIndex => setShowPanel(true)}
+                showPlusButton={showPlusButton}
                 isEditMode={isEditMode}
-                onPanelClose={() => setShowPanel(false)}
-                filters={props.suggestedFilters}
-                removeFilter={filter => removeFilter(filter)}
-                applyFilter={filter => applyFilter(filter)}
               />
-            </div>
+            ))}
+          </ol>
+          <div
+            className={classNames("panel-wrap", showPanel ? "show" : "hide")}
+          >
+            <DishesPanel
+              onSearch={onSearch}
+              onSearchClear={onSearchClear}
+              isSearchMode={isSearchMode}
+              searchReceived={props.searchReceived}
+              searchResult={props.searchResult}
+              allDishes={allDishes}
+              isEditMode={isEditMode}
+              onPanelClose={() => setShowPanel(false)}
+              filters={props.suggestedFilters}
+              removeFilter={filter => removeFilter(filter)}
+              applyFilter={filter => applyFilter(filter)}
+            />
           </div>
         </div>
       </DragDropContext>
