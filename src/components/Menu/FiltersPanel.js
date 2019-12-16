@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import "../../scss/FiltersPanel.scss";
-import { Form } from "react-bootstrap";
 import { Card, Collapse } from "react-bootstrap";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormGroup from "@material-ui/core/FormGroup";
 
 const FiltersPanel = ({
   filters,
@@ -36,20 +38,18 @@ const FiltersPanel = ({
       <Collapse in={expandFiltersState} className="filter-container">
         <Card>
           <Card.Body>
-            <ul className="filter-container">
+            <FormGroup row className="filter-container">
               {filters.map((filter, index) => {
                 return (
-                  <li key={index} className="filter">
-                    <Form.Check
-                      className="filter-check"
-                      type="checkbox"
-                      label={filter}
-                      onChange={e => handleCheck(e, filter)}
-                    />
-                  </li>
+                  <FormControlLabel
+                    control={
+                      <Checkbox onChange={e => handleCheck(e, filter)} />
+                    }
+                    label={filter}
+                  />
                 );
               })}
-            </ul>
+            </FormGroup>
           </Card.Body>
         </Card>
       </Collapse>

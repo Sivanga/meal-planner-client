@@ -6,12 +6,12 @@
   padding: 0px;
   height: auto;
   width: 100%;
-}
 
-.filter-check {
-  margin-right: 5px;
+  .MuiButtonBase-root {
+    padding-right: 5px;
+  }
 
-  .form-check-input {
-    margin-left: -0.9rem;
+  label {
+    margin-right: 5px;
   }
 }
