@@ -17,6 +17,7 @@ import { connect } from "react-redux";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/NewDish.scss";
 import classNames from "classnames";
+import { useHistory } from "react-router-dom";
 
 const DISH_MEAL_ERROR = "Please select at least one meal";
 const DISH_MEAL_VALID = "valid";
@@ -37,6 +38,9 @@ const NewDish = props => {
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
+
+  /** Used to redirect to dishes list after saving the menu */
+  let history = useHistory();
 
   /** Dish state */
   const [dish, setDish] = useState(props.dish);
@@ -140,6 +144,10 @@ const NewDish = props => {
 
       props.onDishAdded(dish);
     }
+
+    history.push("/myFavorites", {
+      activeView: "ACTIVE_VIEW_DISHES"
+    });
   };
 
   /** Call Click on fileUploader ref */
