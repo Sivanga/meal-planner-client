@@ -53,8 +53,6 @@ class DishTags extends Component {
         handleDelete={this.handleTagDelete.bind(this)}
         handleAddition={this.handleTagAddition.bind(this)}
         allowNew={true}
-        placeholder="Add new"
-        delimiters={["Enter", "Tab", ",", ";"]}
       />
     );
   }
