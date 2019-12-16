@@ -215,7 +215,7 @@ const FavoriteDishes = ({
         onDishViewClick={dish =>
           setShowEditDishModal({ show: true, dish: dish, edit: false })
         }
-        onDishAddToMedataReceivednuClick={(dish, menuId) =>
+        onDishAddToMenuClick={(dish, menuId) =>
           handleAddToMenuClick(dish, menuId)
         }
       />
