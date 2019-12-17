@@ -225,8 +225,11 @@ const DishCard = ({
                 )}
                 {dish.tags && (
                   <ul className="list-unstyled d-flex flex-wrap justify-content-start mb-0">
-                    {dish.tags.map(tag => (
-                      <li key={tag.id} className="badge badge-pill badge-tags">
+                    {dish.tags.map((tag, index) => (
+                      <li
+                        key={tag.index}
+                        className="badge badge-pill badge-tags"
+                      >
                         {tag.name}
                       </li>
                     ))}

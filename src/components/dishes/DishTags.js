@@ -1,62 +1,75 @@
-import React, { Component } from "react";
-import ReactTags from "react-tag-autocomplete";
+import React, { useState } from "react";
+// import ReactTags from "react-tag-autocomplete";
 import PropTypes from "prop-types";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import Chip from "@material-ui/core/Chip";
+import TextField from "@material-ui/core/TextField";
 
 import "../../scss/DishTags.scss";
 
-class DishTags extends Component {
-  constructor(props) {
-    super(props);
+const DishTags = ({ tags, onChange }) => {
+  const [tagsState, setTagsState] = useState(tags ? tags : []);
+  const [suggestions] = useState([
+    { name: "Kids" },
+    { name: "Chicken" },
+    { name: "GlutenFree" },
+    { name: "Eggs" },
+    { name: "Meat" },
+    { name: "Vegeterian" },
+    { name: "Vegan" },
+    { name: "Feezer" },
+    { name: "Favorite" },
+    { name: "New" },
+    { name: "Hosting" }
+  ]);
 
-    this.state = {
-      tags: props.tags ? props.tags : [],
-      suggestions: [
-        { id: 1, name: "Lunch" },
-        { id: 2, name: "Chicken" },
-        { id: 3, name: "Breakfast" },
-        { id: 4, name: "Dinner" },
-        { id: 5, name: "Meat" },
-        { id: 6, name: "Vegeterian" },
-        { id: 7, name: "Vegan" },
-        { id: 8, name: "Feezer" },
-        { id: 9, name: "Favorite" },
-        { id: 10, name: "New" },
-        { id: 11, name: "Desert" }
-      ]
-    };
-  }
+  const handleOnChange = (event, values) => {
+    event.preventDefault();
 
-  componentDidMount(props) {
-    this.props.onChange(this.state.tags);
-  }
+    // Set up name for each tag
+    var tags = [];
+    values.map(value => {
+      var tag = {};
+      tag.name = value;
+      tags.push(tag);
+    });
+    setTagsState(tags);
+    onChange(tags);
+  };
 
-  handleTagDelete(i) {
-    const tags = this.state.tags.slice(0);
-    tags.splice(i, 1);
-    this.setState({ tags });
-    this.props.onChange(tags);
-  }
-
-  handleTagAddition(tag) {
-    // Set id
-    tag.id = this.state.tags.length + 1;
-    const tags = [].concat(this.state.tags, tag);
-    this.setState({ tags });
-    this.props.onChange(tags);
-  }
-
-  render() {
-    return (
-      <ReactTags
-        tags={this.state.tags}
-        suggestions={this.state.suggestions}
-        handleDelete={this.handleTagDelete.bind(this)}
-        handleAddition={this.handleTagAddition.bind(this)}
-        allowNew={true}
-      />
-    );
-  }
-}
+  return (
+    <Autocomplete
+      multiple
+      id="tags"
+      options={suggestions.map(item => item.name)}
+      defaultValue={tagsState.map(item => item.name)}
+      freeSolo
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+        ))
+      }
+      renderInput={params => (
+        <TextField
+          {...params}
+          variant="filled"
+          placeholder="Add new tags"
+          fullWidth
+        />
+      )}
+      onChange={(event, newValue) => {
+        handleOnChange(event, newValue);
+      }}
+    />
+    // <ReactTags
+    //   tags={this.state.tags}
+    //   suggestions={this.state.suggestions}
+    //   handleDelete={this.handleTagDelete.bind(this)}
+    //   handleAddition={this.handleTagAddition.bind(this)}
+    //   allowNew={true}
+    // />
+  );
+};
 
 DishTags.propTypes = {
   onChange: PropTypes.func
