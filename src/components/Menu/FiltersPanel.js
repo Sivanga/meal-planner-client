@@ -42,6 +42,7 @@ const FiltersPanel = ({
               {filters.map((filter, index) => {
                 return (
                   <FormControlLabel
+                    key={index}
                     control={
                       <Checkbox onChange={e => handleCheck(e, filter)} />
                     }

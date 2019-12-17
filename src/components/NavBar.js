@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Nav } from "react-bootstrap";
+import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { MDBBtn } from "mdbreact";
 import { useAuth } from "../components/auth/UseAuth";
@@ -48,11 +48,12 @@ function NavBar() {
                 href="/login"
                 className="nav-login-btn"
               >
-                <MDBBtn outline color="elegant">
+                <Button variant="outline-dark">
+                  {" "}
                   {auth.authState.user
                     ? auth.authState.user.displayName
                     : "Login"}
-                </MDBBtn>
+                </Button>
               </Nav.Link>
             </Nav.Item>
           </Nav>

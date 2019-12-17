@@ -1,26 +1,28 @@
 @import "./Variables.scss";
-.MuiFilledInput-root {
-  background: white !important;
-}
+#tags-auto-complete {
+  .MuiFilledInput-root {
+    background: white !important;
+  }
 
-.MuiChip-outlined {
-  background-color: $primary !important;
-  color: white !important;
-  border: 1px solid #d1d1d1 !important;
-}
+  .MuiChip-outlined {
+    background-color: $primary !important;
+    color: white !important;
+    border: 1px solid #d1d1d1 !important;
+  }
 
-.MuiChip-root {
-  height: 1.5rem !important;
-}
+  .MuiChip-root {
+    height: 1.5rem !important;
+  }
 
-.MuiChip-deleteIcon {
-  width: 12px !important;
-}
+  .MuiChip-deleteIcon {
+    width: 12px !important;
+  }
 
-.MuiSvgIcon-root {
-  color: white !important;
-}
+  .MuiSvgIcon-root {
+    color: white !important;
+  }
 
-.MuiFilledInput-underline:after {
-  border-bottom: 2px solid $primary !important;
+  .MuiFilledInput-underline:after {
+    border-bottom: 2px solid $primary !important;
+  }
 }

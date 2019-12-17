@@ -38,36 +38,34 @@ const DishTags = ({ tags, onChange }) => {
   };
 
   return (
-    <Autocomplete
-      multiple
-      id="tags"
-      options={suggestions.map(item => item.name)}
-      defaultValue={tagsState.map(item => item.name)}
-      freeSolo
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-        ))
-      }
-      renderInput={params => (
-        <TextField
-          {...params}
-          variant="filled"
-          placeholder="Add new tags"
-          fullWidth
-        />
-      )}
-      onChange={(event, newValue) => {
-        handleOnChange(event, newValue);
-      }}
-    />
-    // <ReactTags
-    //   tags={this.state.tags}
-    //   suggestions={this.state.suggestions}
-    //   handleDelete={this.handleTagDelete.bind(this)}
-    //   handleAddition={this.handleTagAddition.bind(this)}
-    //   allowNew={true}
-    // />
+    <div id="tags-auto-complete">
+      <Autocomplete
+        multiple
+        options={suggestions.map(item => item.name)}
+        defaultValue={tagsState.map(item => item.name)}
+        freeSolo
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip
+              variant="outlined"
+              label={option}
+              {...getTagProps({ index })}
+            />
+          ))
+        }
+        renderInput={params => (
+          <TextField
+            {...params}
+            variant="filled"
+            placeholder="Add new tags"
+            fullWidth
+          />
+        )}
+        onChange={(event, newValue) => {
+          handleOnChange(event, newValue);
+        }}
+      />
+    </div>
   );
 };
 
