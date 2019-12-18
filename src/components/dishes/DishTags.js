@@ -34,7 +34,7 @@ const DishTags = ({ tags, onChange }) => {
       tags.push(tag);
     });
     setTagsState(tags);
-    onChange(tags);
+    onChange(event, tags);
   };
 
   return (

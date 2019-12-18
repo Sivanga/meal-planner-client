@@ -209,69 +209,73 @@ const NewDish = props => {
           />
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="meals">
-        <Form.Label column sm="2">
-          Meals
-        </Form.Label>
+      <Form>
+        <Form.Group as={Row} controlId="meals">
+          <Form.Label column sm="2">
+            Meals
+          </Form.Label>
 
-        <Col sm="8">
-          <div
-            className={classNames("meals-control", {
-              invalid: errors.meals && errors.meals.length > 0,
-              valid: errors.meals && errors.meals === "valid"
-            })}
-          >
-            {meals.map((meal, index) => {
-              return (
-                <MDBBadge
-                  key={index}
-                  pill
-                  color="primary"
-                  className={classNames("meal-pill", {
-                    active: selectedMeals.find(
-                      currMeal => currMeal.name === meal.name
-                    )
-                  })}
-                  onClick={() => toggleMealSelection(meal)}
-                >
-                  {meal.name}
-                </MDBBadge>
-              );
-            })}
+          <Col sm="8">
+            <div
+              className={classNames("meals-control", {
+                invalid: errors.meals && errors.meals.length > 0,
+                valid: errors.meals && errors.meals === "valid"
+              })}
+            >
+              {meals.map((meal, index) => {
+                return (
+                  <MDBBadge
+                    key={index}
+                    pill
+                    color="primary"
+                    className={classNames("meal-pill", {
+                      active: selectedMeals.find(
+                        currMeal => currMeal.name === meal.name
+                      )
+                    })}
+                    onClick={() => toggleMealSelection(meal)}
+                  >
+                    {meal.name}
+                  </MDBBadge>
+                );
+              })}
 
-            {/** Add new meal */}
-            <Form.Control
-              type="text"
-              placeholder="New"
-              onKeyPress={event => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  addNewMeal(event);
-                }
+              {/** Add new meal */}
+              <Form.Control
+                type="text"
+                placeholder="New"
+                onKeyPress={event => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    addNewMeal(event);
+                  }
+                }}
+              />
+            </div>
+            {errors.meals && errors.meals !== DISH_MEAL_VALID && (
+              <span className="error">{errors.meals}</span>
+            )}
+          </Col>
+        </Form.Group>
+      </Form>
+      <Form>
+        <Form.Group as={Row} controlId="dishTags">
+          <Form.Label column sm="2">
+            Tags
+          </Form.Label>
+          <Col sm="8">
+            <DishTags
+              tags={dish && dish.tags ? dish.tags : []}
+              onChange={tags => {
+                setDish({
+                  ...dish,
+                  tags: tags
+                });
               }}
             />
-          </div>
-          {errors.meals && errors.meals !== DISH_MEAL_VALID && (
-            <span className="error">{errors.meals}</span>
-          )}
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="dishTags">
-        <Form.Label column sm="2">
-          Tags
-        </Form.Label>
-        <Col sm="8">
-          <DishTags
-            tags={dish && dish.tags ? dish.tags : []}
-            onChange={tags => {
-              setDish({
-                ...dish,
-                tags: tags
-              });
-            }}
-          />
-        </Col>
-      </Form.Group>
+          </Col>
+        </Form.Group>
+      </Form>
       <Form.Group as={Row} controlId="dishLink">
         <Form.Label column sm="2">
           Link
