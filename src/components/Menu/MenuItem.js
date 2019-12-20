@@ -135,7 +135,12 @@ const MenuItem = ({
           {menuListEnum === MenuListEnum.PUBLIC_LIST &&
             menu.favoriteUsers &&
             menu.favoriteUsers.indexOf(currentUid) === -1 && (
-              <span onClick={e => favoriteClicked(e)}>
+              <span
+                onClick={e => {
+                  favoriteClicked(e);
+                  e.stopPropagation();
+                }}
+              >
                 <i className="far fa-heart fa-sm"></i>
               </span>
             )}
@@ -146,7 +151,10 @@ const MenuItem = ({
         <div>
           <Button
             className="btn-modal"
-            onClick={() => setShowDeletOverlay(false)}
+            onClick={e => {
+              e.stopPropagation();
+              setShowDeletOverlay(false);
+            }}
             size="sm"
           >
             NO
@@ -154,7 +162,10 @@ const MenuItem = ({
           <Button
             size="sm"
             className="btn-modal"
-            onClick={() => unfavoriteClicked()}
+            onClick={e => {
+              unfavoriteClicked();
+              e.stopPropagation();
+            }}
           >
             YES
           </Button>
