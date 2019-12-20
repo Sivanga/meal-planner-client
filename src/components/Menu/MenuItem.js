@@ -9,12 +9,19 @@ export const MenuListEnum = {
   PUBLIC_LIST: 2
 };
 
+export const MenuOptions = {
+  PRINT: 1,
+  SHARE: 2
+};
+
 const MenuItem = ({
   menu,
   handleMenuRemove,
   handleMenuAdd,
   menuListEnum,
-  currentUid
+  currentUid,
+  clickedMenu,
+  onClick
 }) => {
   let history = useHistory();
 
@@ -40,12 +47,49 @@ const MenuItem = ({
     setShowDeletOverlay(false);
   };
 
+  const onMenuOpenClick = (menuOption = null) => {
+    history.push("/menu/generate", { menuData: menu, menuOption: menuOption });
+  };
+
   return (
-    <div id="menu-item">
-      <Card
-        onClick={() => history.push("/menu/generate", { menuData: menu })}
-        className="menu-preview-wrapper"
+    <div
+      id="menu-item"
+      onClick={() => {
+        if (onClick) {
+          onClick(menu.id);
+        }
+      }}
+    >
+      <span
+        className={classNames("dish-card-menu", {
+          show: clickedMenu === menu.id
+        })}
       >
+        <ul className="dish-card-menu-list">
+          <li
+            onClick={() => {
+              onMenuOpenClick();
+            }}
+          >
+            Open
+          </li>
+          <li
+            onClick={() => {
+              onMenuOpenClick(MenuOptions.PRINT);
+            }}
+          >
+            Print
+          </li>
+          <li
+            onClick={() => {
+              // onMenuShareClick(menu);
+            }}
+          >
+            Share
+          </li>
+        </ul>
+      </span>
+      <Card className="menu-preview-wrapper">
         <div className="menu-preview-container">
           <div>
             <img src={previewImages[0]} className="menu-preview-img" alt="" />

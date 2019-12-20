@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MenuItem from "./MenuItem";
 import "../../scss/MenuList.scss";
 
@@ -7,9 +7,17 @@ const MenuList = ({
   handleMenuRemove,
   handleMenuAdd,
   menuListEnum,
-  currentUid
+  currentUid,
+  onOptionItemClick
 }) => {
- 
+  /** Show / hide options on selected menu */
+  const [clickedMenu, setClickedMenu] = useState(null);
+
+  useEffect(() => {
+    // Reset the clicked dish id after menu item was clicked
+    setClickedMenu("");
+  }, [onOptionItemClick]);
+
   return (
     <div className="menu-list-container">
       {menus.map(menu => {
@@ -21,6 +29,8 @@ const MenuList = ({
             handleMenuAdd={handleMenuAdd}
             menuListEnum={menuListEnum}
             currentUid={currentUid}
+            clickedMenu={clickedMenu}
+            onClick={id => setClickedMenu(id)}
           />
         );
       })}

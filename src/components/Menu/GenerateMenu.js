@@ -20,6 +20,7 @@ import { getContainerStyle } from "./Helpers";
 import { Redirect, Prompt } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import ReactToPrint from "react-to-print";
+import { MenuOptions } from "./MenuItem";
 
 import {
   Button,
@@ -74,6 +75,9 @@ const GenerateMenu = props => {
 
   /** Used to print the menu */
   const componentRef = useRef();
+
+  /** Used to trigger ref automatically */
+  const triggerPrintRef = useRef();
 
   /**
   Get from history the Random dishes array if exist - this data comes from clicking an existing menu
@@ -174,12 +178,7 @@ const GenerateMenu = props => {
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-    console.log(
-      "use effect. props.favoriteDataReceived: ",
-      props.favoriteDataReceived,
-      " props.publicDataReceived: ",
-      props.publicDataReceived
-    );
+
     // Fetch private and public dishes
     if (!props.favoriteDataReceived.received) {
       props.fetchDishes(auth.authState.user.uid, selectedFilters);
@@ -209,6 +208,18 @@ const GenerateMenu = props => {
     props.publicDataReceived,
     props.suggestedFilters
   ]);
+
+  /** Only once - if this menu was opened with PRINT option, trigger print */
+  useEffect(() => {
+    if (
+      props.location &&
+      props.location.state &&
+      props.location.state.menuOption &&
+      props.location.state.menuOption === MenuOptions.PRINT
+    ) {
+      triggerPrintRef.current.click();
+    }
+  }, []);
 
   /**
    * Get days and meals from previous page (menu template)
@@ -708,8 +719,12 @@ const GenerateMenu = props => {
               </Button>
               <ReactToPrint
                 trigger={() => (
-                  <Button className="meal-plan-btn" onClick={() => {}}>
-                    <i className="fa fa-print" aria-hidden="true"></i>
+                  <Button className="meal-plan-btn">
+                    <i
+                      className="fa fa-print"
+                      aria-hidden="true"
+                      ref={triggerPrintRef}
+                    ></i>
                   </Button>
                 )}
                 content={() => componentRef.current}
