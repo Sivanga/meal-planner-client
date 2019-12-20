@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import DishesPanel from "./DishesPanel";
@@ -19,6 +19,7 @@ import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { getContainerStyle } from "./Helpers";
 import { Redirect, Prompt } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
+import ReactToPrint from "react-to-print";
 
 import {
   Button,
@@ -70,6 +71,9 @@ const GenerateMenu = props => {
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
+
+  /** Used to print the menu */
+  const componentRef = useRef();
 
   /**
   Get from history the Random dishes array if exist - this data comes from clicking an existing menu
@@ -653,143 +657,174 @@ const GenerateMenu = props => {
         }
       />
       <SaveModal />
-      <DragDropContext
-        onDragEnd={result => onDragEnd(result)}
-        onDragStart={e => onDragStart(e)}
-      >
-        {isEditMode && (
-          <div className="generate-btn-wrapper">
-            <MDBBtn
-              className="generate-btn random-btn"
-              onClick={() => handleRandomClick()}
-            >
-              RANDOM!
-            </MDBBtn>
-            <Button
-              className="meal-plan-btn"
-              onClick={() => {
-                setBlockLeave(false); // Alow to leave the page after edit is done
-                setSaveModalShow(true);
-              }}
-            >
-              Save
-            </Button>
-          </div>
-        )}
-        {!isEditMode && (
-          <Button
-            className="meal-plan-btn generate-btn "
-            onClick={() => {
-              setIsEditMode(true);
-              setBlockLeave(true);
-            }}
-          >
-            EDIT
-          </Button>
-        )}
-        {isEditMode && (
-          <div
-            className={classNames("panel-handle", "filters-and-search", {
-              "is-open": showPanel
-            })}
-            onClick={() => setShowPanel(!showPanel)}
-          >
-            + Search and Filter
-          </div>
-        )}
 
-        {/* Allow dragging the extra dish info */}
-        {extraDishInfo && (
-          <div className="extra-dish-droppable">
-            <Droppable
-              droppableId={EXTRA_DISH_DROPPABLE_ID}
-              isDropDisabled={true}
-            >
-              {(droppableProvided, snapshot) => (
-                <div
-                  ref={droppableProvided.innerRef}
-                  {...droppableProvided.droppableProps}
-                  {...droppableProvided.droppablePlaceholder}
-                >
-                  <Draggable draggableId={EXTRA_DISH_DRAGGABLE_ID} index={0}>
-                    {(draggebleProvided, draggebleSnapshot) => (
-                      <div
-                        ref={draggebleProvided.innerRef}
-                        {...draggebleProvided.draggableProps}
-                        {...draggebleProvided.dragHandleProps}
-                      >
-                        <DishCard
-                          dish={extraDishInfo}
-                          dishListEnum={DishListEnum.EXTRA_DISH_INFO}
-                          handleCloseExtraDishClick={handleCloseExtraDishClick}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                  {droppableProvided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-        )}
-        <div className="generateMenuContainer">
-          <ol className="generateMenuTable">
-            <li className="item-container" style={getContainerStyle(days)}>
-              <div key="day/meal" className="attribute">
-                Day/Meal
-              </div>
-              {/* Days headers */}
-              {days.map((day, index) => (
-                <div
-                  id="generated-day"
-                  key={index}
-                  className={classNames("day-column", "attribute", {
-                    dayDisabled: !day.enabled
-                  })}
-                >
-                  {day.day}
-                </div>
-              ))}
-            </li>
-
-            {/* Meals */}
-            {meals.map((meal, mealIndex) => (
-              <TableDroppable
-                key={mealIndex}
-                mealIndex={mealIndex}
-                meal={meal}
-                days={days}
-                randomDishes={randomDishes}
-                onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
-                handleDishLock={dayIndex => handleDishLock(mealIndex, dayIndex)}
-                handleDishUnlock={dayIndex =>
-                  handleDishUnlock(mealIndex, dayIndex)
-                }
-                onPlusClick={dayIndex => setShowPanel(true)}
-                showPlusButton={showPlusButton}
-                isEditMode={isEditMode}
-              />
-            ))}
-          </ol>
-          <div
-            className={classNames("panel-wrap", showPanel ? "show" : "hide")}
-          >
-            <DishesPanel
-              onSearch={onSearch}
-              onSearchClear={onSearchClear}
-              isSearchMode={isSearchMode}
-              searchReceived={props.searchReceived}
-              searchResult={props.searchResult}
-              allDishes={allDishes}
-              isEditMode={isEditMode}
-              onPanelClose={() => setShowPanel(false)}
-              filters={props.suggestedFilters}
-              removeFilter={filter => removeFilter(filter)}
-              applyFilter={filter => applyFilter(filter)}
-            />
-          </div>
+      <div ref={componentRef}>
+        <div className="print-only page-title">
+          <span>Pure Meal Plan</span>
+          <br />
+          <span>https://puremealplan.com/</span>
         </div>
-      </DragDropContext>
+        <DragDropContext
+          onDragEnd={result => onDragEnd(result)}
+          onDragStart={e => onDragStart(e)}
+        >
+          {isEditMode && (
+            <div className="generate-btn-wrapper">
+              <MDBBtn
+                className="generate-btn random-btn"
+                onClick={() => handleRandomClick()}
+              >
+                RANDOM!
+              </MDBBtn>
+              <Button
+                className="meal-plan-btn"
+                onClick={() => {
+                  setBlockLeave(false); // Alow to leave the page after edit is done
+                  setSaveModalShow(true);
+                }}
+              >
+                Save
+              </Button>
+              <ReactToPrint
+                trigger={() => (
+                  <Button className="meal-plan-btn" onClick={() => {}}>
+                    <i className="fa fa-print" aria-hidden="true"></i>
+                  </Button>
+                )}
+                content={() => componentRef.current}
+              />
+            </div>
+          )}
+          {!isEditMode && (
+            <div className="generate-menu-edit">
+              <Button
+                className="meal-plan-btn generate-btn "
+                onClick={() => {
+                  setIsEditMode(true);
+                  setBlockLeave(true);
+                }}
+              >
+                EDIT
+              </Button>
+              <ReactToPrint
+                trigger={() => (
+                  <Button className="meal-plan-btn" onClick={() => {}}>
+                    <i className="fa fa-print" aria-hidden="true"></i>
+                  </Button>
+                )}
+                content={() => componentRef.current}
+              />
+            </div>
+          )}
+
+          {isEditMode && (
+            <div
+              className={classNames("panel-handle", "filters-and-search", {
+                "is-open": showPanel
+              })}
+              onClick={() => setShowPanel(!showPanel)}
+            >
+              + Search and Filter
+            </div>
+          )}
+
+          {/* Allow dragging the extra dish info */}
+          {extraDishInfo && (
+            <div className="extra-dish-droppable">
+              <Droppable
+                droppableId={EXTRA_DISH_DROPPABLE_ID}
+                isDropDisabled={true}
+              >
+                {(droppableProvided, snapshot) => (
+                  <div
+                    ref={droppableProvided.innerRef}
+                    {...droppableProvided.droppableProps}
+                    {...droppableProvided.droppablePlaceholder}
+                  >
+                    <Draggable draggableId={EXTRA_DISH_DRAGGABLE_ID} index={0}>
+                      {(draggebleProvided, draggebleSnapshot) => (
+                        <div
+                          ref={draggebleProvided.innerRef}
+                          {...draggebleProvided.draggableProps}
+                          {...draggebleProvided.dragHandleProps}
+                        >
+                          <DishCard
+                            dish={extraDishInfo}
+                            dishListEnum={DishListEnum.EXTRA_DISH_INFO}
+                            handleCloseExtraDishClick={
+                              handleCloseExtraDishClick
+                            }
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                    {droppableProvided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          )}
+          <div className="generateMenuContainer">
+            <ol className="generateMenuTable">
+              <li className="item-container" style={getContainerStyle(days)}>
+                <div key="day/meal" className="attribute">
+                  Day/Meal
+                </div>
+                {/* Days headers */}
+                {days.map((day, index) => (
+                  <div
+                    id="generated-day"
+                    key={index}
+                    className={classNames("day-column", "attribute", {
+                      dayDisabled: !day.enabled
+                    })}
+                  >
+                    {day.day}
+                  </div>
+                ))}
+              </li>
+
+              {/* Meals */}
+              {meals.map((meal, mealIndex) => (
+                <TableDroppable
+                  key={mealIndex}
+                  mealIndex={mealIndex}
+                  meal={meal}
+                  days={days}
+                  randomDishes={randomDishes}
+                  onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
+                  handleDishLock={dayIndex =>
+                    handleDishLock(mealIndex, dayIndex)
+                  }
+                  handleDishUnlock={dayIndex =>
+                    handleDishUnlock(mealIndex, dayIndex)
+                  }
+                  onPlusClick={dayIndex => setShowPanel(true)}
+                  showPlusButton={showPlusButton}
+                  isEditMode={isEditMode}
+                />
+              ))}
+            </ol>
+            <div
+              className={classNames("panel-wrap", showPanel ? "show" : "hide")}
+            >
+              <DishesPanel
+                onSearch={onSearch}
+                onSearchClear={onSearchClear}
+                isSearchMode={isSearchMode}
+                searchReceived={props.searchReceived}
+                searchResult={props.searchResult}
+                allDishes={allDishes}
+                isEditMode={isEditMode}
+                onPanelClose={() => setShowPanel(false)}
+                filters={props.suggestedFilters}
+                removeFilter={filter => removeFilter(filter)}
+                applyFilter={filter => applyFilter(filter)}
+              />
+            </div>
+          </div>
+        </DragDropContext>
+      </div>
     </>
   );
 };

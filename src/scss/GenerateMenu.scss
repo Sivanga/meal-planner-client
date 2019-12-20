@@ -181,3 +181,58 @@ li {
 .extra-dish-droppable {
   max-width: 100px;
 }
+
+@media print {
+  html,
+  body,
+  .generateMenuContainer {
+    height: initial !important;
+    overflow: initial !important;
+  }
+
+  .generate-menu-edit,
+  .panel-handle,
+  .generate-btn-wrapper,
+  .fa-stack,
+  .fa-minus-circle {
+    display: none !important;
+  }
+
+  .page-title {
+    display: block !important;
+  }
+
+  .panel-wrap {
+    transform: translate(100%) !important;
+    display: none !important;
+  }
+  .generateMenuContainer {
+    max-width: 1000px !important;
+    max-height: 100% !important;
+    margin: auto;
+    padding-top: 30px !important;
+  }
+
+  .item-container {
+    max-width: 1000px;
+  }
+
+  .generateMenuTable {
+    overflow: unset;
+    height: 100% !important;
+  }
+}
+
+@page {
+  size: auto;
+  margin: 20mm;
+  page-break-inside: auto;
+}
+
+// Show only in print mode
+.page-title {
+  display: none;
+  text-align: center;
+  color: $primary;
+  font-size: 1.3rem;
+}
