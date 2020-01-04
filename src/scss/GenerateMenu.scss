@@ -96,10 +96,13 @@ li {
   font-size: 1rem;
 }
 
-/* Day Header */
-.generateMenuTable > .item-container:first-child > .attribute {
-  background-color: $primary;
-  color: white;
+/* Day + Meal Header */
+.generateMenuTable > .item-container:first-child > .attribute,
+.generateMenuTable > .item-container > div:first-child {
+  background-color: white;
+  border-top: solid $primary 2px;
+  border-bottom: solid $primary 2px;
+  color: $primary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,14 +110,16 @@ li {
   padding: 0.5rem;
 }
 
-/* Meal Header */
+/* Last child of day header */
+.generateMenuTable > .item-container:first-child > .attribute:last-child {
+  border-right: solid $primary 2px;
+}
+
+/* Meal Header - specific border */
 .generateMenuTable > .item-container > div:first-child {
-  background-color: $primary;
-  color: white;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-top: none;
+  border-left: solid $primary 2px;
+  border-right: solid $primary 2px;
 }
 
 .item-container {
