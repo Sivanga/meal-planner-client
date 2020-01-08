@@ -126,20 +126,24 @@ const ShareModal = ({ show, handleHide, days, meals, randomDishes, uid }) => {
                 {meal.name}
               </div>
 
-              {days.map((day, dayIndex) => (
-                <DishCard
-                  className={classNames("attribute", {
-                    mealDisabled: !day.enabled
-                  })}
-                  dish={
-                    randomDishes[mealIndex]
-                      ? randomDishes[mealIndex][dayIndex]
-                      : null
-                  }
-                  dishListEnum={DishListEnum.NO_LIST}
-                  isEditMode={false}
-                />
-              ))}
+              {days.map((day, dayIndex) =>
+                day.enabled &&
+                randomDishes[mealIndex] &&
+                randomDishes[mealIndex][dayIndex] ? (
+                  <DishCard
+                    className={classNames("attribute", {
+                      mealDisabled: !day.enabled
+                    })}
+                    dish={
+                      randomDishes[mealIndex]
+                        ? randomDishes[mealIndex][dayIndex]
+                        : null
+                    }
+                    dishListEnum={DishListEnum.NO_LIST}
+                    isEditMode={false}
+                  />
+                ) : null
+              )}
             </li>
           ))}
         </ol>
