@@ -142,7 +142,9 @@ const ShareModal = ({ show, handleHide, days, meals, randomDishes, uid }) => {
                     dishListEnum={DishListEnum.NO_LIST}
                     isEditMode={false}
                   />
-                ) : null
+                ) : (
+                  <div className={"mealDisabled"} />
+                )
               )}
             </li>
           ))}
