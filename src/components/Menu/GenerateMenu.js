@@ -14,14 +14,14 @@ import DishCard, { DishListEnum } from "../dishes/DishCard";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
-import TableDroppable from "./TableDroppable";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
-import { getContainerStyle } from "./Helpers";
 import { Redirect, Prompt } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import ReactToPrint from "react-to-print";
 import { MenuOptions } from "./MenuItem";
-
+import ShareIcon from "@material-ui/icons/Share";
+import ShareModal from "./ShareModal";
+import MenuTabel from "./MenuTabel";
 import {
   Button,
   MDBBtn,
@@ -32,7 +32,6 @@ import {
 } from "mdbreact";
 import { Form, Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
 import "../../scss/GenerateMenu.scss";
@@ -82,17 +81,19 @@ const GenerateMenu = props => {
   /**
   Get from history the Random dishes array if exist - this data comes from clicking an existing menu
   Get from history days and meal - this data comes from previous page - menu template
-  Get from history extraDishInfo to add to menu
+  Get from history extraDishInfo to add specific dish to menu
    */
-  var initialRandomDishes = null;
   var days = null;
   var meals = null;
   var extraDishInfoInitial = null;
   var initialSelectedFilters = [];
+  var menuData = props.menuData;
+  var initialRandomDishes = null;
+  if (menuData) initialRandomDishes = props.menuData.dishes;
 
   // Get menu data
   if (props.location && props.location.state && props.location.state.menuData) {
-    const menuData = props.location.state.menuData;
+    menuData = props.location.state.menuData;
     if (menuData.days) {
       days = menuData.days;
     }
@@ -159,6 +160,9 @@ const GenerateMenu = props => {
   /** Save modal is shown */
   const [saveModalShow, setSaveModalShow] = useState(false);
 
+  /** Share modal status - show and image data */
+  const [shareModalStatus, setShareModalStatus] = useState(false);
+
   /** Merged favorite and public dishes to be used in paenl */
   const [allDishes, setAllDishes] = useState([]);
 
@@ -172,6 +176,12 @@ const GenerateMenu = props => {
   const [selectedFilters, setSelectedFilters] = useState(
     initialSelectedFilters
   );
+
+  var mergePrivateAndPublic = () => {
+    var mergedDishes = props.favoriteDishes.concat(props.publicDishes);
+    var map = new Map(mergedDishes.map(dish => [dish.id, dish]));
+    setAllDishes([...map.values()]);
+  };
 
   /**
    * Fetch private and public dishes. Compute random dishes after all data is received
@@ -217,7 +227,7 @@ const GenerateMenu = props => {
       props.location.state.menuOption &&
       props.location.state.menuOption === MenuOptions.PRINT
     ) {
-      triggerPrintRef.current.click();
+      if (triggerPrintRef.current) triggerPrintRef.current.click();
     }
   }, []);
 
@@ -236,12 +246,6 @@ const GenerateMenu = props => {
       />
     );
   }
-
-  var mergePrivateAndPublic = () => {
-    var mergedDishes = props.favoriteDishes.concat(props.publicDishes);
-    var map = new Map(mergedDishes.map(dish => [dish.id, dish]));
-    setAllDishes([...map.values()]);
-  };
 
   /**
    * Create random dishes array of the length of days and meals.
@@ -571,7 +575,6 @@ const GenerateMenu = props => {
   };
 
   const handleSelectedFilters = filters => {
-    console.log("handleSelectedFilters: ", filters);
     if (filters && filters.length > 0) {
       setIsFilterMode(true);
       onSearch("", filters);
@@ -659,6 +662,33 @@ const GenerateMenu = props => {
     );
   };
 
+  const PrintAndShare = () => {
+    return (
+      <>
+        <ReactToPrint
+          trigger={() => (
+            <Button className="meal-plan-btn">
+              <i
+                className="fa fa-print"
+                aria-hidden="true"
+                ref={triggerPrintRef}
+              ></i>
+            </Button>
+          )}
+          content={() => componentRef.current}
+        />
+        <Button
+          className="meal-plan-btn"
+          onClick={() => {
+            setShareModalStatus(true);
+          }}
+        >
+          <ShareIcon />
+        </Button>
+      </>
+    );
+  };
+
   return (
     <>
       <Prompt
@@ -668,8 +698,27 @@ const GenerateMenu = props => {
         }
       />
       <SaveModal />
+      <ShareModal
+        show={shareModalStatus}
+        handleHide={() => {
+          setShareModalStatus(false);
+        }}
+        days={days}
+        meals={meals}
+        randomDishes={randomDishes}
+        uid={
+          auth.authState && auth.authState && auth.authState.user
+            ? auth.authState.user.uid
+            : null
+        }
+      />
 
-      <div ref={componentRef}>
+      <div
+        ref={componentRef}
+        className={classNames({
+          share: shareModalStatus
+        })}
+      >
         <div className="print-only page-title">
           <span>Pure Meal Plan</span>
           <br />
@@ -696,14 +745,7 @@ const GenerateMenu = props => {
               >
                 Save
               </Button>
-              <ReactToPrint
-                trigger={() => (
-                  <Button className="meal-plan-btn" onClick={() => {}}>
-                    <i className="fa fa-print" aria-hidden="true"></i>
-                  </Button>
-                )}
-                content={() => componentRef.current}
-              />
+              <PrintAndShare />
             </div>
           )}
           {!isEditMode && (
@@ -717,18 +759,7 @@ const GenerateMenu = props => {
               >
                 EDIT
               </Button>
-              <ReactToPrint
-                trigger={() => (
-                  <Button className="meal-plan-btn">
-                    <i
-                      className="fa fa-print"
-                      aria-hidden="true"
-                      ref={triggerPrintRef}
-                    ></i>
-                  </Button>
-                )}
-                content={() => componentRef.current}
-              />
+              <PrintAndShare />
             </div>
           )}
 
@@ -780,46 +811,18 @@ const GenerateMenu = props => {
             </div>
           )}
           <div className="generateMenuContainer">
-            <ol className="generateMenuTable">
-              <li className="item-container" style={getContainerStyle(days)}>
-                <div key="day/meal" className="attribute">
-                  Day/Meal
-                </div>
-                {/* Days headers */}
-                {days.map((day, index) => (
-                  <div
-                    id="generated-day"
-                    key={index}
-                    className={classNames("day-column", "attribute", {
-                      dayDisabled: !day.enabled
-                    })}
-                  >
-                    {day.day}
-                  </div>
-                ))}
-              </li>
+            <MenuTabel
+              days={days}
+              meals={meals}
+              randomDishes={randomDishes}
+              onMinusClick={onMinusClick}
+              handleDishLock={handleDishLock}
+              handleDishUnlock={handleDishUnlock}
+              setShowPanel={setShowPanel}
+              showPlusButton={showPlusButton}
+              isEditMode={isEditMode}
+            />
 
-              {/* Meals */}
-              {meals.map((meal, mealIndex) => (
-                <TableDroppable
-                  key={mealIndex}
-                  mealIndex={mealIndex}
-                  meal={meal}
-                  days={days}
-                  randomDishes={randomDishes}
-                  onMinusClick={dayIndex => onMinusClick(mealIndex, dayIndex)}
-                  handleDishLock={dayIndex =>
-                    handleDishLock(mealIndex, dayIndex)
-                  }
-                  handleDishUnlock={dayIndex =>
-                    handleDishUnlock(mealIndex, dayIndex)
-                  }
-                  onPlusClick={dayIndex => setShowPanel(true)}
-                  showPlusButton={showPlusButton}
-                  isEditMode={isEditMode}
-                />
-              ))}
-            </ol>
             <div
               className={classNames("panel-wrap", showPanel ? "show" : "hide")}
             >
