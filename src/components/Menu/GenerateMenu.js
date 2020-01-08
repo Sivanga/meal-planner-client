@@ -19,7 +19,6 @@ import { Redirect, Prompt } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import ReactToPrint from "react-to-print";
 import { MenuOptions } from "./MenuItem";
-import ShareIcon from "@material-ui/icons/Share";
 import ShareModal from "./ShareModal";
 import MenuTabel from "./MenuTabel";
 import {
@@ -75,8 +74,11 @@ const GenerateMenu = props => {
   /** Used to print the menu */
   const componentRef = useRef();
 
-  /** Used to trigger ref automatically */
+  /** Used to trigger print automatically */
   const triggerPrintRef = useRef();
+
+  /** Used to trigger share automatically */
+  const triggerShareRef = useRef();
 
   /**
   Get from history the Random dishes array if exist - this data comes from clicking an existing menu
@@ -219,15 +221,20 @@ const GenerateMenu = props => {
     props.suggestedFilters
   ]);
 
-  /** Only once - if this menu was opened with PRINT option, trigger print */
+  /** Only once - if this menu was opened with PRINT option, trigger print
+  if this menu was opened with SHARE option, trigger SHARE */
   useEffect(() => {
     if (
       props.location &&
       props.location.state &&
-      props.location.state.menuOption &&
-      props.location.state.menuOption === MenuOptions.PRINT
+      props.location.state.menuOption
     ) {
-      if (triggerPrintRef.current) triggerPrintRef.current.click();
+      if (props.location.state.menuOption === MenuOptions.PRINT) {
+        if (triggerPrintRef.current) triggerPrintRef.current.click();
+      }
+      if (props.location.state.menuOption === MenuOptions.SHARE) {
+        if (triggerShareRef.current) triggerShareRef.current.click();
+      }
     }
   }, []);
 
@@ -683,7 +690,7 @@ const GenerateMenu = props => {
             setShareModalStatus(true);
           }}
         >
-          <ShareIcon />
+          <i className="fas fa-share-alt" ref={triggerShareRef}></i>
         </Button>
       </>
     );

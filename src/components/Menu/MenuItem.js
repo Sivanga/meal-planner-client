@@ -82,7 +82,7 @@ const MenuItem = ({
           </li>
           <li
             onClick={() => {
-              // onMenuShareClick(menu);
+              onMenuOpenClick(MenuOptions.SHARE);
             }}
           >
             Share
