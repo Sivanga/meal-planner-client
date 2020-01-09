@@ -1,5 +1,6 @@
 import {
   SET_MENU,
+  FETCH_MENU,
   REMOVE_MENU,
   REMOVE_MENU_FROM_FAVORITE,
   ADD_MENU_TO_FAVORITE,
@@ -25,6 +26,15 @@ function menus(state = [], action) {
       // Append menus to previos array
       var menusCopy = [...state];
       return menusCopy.concat(action.payload);
+    default:
+      return state;
+  }
+}
+
+function menu(state = {}, action) {
+  switch (action.type) {
+    case FETCH_MENU:
+      return action.payload;
     default:
       return state;
   }
@@ -107,6 +117,7 @@ function publicMenusSearchReceived(state = false, action) {
 }
 
 const MenuReducer = combineReducers({
+  menu,
   menus,
   publicMenus,
   privateMenusDataReceived,

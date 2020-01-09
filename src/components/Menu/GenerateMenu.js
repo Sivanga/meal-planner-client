@@ -8,14 +8,15 @@ import {
   searchAllDishes,
   setMenu,
   clearSearchAllDishes,
-  getPopularTags
+  getPopularTags,
+  fetchMenu
 } from "../../store/actions/Actions";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
-import { Redirect, Prompt } from "react-router-dom";
+import { Redirect, Prompt, useParams } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import ReactToPrint from "react-to-print";
 import { MenuOptions } from "./MenuItem";
@@ -37,6 +38,7 @@ import "../../scss/GenerateMenu.scss";
 
 const mapStateToProps = state => {
   return {
+    menuData: state.menus.menu,
     favoriteDishes: state.dishes.dishes,
     favoriteDataReceived: state.dishes.privateDishesDataReceived,
     publicDishes: state.dishes.publicDishes,
@@ -53,6 +55,7 @@ const mapDispatchToProps = dispatch => ({
   fetchPublicDishes: (uid, selectedFilters) =>
     dispatch(fetchPublicDishes(uid, selectedFilters)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
+  fetchMenu: (id, uid, type) => dispatch(fetchMenu(id, uid, type)),
   searchAllDishes: (uid, query, selectedFilters) =>
     dispatch(searchAllDishes(uid, query, selectedFilters)),
   clearSearchAllDishes: () => dispatch(clearSearchAllDishes()),
@@ -63,6 +66,8 @@ const EXTRA_DISH_DROPPABLE_ID = "EXTRA_DISH_DROPPABLE_ID";
 const EXTRA_DISH_DRAGGABLE_ID = "EXTRA_DISH_DRAGGABLE_ID";
 
 const GenerateMenu = props => {
+  let { menuId, type } = useParams();
+
   /** Used to redirect to menus list after saving the menu */
   let history = useHistory();
 
@@ -83,50 +88,40 @@ const GenerateMenu = props => {
   /**
   Get from history the Random dishes array if exist - this data comes from clicking an existing menu
   Get from history days and meal - this data comes from previous page - menu template
-  Get from history extraDishInfo to add specific dish to menu
+  Get menu data from props
    */
-  var days = null;
-  var meals = null;
+  const readMenuData = () => {
+    var menuData = props.menuData;
+
+    // Get menu data from location
+    if (
+      props.location &&
+      props.location.state &&
+      props.location.state.menuData
+    ) {
+      menuData = props.location.state.menuData;
+    }
+
+    if (!menuData) return;
+
+    // menuData.dishes can arrive with undefined valus from backend, change it to empty array
+    if (menuData.meals) {
+      menuData.meals.map((meal, mealIndex) => {
+        if (!menuData.dishes[mealIndex]) {
+          menuData.dishes[mealIndex] = [];
+          menuData.days.map((day, dayIndex) => {
+            menuData.dishes[mealIndex][dayIndex] = null;
+          });
+        }
+      });
+    }
+    return menuData;
+  };
+
+  var menuData = readMenuData();
+
+  /** Get from history extraDishInfo to add specific dish to menu */
   var extraDishInfoInitial = null;
-  var initialSelectedFilters = [];
-  var menuData = props.menuData;
-  var initialRandomDishes = null;
-  if (menuData) initialRandomDishes = props.menuData.dishes;
-
-  // Get menu data
-  if (props.location && props.location.state && props.location.state.menuData) {
-    menuData = props.location.state.menuData;
-    if (menuData.days) {
-      days = menuData.days;
-    }
-    if (menuData.meals) {
-      meals = menuData.meals;
-    }
-    if (menuData.dishes) {
-      initialRandomDishes = menuData.dishes;
-
-      // initialRandomDishes can arrive with undefined valus from backend, change it to empty array
-      if (meals) {
-        meals.map((meal, mealIndex) => {
-          if (!initialRandomDishes[mealIndex]) {
-            initialRandomDishes[mealIndex] = [];
-            days.map((day, dayIndex) => {
-              initialRandomDishes[mealIndex][dayIndex] = null;
-            });
-          }
-        });
-      }
-    }
-    if (menuData.meals) {
-      meals = menuData.meals;
-    }
-
-    if (menuData.selectedFilters) {
-      initialSelectedFilters = menuData.selectedFilters;
-    }
-  }
-
-  // Get extra dish info
   if (
     props.location &&
     props.location.state &&
@@ -139,12 +134,14 @@ const GenerateMenu = props => {
   const [extraDishInfo, setExtraDishInfo] = useState(extraDishInfoInitial);
 
   /** Random dishes */
-  const [randomDishes, setRandomDishes] = useState(initialRandomDishes);
+  const [randomDishes, setRandomDishes] = useState(
+    menuData && menuData.dishes ? menuData.dishes : null
+  );
 
   /** IsEditMode - if initialRandomDishes exist it means the menu was opened for viewing from existing menu
   Otherwise this is a newly created menu */
   const [isEditMode, setIsEditMode] = useState(
-    initialRandomDishes && !extraDishInfo ? false : true
+    menuData && menuData.dishes && !extraDishInfo ? false : true
   );
 
   const [blockLeave, setBlockLeave] = useState(isEditMode ? true : false);
@@ -176,7 +173,7 @@ const GenerateMenu = props => {
 
   /** Use to fetch dishes and search result with selected filters */
   const [selectedFilters, setSelectedFilters] = useState(
-    initialSelectedFilters
+    menuData && menuData.selectedFilters ? menuData.selectedFilters : []
   );
 
   var mergePrivateAndPublic = () => {
@@ -189,7 +186,8 @@ const GenerateMenu = props => {
    * Fetch private and public dishes. Compute random dishes after all data is received
    */
   useEffect(() => {
-    if (!auth.authState.user) return;
+    if (!auth.authState.user || !menuData || !menuData.meals || !menuData.days)
+      return;
 
     // Fetch private and public dishes
     if (!props.favoriteDataReceived.received) {
@@ -204,7 +202,7 @@ const GenerateMenu = props => {
 
     // Compute random dishes if both favorite and public dishes received
     if (props.favoriteDataReceived && props.publicDataReceived) {
-      if (!randomDishes) {
+      if (!menuData.dishes && !randomDishes) {
         computeRandomDishes();
       }
       mergePrivateAndPublic(); // Merge dishes are used in the panel. Merge ony once
@@ -218,8 +216,27 @@ const GenerateMenu = props => {
     auth,
     props.favoriteDataReceived,
     props.publicDataReceived,
-    props.suggestedFilters
+    props.suggestedFilters,
+    menuData
   ]);
+
+  /**
+  Only once - Fetch menu from backEnd if there's no menuData but there's menuId
+   */
+  useEffect(() => {
+    if (!auth.authState.user) return;
+    console.log("useEffect menuData: ", menuData);
+
+    // There's menuId without menuData, fetch menu from backend
+    if (menuData && !menuData.days && !menuData.meals && menuId) {
+      props.fetchMenu(menuId, auth.authState.user.uid, type);
+    }
+
+    // Menu was fetched succesfuly, set random dishes
+    if (menuData && menuData.days && menuData.meals && menuId) {
+      setRandomDishes(menuData.dishes);
+    }
+  }, [auth, menuData]);
 
   /** Only once - if this menu was opened with PRINT option, trigger print
   if this menu was opened with SHARE option, trigger SHARE */
@@ -242,8 +259,12 @@ const GenerateMenu = props => {
    * Get days and meals from previous page (menu template)
    If theres no days and meals data, go back main menu page
    */
+  if (!menuData || !menuData.meals || !menuData.days) {
+    // If there's menuId, show loading while fetching menu data
+    if (menuId) {
+      return <div className="center-text">Loading...</div>;
+    }
 
-  if (!meals || !days) {
     return (
       <Redirect
         push
@@ -261,11 +282,11 @@ const GenerateMenu = props => {
   var computeRandomDishes = () => {
     // Create matrix
     var randomDishes = [];
-    meals.map((meal, mealIndex) => {
+    menuData.meals.map((meal, mealIndex) => {
       // Create array
       randomDishes[mealIndex] = [];
 
-      days.map((day, dayIndex) => {
+      menuData.days.map((day, dayIndex) => {
         // Don't assign a dish for a disabled day
         if (!day.enabled) return (randomDishes[mealIndex][dayIndex] = null);
 
@@ -300,8 +321,8 @@ const GenerateMenu = props => {
    */
   const handleRandomClick = () => {
     var copy = { ...randomDishes };
-    meals.map((meal, mealIndex) => {
-      days.map((day, dayIndex) => {
+    menuData.meals.map((meal, mealIndex) => {
+      menuData.days.map((day, dayIndex) => {
         // Don't assign a dish for a disabled day
         // Don't replace a locked dish
         if (
@@ -343,7 +364,7 @@ const GenerateMenu = props => {
     var mergedDishes = mealsFavoriteDishes;
 
     // If mealsFavoriteDishes length is less then days length, use public dishes as well
-    if (mealsFavoriteDishes.length < days.length) {
+    if (mealsFavoriteDishes.length < menuData.days.length) {
       const mealsPublicDishes = findDishesForMeal(props.publicDishes, meal);
       mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
     }
@@ -370,7 +391,7 @@ const GenerateMenu = props => {
     if (!destination) return;
 
     // Can't drop to a disabled day
-    if (!days[destination.index].enabled) return;
+    if (!menuData.days[destination.index].enabled) return;
 
     // Drop from extra dish
     if (source.droppableId === EXTRA_DISH_DROPPABLE_ID) {
@@ -482,8 +503,8 @@ const GenerateMenu = props => {
   const onSaveClick = (menuShareState, menuNameState) => {
     // Generate menu preview
     var images = [];
-    for (var i = 0; i < days.length; i++) {
-      for (var j = 0; j < days.length; j++) {
+    for (var i = 0; i < menuData.days.length; i++) {
+      for (var j = 0; j < menuData.days.length; j++) {
         // Add this image only if it's not already exist
         if (
           randomDishes[i] &&
@@ -502,8 +523,8 @@ const GenerateMenu = props => {
     // Send generated menu to backend
     const menu = {
       date: Date.now(),
-      days: days,
-      meals: meals,
+      days: menuData.days,
+      meals: menuData.meals,
       dishes: randomDishes,
       previewImages: previewImages,
       sharePublic: menuShareState,
@@ -710,8 +731,8 @@ const GenerateMenu = props => {
         handleHide={() => {
           setShareModalStatus(false);
         }}
-        days={days}
-        meals={meals}
+        days={menuData.days}
+        meals={menuData.meals}
         randomDishes={randomDishes}
         uid={
           auth.authState && auth.authState && auth.authState.user
@@ -819,8 +840,8 @@ const GenerateMenu = props => {
           )}
           <div className="generateMenuContainer">
             <MenuTabel
-              days={days}
-              meals={meals}
+              days={menuData.days}
+              meals={menuData.meals}
               randomDishes={randomDishes}
               onMinusClick={onMinusClick}
               handleDishLock={handleDishLock}

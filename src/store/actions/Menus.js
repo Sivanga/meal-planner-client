@@ -6,6 +6,7 @@ import {
   PRIVATE_MENUS_DATA_RECIEVED,
   PUBLIC_MENUS_DATA_RECIEVED,
   SET_MENU,
+  FETCH_MENU,
   REMOVE_MENU,
   SEARCH_FAVORITE_MENUS,
   SEARCH_FAVORITE_MENUS_RECEIVED,
@@ -111,6 +112,28 @@ export const fetchMenus = (uid, prevNextPage) => async dispatch => {
     dispatch({
       type: FETCH_PRIVATE_MENUS,
       payload: menus
+    });
+  });
+};
+
+/** Fetch a specific menu */
+export const fetchMenu = (menuId, uid, type) => async dispatch => {
+  var ref;
+
+  // Fetch public menu
+  if (type === "public") {
+    ref = publicMenusDbRef().child(menuId);
+  }
+
+  // Fetch private menu
+  else {
+    ref = menusDbRef(uid).child(menuId);
+  }
+
+  ref.once("value", snapshot => {
+    dispatch({
+      type: FETCH_MENU,
+      payload: snapshot.val()
     });
   });
 };

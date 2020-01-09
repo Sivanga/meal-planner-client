@@ -48,7 +48,15 @@ const MenuItem = ({
   };
 
   const onMenuOpenClick = (menuOption = null) => {
-    history.push("/menu/generate", { menuData: menu, menuOption: menuOption });
+    // Open private or public menu
+    var type = "public";
+    if (menuListEnum === MenuListEnum.MY_FAVORITES_LIST) {
+      type = "private";
+    }
+    history.push(`/menu/generate/${type}/${menu.id}`, {
+      menuData: menu,
+      menuOption: menuOption
+    });
   };
 
   return (

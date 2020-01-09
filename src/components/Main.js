@@ -15,7 +15,10 @@ function Main(props) {
   return (
     <Switch>
       <Route exact path="/" component={Dishes} />
-
+      <Route
+        path="/menu/generate/:type/:menuId"
+        render={props => <GenerateMenu {...props} />}
+      />
       <Route
         path="/menu/generate"
         render={props => <GenerateMenu {...props} />}
