@@ -10,15 +10,23 @@ import {
   EmailIcon
 } from "react-share";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
-import { Modal } from "react-bootstrap";
+import { Modal, Button, Spinner } from "react-bootstrap";
 import "../../scss/ShareModal.scss";
 import classNames from "classnames";
 import { storageRef } from "../../firebase.js";
 import htmlToImage from "html-to-image";
-import { Spinner } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
-const ShareModal = ({ show, handleHide, days, meals, randomDishes, uid }) => {
+const ShareModal = ({
+  isPrivateMenu,
+  show,
+  handleHide,
+  days,
+  meals,
+  randomDishes,
+  uid,
+  handleMakePublic
+}) => {
   // Used to take a screenshot of the menu
   const componentRef = useRef();
 
@@ -58,6 +66,25 @@ const ShareModal = ({ show, handleHide, days, meals, randomDishes, uid }) => {
       gridTemplateColumns: "75px 85px 85px 85px 85px 85px 85px 85px"
     };
   };
+
+  if (isPrivateMenu) {
+    return (
+      <Modal show={show} onHide={handleHide}>
+        <Modal.Header>Share Menu</Modal.Header>
+        <Modal.Body>
+          Anyone with a link to this menu will be able to open it.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className="meal-plan-btn" onClick={handleHide}>
+            Cancel
+          </Button>
+          <Button className="meal-plan-btn" onClick={handleMakePublic}>
+            Ok
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   return (
     <Modal show={show} onHide={handleHide} size="lg">

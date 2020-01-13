@@ -18,21 +18,14 @@ import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
-import { Redirect, Prompt, useParams } from "react-router-dom";
+import { Prompt, useParams } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import ReactToPrint from "react-to-print";
 import { MenuOptions } from "./MenuItem";
 import ShareModal from "./ShareModal";
+import SaveModal from "./SaveModal";
 import MenuTabel from "./MenuTabel";
-import {
-  Button,
-  MDBBtn,
-  MDBModal,
-  MDBModalBody,
-  MDBModalHeader,
-  MDBModalFooter
-} from "mdbreact";
-import { Form, Row, Col } from "react-bootstrap";
+import { Button, MDBBtn } from "mdbreact";
 import { useHistory } from "react-router-dom";
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 import "../../scss/TemplateMenu.scss";
@@ -167,8 +160,8 @@ const GenerateMenu = props => {
   /** Save modal is shown */
   const [saveModalShow, setSaveModalShow] = useState(false);
 
-  /** Share modal status - show and image data */
-  const [shareModalStatus, setShareModalStatus] = useState(false);
+  /** Share modal is shown */
+  const [shareModalShow, setShareModalShow] = useState(false);
 
   /** Merged favorite and public dishes to be used in paenl */
   const [allDishes, setAllDishes] = useState([]);
@@ -645,11 +638,7 @@ const GenerateMenu = props => {
   const onShareClick = () => {
     if (validateLoggedInUser() === false) return;
 
-    // Make this menu public
-    if (!menuData.sharePublic) {
-      props.makeMenuPublic(menuData.id, auth.authState.user.uid);
-    }
-    setShareModalStatus(true);
+    setShareModalShow(true);
   };
 
   /**
@@ -684,64 +673,6 @@ const GenerateMenu = props => {
   ) {
     return <div className="center-text">Loading...</div>;
   }
-
-  const SaveModal = () => {
-    /** Share menu value */
-    const [menuShareState, setMenuShareState] = useState(true);
-
-    const [menuNameState, setMenuNameState] = useState("");
-
-    return (
-      <MDBModal
-        isOpen={saveModalShow}
-        toggle={() => setSaveModalShow(!saveModalShow)}
-      >
-        <MDBModalHeader toggle={() => setSaveModalShow(!saveModalShow)}>
-          One Last Step!
-        </MDBModalHeader>
-        <MDBModalBody>
-          <Form.Group controlId="menuName" as={Row}>
-            <Form.Label column sm="2">
-              Name
-            </Form.Label>
-            <Col sm="8">
-              <Form.Control
-                type="text"
-                placeholder={menuNameState}
-                onChange={event => setMenuNameState(event.target.value)}
-              />
-            </Col>
-          </Form.Group>
-
-          <Form.Group controlId="menuShare" as={Row}>
-            <Form.Label column sm="2">
-              Visibility
-            </Form.Label>
-            <Col sm="8">
-              <Form.Check
-                className="menuShareLable"
-                type="checkbox"
-                label=" Share with our community and get others
-                inspired!"
-                checked={menuShareState}
-                onChange={() => setMenuShareState(!menuShareState)}
-              />
-            </Col>
-          </Form.Group>
-        </MDBModalBody>
-        <MDBModalFooter>
-          <MDBBtn
-            onClick={() => {
-              onSaveClick(menuShareState, menuNameState);
-            }}
-            className="generate-btn"
-          >
-            SAVE
-          </MDBBtn>
-        </MDBModalFooter>
-      </MDBModal>
-    );
-  };
 
   const PrintAndShare = () => {
     return (
@@ -782,11 +713,18 @@ const GenerateMenu = props => {
           `Are you sure you want to leave before saving changes?`
         }
       />
-      <SaveModal />
+      <SaveModal
+        saveModalShow={saveModalShow}
+        toggle={() => setSaveModalShow(!saveModalShow)}
+        onSaveClick={(menuShareState, menuNameState) =>
+          onSaveClick(menuShareState, menuNameState)
+        }
+      />
       <ShareModal
-        show={shareModalStatus}
+        isPrivateMenu={!menuData.sharePublic}
+        show={shareModalShow}
         handleHide={() => {
-          setShareModalStatus(false);
+          setShareModalShow(false);
         }}
         days={menuData.days}
         meals={menuData.meals}
@@ -796,12 +734,19 @@ const GenerateMenu = props => {
             ? auth.authState.user.uid
             : null
         }
+        handleMakePublic={() => {
+          // Set as public in backend
+          props.makeMenuPublic(menuData.id, auth.authState.user.uid);
+
+          // Set as public locally
+          setMenuData({ ...menuData, sharePublic: true });
+        }}
       />
 
       <div
         ref={componentRef}
         className={classNames({
-          share: shareModalStatus
+          share: shareModalShow
         })}
       >
         <div className="print-only page-title">
