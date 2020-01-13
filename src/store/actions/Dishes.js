@@ -366,6 +366,12 @@ export const fetchPublicDishes = (
 };
 
 export const addToFavorites = (dish, uid) => async dispatch => {
+  // Add the dish locally
+  dispatch({
+    type: ADD_DISH,
+    payload: dish
+  });
+
   // Set the dish under current user
   dishesDbRef(uid)
     .child("/" + dish.id)
@@ -380,12 +386,17 @@ export const addToFavorites = (dish, uid) => async dispatch => {
       var dishToUpdate = (snapshot.val() && snapshot.val()) || {};
       var favoriteUsers = dishToUpdate.favoriteUsers;
       favoriteUsers.push(uid);
-      ref.child(`${dish.id}`).update({ favoriteUsers: favoriteUsers });
+      ref.child(`${dish.id}`).update({
+        favoriteUsers: favoriteUsers
+      });
 
       // This is usuful to update search result as elasticsearch doesn't refresh frequently
       dispatch({
         type: ADD_DISH_TO_FAVORITE,
-        payload: { dishId: dish.id, favoriteUsers }
+        payload: {
+          dishId: dish.id,
+          favoriteUsers
+        }
       });
     });
 };
