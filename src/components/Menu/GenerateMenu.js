@@ -7,9 +7,11 @@ import {
   fetchPublicDishes,
   searchAllDishes,
   setMenu,
+  makeMenuPublic,
   clearSearchAllDishes,
   getPopularTags,
-  fetchMenu
+  fetchMenu,
+  resetMenuState
 } from "../../store/actions/Actions";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
 import { useAuth } from "../auth/UseAuth";
@@ -55,7 +57,9 @@ const mapDispatchToProps = dispatch => ({
   fetchPublicDishes: (uid, selectedFilters) =>
     dispatch(fetchPublicDishes(uid, selectedFilters)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
+  makeMenuPublic: (payload, uid) => dispatch(makeMenuPublic(payload, uid)),
   fetchMenu: (id, uid, type) => dispatch(fetchMenu(id, uid, type)),
+  resetMenuState: () => dispatch(resetMenuState()),
   searchAllDishes: (uid, query, selectedFilters) =>
     dispatch(searchAllDishes(uid, query, selectedFilters)),
   clearSearchAllDishes: () => dispatch(clearSearchAllDishes()),
@@ -66,7 +70,7 @@ const EXTRA_DISH_DROPPABLE_ID = "EXTRA_DISH_DROPPABLE_ID";
 const EXTRA_DISH_DRAGGABLE_ID = "EXTRA_DISH_DRAGGABLE_ID";
 
 const GenerateMenu = props => {
-  let { menuId, type } = useParams();
+  let { menuId, type, ownerId } = useParams();
 
   /** Used to redirect to menus list after saving the menu */
   let history = useHistory();
@@ -105,7 +109,7 @@ const GenerateMenu = props => {
     if (!menuData) return;
 
     // menuData.dishes can arrive with undefined valus from backend, change it to empty array
-    if (menuData.meals) {
+    if (menuData.meals && menuData.dishes) {
       menuData.meals.map((meal, mealIndex) => {
         if (!menuData.dishes[mealIndex]) {
           menuData.dishes[mealIndex] = [];
@@ -118,7 +122,11 @@ const GenerateMenu = props => {
     return menuData;
   };
 
-  var menuData = readMenuData();
+  /** Set menu data from props.location or actual props */
+  const [menuData, setMenuData] = useState(readMenuData());
+
+  /** Used to determine if the menu was opened via shared link */
+  const [isSharedMenu, setSharedMenu] = useState(false);
 
   /** Get from history extraDishInfo to add specific dish to menu */
   var extraDishInfoInitial = null;
@@ -221,59 +229,64 @@ const GenerateMenu = props => {
   ]);
 
   /**
-  Only once - Fetch menu from backEnd if there's no menuData but there's menuId
+  Fetch menu from backEnd if there's no menuData but there's menuId
    */
   useEffect(() => {
-    if (!auth.authState.user) return;
-    console.log("useEffect menuData: ", menuData);
-
-    // There's menuId without menuData, fetch menu from backend
-    if (menuData && !menuData.days && !menuData.meals && menuId) {
-      props.fetchMenu(menuId, auth.authState.user.uid, type);
-    }
-
-    // Menu was fetched succesfuly, set random dishes
-    if (menuData && menuData.days && menuData.meals && menuId) {
-      setRandomDishes(menuData.dishes);
-    }
-  }, [auth, menuData]);
-
-  /** Only once - if this menu was opened with PRINT option, trigger print
-  if this menu was opened with SHARE option, trigger SHARE */
-  useEffect(() => {
+    // There's no menuData - This can happen when a menu was opended from a shared link
+    // Fetch menu from backend with menuId
     if (
-      props.location &&
-      props.location.state &&
-      props.location.state.menuOption
+      (!menuData || !menuData.days) &&
+      (!props.menuData || !props.menuData.days)
     ) {
-      if (props.location.state.menuOption === MenuOptions.PRINT) {
-        if (triggerPrintRef.current) triggerPrintRef.current.click();
+      setSharedMenu(true);
+      props.fetchMenu(menuId, ownerId, type);
+      return;
+    }
+
+    // Menu was fetched succesfuly, set menu detauks to state
+    if (props.menuData.days && !menuData.days) {
+      setMenuData(readMenuData());
+      setRandomDishes(props.menuData.dishes);
+      setIsEditMode(false); // This menu was opened via shared link therefor Edit isn't allowed
+    }
+  }, [menuData, props.menuData]);
+
+  /** Only once: 
+  if this menu was opened with PRINT option, trigger PRINT
+  if this menu was opened with SHARE option, trigger SHARE
+  if this menu is newly generated, delete the previous menu data state in store */
+  useEffect(() => {
+    if (props.location && props.location.state) {
+      if (props.location.state.menuOption) {
+        if (props.location.state.menuOption === MenuOptions.PRINT) {
+          if (triggerPrintRef.current) triggerPrintRef.current.click();
+        }
+        if (props.location.state.menuOption === MenuOptions.SHARE) {
+          if (triggerShareRef.current) triggerShareRef.current.click();
+        }
       }
-      if (props.location.state.menuOption === MenuOptions.SHARE) {
-        if (triggerShareRef.current) triggerShareRef.current.click();
+      if (props.location.state.newGeneratedMenu) {
+        props.resetMenuState();
       }
     }
   }, []);
 
-  /**
-   * Get days and meals from previous page (menu template)
-   If theres no days and meals data, go back main menu page
-   */
-  if (!menuData || !menuData.meals || !menuData.days) {
-    // If there's menuId, show loading while fetching menu data
-    if (menuId) {
-      return <div className="center-text">Loading...</div>;
+  // Save menuData to state when it's received by props
+  // If this is a newly generated menu, when saving it's data we get new id
+  // Use this id to generate a deep link that we can use later in order to share the menu
+  // Don't do this for shared menus as it already have id
+  useEffect(() => {
+    if (isSharedMenu) return;
+    if (props.menuData.id) {
+      setMenuData(props.menuData);
+      history.push(
+        `/menu/generate/private/${props.menuData.id}/${auth.authState.user.uid}`,
+        {
+          menuData
+        }
+      );
     }
-
-    return (
-      <Redirect
-        push
-        to={{
-          pathname: "/menu"
-        }}
-      />
-    );
-  }
+  }, [props.menuData, auth]);
 
   /**
    * Create random dishes array of the length of days and meals.
@@ -376,7 +389,6 @@ const GenerateMenu = props => {
    * Close the panel when drag starts
    */
   const onDragStart = e => {
-    console.log("onDragStart:", e);
     setShowPanel(false);
     setShowPlusButton(false);
   };
@@ -534,14 +546,9 @@ const GenerateMenu = props => {
     props.setMenu(menu, auth.authState.user.uid);
 
     setSaveModalShow(false); // Hide the modal
-
-    history.push("/myFavorites", {
-      activeView: "ACTIVE_VIEW_MENUS"
-    });
   };
 
   /** Shuffle array for randomized menu preview */
-
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -612,10 +619,57 @@ const GenerateMenu = props => {
     }
   };
 
+  const isUserLoggedIn = () => {
+    if (auth.authState.user && auth.authState.user.uid) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const validateLoggedInUser = () => {
+    if (isUserLoggedIn() === false) {
+      alert("Please Login first");
+      return false;
+    }
+
+    return true;
+  };
+
+  const onEditClick = () => {
+    if (validateLoggedInUser() === false) return;
+    setIsEditMode(true);
+    setBlockLeave(true);
+  };
+
+  const onShareClick = () => {
+    if (validateLoggedInUser() === false) return;
+
+    // Make this menu public
+    if (!menuData.sharePublic) {
+      props.makeMenuPublic(menuData.id, auth.authState.user.uid);
+    }
+    setShareModalStatus(true);
+  };
+
   /**
-   * If there's no logged in user, show login message
+   * If there's no days and meals data in menu
    */
-  if (!auth.authState.user && auth.authState.authStatusReported) {
+  if (!menuData || !menuData.meals || !menuData.days) {
+    // If the menu was opened via shared link, it's data is being fetched, show loading
+    if (isSharedMenu) {
+      return <div className="center-text">Loading...</div>;
+    }
+  }
+
+  /**
+   * If there's no menu data and no logged in user in order to fetch menu, show login message
+   */
+  if (
+    !menuData.days &&
+    !auth.authState.user &&
+    auth.authState.authStatusReported
+  ) {
     return (
       <div className="center-text">Please log in to create your own menu!</div>
     );
@@ -625,9 +679,8 @@ const GenerateMenu = props => {
    * If dishes data is still loading, show loading message
    */
   if (
-    !props.favoriteDataReceived ||
-    !props.publicDataReceived ||
-    !randomDishes
+    !isSharedMenu &&
+    (!props.favoriteDataReceived || !props.publicDataReceived || !randomDishes)
   ) {
     return <div className="center-text">Loading...</div>;
   }
@@ -705,14 +758,18 @@ const GenerateMenu = props => {
           )}
           content={() => componentRef.current}
         />
-        <Button
-          className="meal-plan-btn"
-          onClick={() => {
-            setShareModalStatus(true);
-          }}
-        >
-          <i className="fas fa-share-alt" ref={triggerShareRef}></i>
-        </Button>
+
+        {/* Share menu only after it was saved to backend and it has it's unique id*/}
+        {menuData.id && (
+          <Button
+            className="meal-plan-btn"
+            onClick={() => {
+              onShareClick();
+            }}
+          >
+            <i className="fas fa-share-alt" ref={triggerShareRef}></i>
+          </Button>
+        )}
       </>
     );
   };
@@ -781,8 +838,7 @@ const GenerateMenu = props => {
               <Button
                 className="meal-plan-btn generate-btn "
                 onClick={() => {
-                  setIsEditMode(true);
-                  setBlockLeave(true);
+                  onEditClick();
                 }}
               >
                 EDIT

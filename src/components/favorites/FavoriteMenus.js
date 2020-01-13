@@ -56,7 +56,7 @@ const FavoriteMenus = ({
     if (!auth.authState.user) return;
 
     const uid = auth.authState.user.uid;
-    if (!dataReceived) fetchMenus(auth.authState.user.uid);
+    if (!dataReceived.received) fetchMenus(auth.authState.user.uid);
 
     // Clean up listener
     return () => {
@@ -80,7 +80,7 @@ const FavoriteMenus = ({
   /**
    * If  data is still loading, show message
    */
-  if (!dataReceived) {
+  if (!dataReceived.received) {
     return <div className="center-text">Loading...</div>;
   }
 

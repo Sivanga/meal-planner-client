@@ -29,7 +29,7 @@ const mapStateToProps = state => {
     searchReceived: state.dishes.publicDishesSearchDataReceived,
     searchResult: state.dishes.publicDishesSearchResult,
     privateMenus: state.menus.menus,
-    privateMenusDataReceived: state.menus.privateMenusDataReceived
+    privateMenusDataReceived: state.menus.privateMenusDataReceived.received
   };
 };
 
@@ -79,8 +79,7 @@ const Dishes = ({
   });
 
   /**
-   * Fetch dishes in first render.
-   * FETCH_DISHES Action creator will have an observable to notify for further changes
+   * Fetch dishes
    */
   useEffect(() => {
     var uid = null;
@@ -88,15 +87,27 @@ const Dishes = ({
       uid = auth.authState.user.uid;
     }
     if (!dataReceived.received) fetchPublicDishes(uid);
-    if (!privateMenusDataReceived.received) {
-      fetchMenus(uid);
-    }
 
     // Clean up listener
     return () => {
       cleanUpFetchPublicDishesListener();
     };
-  }, [auth, dataReceived, privateMenusDataReceived]);
+  }, [auth, dataReceived]);
+
+  /**
+   * Fetch Private menus
+   */
+  useEffect(() => {
+    var uid = null;
+    if (auth.authState.user && auth.authState.user.uid) {
+      uid = auth.authState.user.uid;
+    }
+    if (!uid) return;
+
+    if (!privateMenusDataReceived) {
+      fetchMenus(uid);
+    }
+  }, [auth, privateMenusDataReceived]);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);

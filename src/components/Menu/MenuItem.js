@@ -49,11 +49,14 @@ const MenuItem = ({
 
   const onMenuOpenClick = (menuOption = null) => {
     // Open private or public menu
-    var type = "public";
-    if (menuListEnum === MenuListEnum.MY_FAVORITES_LIST) {
-      type = "private";
+    var path;
+    if (menuListEnum === MenuListEnum.PUBLIC_LIST) {
+      path = `/menu/generate/public/${menu.id}`;
+    } else {
+      path = `/menu/generate/private/${menu.id}/${currentUid}`;
     }
-    history.push(`/menu/generate/${type}/${menu.id}`, {
+
+    history.push(path, {
       menuData: menu,
       menuOption: menuOption
     });

@@ -1,6 +1,7 @@
 import {
   SET_MENU,
   FETCH_MENU,
+  RESET_MENU,
   REMOVE_MENU,
   REMOVE_MENU_FROM_FAVORITE,
   ADD_MENU_TO_FAVORITE,
@@ -33,8 +34,12 @@ function menus(state = [], action) {
 
 function menu(state = {}, action) {
   switch (action.type) {
+    case SET_MENU:
+      return action.payload;
     case FETCH_MENU:
       return action.payload;
+    case RESET_MENU:
+      return {};
     default:
       return state;
   }

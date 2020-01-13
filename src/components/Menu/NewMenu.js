@@ -36,6 +36,7 @@ const NewMenu = props => {
           to={{
             pathname: "/menu/generate",
             state: {
+              newGeneratedMenu: true,
               menuData: menuData,
               extraDishInfo: extraDishInfo
             }

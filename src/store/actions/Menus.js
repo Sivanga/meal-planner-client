@@ -6,6 +6,7 @@ import {
   PRIVATE_MENUS_DATA_RECIEVED,
   PUBLIC_MENUS_DATA_RECIEVED,
   SET_MENU,
+  RESET_MENU,
   FETCH_MENU,
   REMOVE_MENU,
   SEARCH_FAVORITE_MENUS,
@@ -22,16 +23,17 @@ import * as firebase from "firebase/app";
  * Set menu to backend
  */
 export const setMenu = (payload, uid) => async dispatch => {
+  // Get a ref for a new menu
+  var newMenuKey = menusDbRef(uid).push().key;
+  payload.id = newMenuKey;
+
   // Add the menu locally
   dispatch({
     type: SET_MENU,
     payload: payload
   });
 
-  // Get a ref for a new menu
-  var newMenuKey = menusDbRef(uid).push().key;
   var updates = {};
-  payload.id = newMenuKey;
 
   // Push the menu under current user
   updates["/menus/" + uid + "/" + newMenuKey] = payload;
@@ -44,6 +46,19 @@ export const setMenu = (payload, uid) => async dispatch => {
   }
 
   databaseRef.update(updates);
+};
+
+export const resetMenuState = () => async dispatch => {
+  // Reset the menu locally
+  dispatch({
+    type: RESET_MENU
+  });
+};
+
+export const makeMenuPublic = (payload, uid) => async dispatch => {
+  menusDbRef(uid)
+    .child(payload)
+    .update({ sharePublic: true });
 };
 
 /**

@@ -26,7 +26,7 @@ const mapStateToProps = state => {
     dishes: state.dishes.dishes,
     privateMenus: state.menus.menus,
     dataReceived: state.dishes.privateDishesDataReceived,
-    menuDataReceived: state.menus.privateMenusDataReceived,
+    menuDataReceived: state.menus.privateMenusDataReceived.received,
     searchReceived: state.dishes.privateDishesSearchReceived,
     searchResult: state.dishes.privateDishesSearchResult
   };
@@ -76,19 +76,23 @@ const FavoriteDishes = ({
 
   /**
    * Fetch dishes in first render.
-   * FETCH_DISHES Action creator will have an observable to notify for further changes
    */
   useEffect(() => {
     if (!auth.authState.user) return;
     const uid = auth.authState.user.uid;
     if (!dataReceived.received) fetchDishes(uid);
-    if (!menuDataReceived) fetchMenus(uid);
 
     // Clean up listener
     return () => {
       cleanUpFetchMenusListener(uid);
     };
-  }, [auth, dataReceived, menuDataReceived]);
+  }, [auth, dataReceived]);
+
+  /** Fetch menus */
+  useEffect(() => {
+    if (!auth.authState.user) return;
+    if (!menuDataReceived) fetchMenus(auth.authState.user.uid);
+  }, [auth, menuDataReceived]);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);

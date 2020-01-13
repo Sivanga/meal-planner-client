@@ -119,7 +119,6 @@ const ShareModal = ({ show, handleHide, days, meals, randomDishes, uid }) => {
               </div>
             ))}
           </li>
-
           {/* Meals */}
           {meals.map((meal, mealIndex) => (
             <li
