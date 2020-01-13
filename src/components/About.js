@@ -87,6 +87,9 @@ const About = () => {
           </div>
         </div>
       </div>
+      <div className="version-code">
+        {"Version code: " + process.env.REACT_APP_WEBSITE_VERSION_CODE}
+      </div>
     </div>
   );
 };
