@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   addDish,
   updateDish,
@@ -11,7 +11,6 @@ import {
   END_PAGINATION
 } from "../../store/actions/Actions";
 import EditDishModal from "../dishes/EditDishModal";
-import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import "../../scss/Dishes.scss";
@@ -20,6 +19,7 @@ import { DishListEnum } from "../dishes/DishCard";
 import ImportDish from "../dishes/ImportDish";
 import SearchComponent from "../SearchComponent";
 import { Button } from "react-bootstrap";
+import withDishes from "../dishes/withDishes";
 
 const mapStateToProps = state => {
   return {
@@ -61,38 +61,22 @@ const FavoriteDishes = ({
   searchResult,
   clearSearchPrivateDishes
 }) => {
-  /** Used to redirect to specific menu after choosing add dish to a menu */
-  let history = useHistory();
-
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
 
   /** Show editDishModal */
-  const [showEditDishModal, setShowEditDishModal] = useState({
-    show: false,
-    dish: null,
-    edit: false
-  });
-
-  /**
-   * Fetch dishes in first render.
-   */
-  useEffect(() => {
-    if (!auth.authState.user) return;
-    const uid = auth.authState.user.uid;
-    if (!dataReceived.received) fetchDishes(uid);
-
-    // Clean up listener
-    return () => {
-      cleanUpFetchMenusListener(uid);
-    };
-  }, [auth, dataReceived]);
-
-  /** Fetch menus */
-  useEffect(() => {
-    if (!auth.authState.user) return;
-    if (!menuDataReceived) fetchMenus(auth.authState.user.uid);
-  }, [auth, menuDataReceived]);
+  const {
+    showEditDishModal,
+    setShowEditDishModal,
+    addToMenu,
+    nextPage
+  } = withDishes(
+    dataReceived.received,
+    fetchDishes,
+    null,
+    menuDataReceived,
+    fetchMenus
+  );
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -118,24 +102,11 @@ const FavoriteDishes = ({
   };
 
   const handleAddToMenuClick = (dish, menuId) => {
-    // Redirect to wanted menu and send the dish as extraDish info
-    const chosenMenu = privateMenus.find(menu => menu.id === menuId);
-    if (!chosenMenu) {
-      history.push("/menu/newMenu", {
-        extraDishInfo: dish
-      });
-      return;
-    }
-
-    // If wanted menu wasn't found, create a new one
-    history.push("/menu/generate", {
-      menuData: chosenMenu,
-      extraDishInfo: dish
-    });
+    addToMenu(dish, menuId, privateMenus);
   };
 
   const onNextPage = () => {
-    fetchDishes(auth.authState.user.uid, dataReceived.next);
+    nextPage();
   };
 
   /**

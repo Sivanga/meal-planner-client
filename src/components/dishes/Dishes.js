@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   addDish,
   fetchPublicDishes,
@@ -13,14 +13,14 @@ import {
 import EditDishModal from "../dishes/EditDishModal";
 import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
 import ImportDish from "./ImportDish";
 import SearchComponent from "../SearchComponent";
+import withDishes from "./withDishes";
+import { useAuth } from "../auth/UseAuth";
 
 const mapStateToProps = state => {
   return {
@@ -61,8 +61,6 @@ const Dishes = ({
   searchPublicDishes,
   clearSearchPublicDishes
 }) => {
-  /** Used to redirect to specific menu after choosing add dish to a menu */
-  let history = useHistory();
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -72,42 +70,18 @@ const Dishes = ({
   const [isSearchMode, setIsSearchMode] = useState(false);
 
   /** Show editDishModal */
-  const [showEditDishModal, setShowEditDishModal] = useState({
-    show: false,
-    dish: null,
-    edit: false
-  });
-
-  /**
-   * Fetch dishes
-   */
-  useEffect(() => {
-    var uid = null;
-    if (auth.authState.user && auth.authState.user.uid) {
-      uid = auth.authState.user.uid;
-    }
-    if (!dataReceived.received) fetchPublicDishes(uid);
-
-    // Clean up listener
-    return () => {
-      cleanUpFetchPublicDishesListener();
-    };
-  }, [auth, dataReceived]);
-
-  /**
-   * Fetch Private menus
-   */
-  useEffect(() => {
-    var uid = null;
-    if (auth.authState.user && auth.authState.user.uid) {
-      uid = auth.authState.user.uid;
-    }
-    if (!uid) return;
-
-    if (!privateMenusDataReceived) {
-      fetchMenus(uid);
-    }
-  }, [auth, privateMenusDataReceived]);
+  const {
+    showEditDishModal,
+    setShowEditDishModal,
+    addToMenu,
+    nextPage
+  } = withDishes(
+    dataReceived.received,
+    fetchPublicDishes,
+    cleanUpFetchPublicDishesListener,
+    privateMenusDataReceived,
+    fetchMenus
+  );
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -139,24 +113,11 @@ const Dishes = ({
     // Add public dish under this user
     addToFavorites(dish, auth.authState.user.uid);
 
-    // Redirect to wanted menu and send the dish as extraDish info
-    const chosenMenu = privateMenus.find(menu => menu.id === menuId);
-    if (!chosenMenu) {
-      history.push("/menu/newMenu", {
-        extraDishInfo: dish
-      });
-      return;
-    }
-
-    // If wanted menu wasn't found, create a new one
-    history.push("/menu/generate", {
-      menuData: chosenMenu,
-      extraDishInfo: dish
-    });
+    addToMenu(dish, menuId, privateMenus);
   };
 
   const onNextPage = () => {
-    fetchPublicDishes(auth.authState.user.uid, dataReceived.next);
+    nextPage();
   };
 
   /**
