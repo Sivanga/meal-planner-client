@@ -13,10 +13,16 @@ import {
   SEARCH_FAVORITE_MENUS_RECEIVED,
   SEARCH_PUBLIC_MENUS_RECEIVED,
   SEARCH_PUBLIC_MENUS,
-  CLEAR_SEARCH_MENUS
+  CLEAR_SEARCH_MENUS,
+  SEEN_TOUR
 } from "../constants/Action-types";
 import { PAGINATION_SIZE, getNextKey, getArrayFromSnapshot } from "./Actions";
-import { menusDbRef, publicMenusDbRef, databaseRef } from "../../firebase";
+import {
+  menusDbRef,
+  publicMenusDbRef,
+  databaseRef,
+  userDbRef
+} from "../../firebase";
 import * as firebase from "firebase/app";
 
 /**
@@ -265,4 +271,23 @@ export const searchPublicMenus = (uid, query) => async dispatch => {
 
 export const clearSearchMenus = () => async dispatch => {
   dispatch({ type: CLEAR_SEARCH_MENUS });
+};
+
+export const didUserSeeTour = uid => async dispatch => {
+  userDbRef(uid).once("value", snapshot => {
+    var seenTour = snapshot.val().seenTour || false;
+    dispatch({
+      type: SEEN_TOUR,
+      payload: seenTour
+    });
+  });
+};
+
+export const setUserSeeTour = uid => async dispatch => {
+  userDbRef(uid).update({ seenTour: true });
+
+  dispatch({
+    type: SEEN_TOUR,
+    payload: true
+  });
 };

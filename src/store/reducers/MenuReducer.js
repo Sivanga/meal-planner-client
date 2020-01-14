@@ -13,7 +13,8 @@ import {
   SEARCH_FAVORITE_MENUS,
   SEARCH_PUBLIC_MENUS_RECEIVED,
   SEARCH_PUBLIC_MENUS,
-  CLEAR_SEARCH_MENUS
+  CLEAR_SEARCH_MENUS,
+  SEEN_TOUR
 } from "../constants/Action-types";
 import { combineReducers } from "redux";
 
@@ -121,6 +122,14 @@ function publicMenusSearchReceived(state = false, action) {
   }
 }
 
+function seenTour(state = {}, action) {
+  switch (action.type) {
+    case SEEN_TOUR:
+      return action.payload;
+    default:
+      return state;
+  }
+}
 const MenuReducer = combineReducers({
   menu,
   menus,
@@ -129,7 +138,8 @@ const MenuReducer = combineReducers({
   publicMenusDataReceived,
   searchMenus,
   privateMenusSearchReceived,
-  publicMenusSearchReceived
+  publicMenusSearchReceived,
+  seenTour
 });
 
 export default MenuReducer;

@@ -11,7 +11,9 @@ import {
   clearSearchAllDishes,
   getPopularTags,
   fetchMenu,
-  resetMenuState
+  resetMenuState,
+  setUserSeeTour,
+  didUserSeeTour
 } from "../../store/actions/Actions";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
 import { useAuth } from "../auth/UseAuth";
@@ -21,6 +23,7 @@ import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { Prompt, useParams } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import ReactToPrint from "react-to-print";
+import Tour from "reactour";
 import { MenuOptions } from "./MenuItem";
 import ShareModal from "./ShareModal";
 import SaveModal from "./SaveModal";
@@ -40,7 +43,8 @@ const mapStateToProps = state => {
     publicDataReceived: state.dishes.publicDishesDataReceived,
     searchReceived: state.dishes.allDishesSearchReceived,
     searchResult: state.dishes.allDishesSearchResult,
-    suggestedFilters: state.dishes.popularTags
+    suggestedFilters: state.dishes.popularTags,
+    seenTour: state.menus.seenTour
   };
 };
 
@@ -56,7 +60,9 @@ const mapDispatchToProps = dispatch => ({
   searchAllDishes: (uid, query, selectedFilters) =>
     dispatch(searchAllDishes(uid, query, selectedFilters)),
   clearSearchAllDishes: () => dispatch(clearSearchAllDishes()),
-  getPopularTags: uid => dispatch(getPopularTags(uid))
+  getPopularTags: uid => dispatch(getPopularTags(uid)),
+  didUserSeeTour: uid => dispatch(didUserSeeTour(uid)),
+  setUserSeeTour: uid => dispatch(setUserSeeTour(uid))
 });
 
 const EXTRA_DISH_DROPPABLE_ID = "EXTRA_DISH_DROPPABLE_ID";
@@ -139,6 +145,9 @@ const GenerateMenu = props => {
     menuData && menuData.dishes ? menuData.dishes : null
   );
 
+  /** Random dishes source */
+  // const [randomDishesSource, setRandomDisheSource] = useState({});
+
   /** IsEditMode - if initialRandomDishes exist it means the menu was opened for viewing from existing menu
   Otherwise this is a newly created menu */
   const [isEditMode, setIsEditMode] = useState(
@@ -162,6 +171,9 @@ const GenerateMenu = props => {
 
   /** Share modal is shown */
   const [shareModalShow, setShareModalShow] = useState(false);
+
+  /** Tour is shown */
+  const [showTour, setShowTour] = useState(false);
 
   /** Merged favorite and public dishes to be used in paenl */
   const [allDishes, setAllDishes] = useState([]);
@@ -281,13 +293,33 @@ const GenerateMenu = props => {
     }
   }, [props.menuData, auth]);
 
+  /** Handle tour show */
+  useEffect(() => {
+    if (!auth.authState.user) return;
+    const uid = auth.authState.user.uid;
+
+    // If seenTour value was fetch, use it
+    if (props.seenTour === false || props.seenTour === true) {
+      // Show tour if needed and if menu is in Edit mode
+      if (!props.seenTour && isEditMode) setShowTour(true);
+    }
+
+    // Otherwise fetch seenTour value
+    else {
+      props.didUserSeeTour(uid);
+    }
+  }, [props.seenTour, auth, isEditMode]);
+
   /**
    * Create random dishes array of the length of days and meals.
    Assign dishes randomally
    */
   var computeRandomDishes = () => {
-    // Create matrix
+    // Create matrix to be retuned
     var randomDishes = [];
+
+    // Create random dishes sources object
+    var randomDishesSource = createRandomDishesSource();
     menuData.meals.map((meal, mealIndex) => {
       // Create array
       randomDishes[mealIndex] = [];
@@ -296,13 +328,92 @@ const GenerateMenu = props => {
         // Don't assign a dish for a disabled day
         if (!day.enabled) return (randomDishes[mealIndex][dayIndex] = null);
 
-        const randomDish = getRandomDish(meal);
+        const randomDish = getRandomDish(meal, randomDishesSource);
+        // Remove random dish from the source so we won't pick it up again
+        if (randomDish)
+          randomDishesSource = removeDishFromRandomSource(
+            randomDishesSource,
+            randomDish.id
+          );
+
         return (randomDishes[mealIndex][dayIndex] = randomDish);
       });
     });
 
     // Set result
     setRandomDishes(randomDishes);
+  };
+
+  const createRandomDishesSource = () => {
+    return {
+      search: props.publicDishes,
+      private: props.favoriteDishes,
+      public: props.publicDishes
+    };
+  };
+
+  const removeDishFromRandomSource = (randomDishesSource, dishId) => {
+    const filteredSearch = removeObjectFromArray(
+      randomDishesSource.search,
+      dishId
+    );
+    const filteredPrivate = removeObjectFromArray(
+      randomDishesSource.private,
+      dishId
+    );
+    const filteredPublic = removeObjectFromArray(
+      randomDishesSource.public,
+      dishId
+    );
+
+    return {
+      search: filteredSearch,
+      private: filteredPrivate,
+      public: filteredPublic
+    };
+  };
+
+  const removeObjectFromArray = (array, id) => {
+    return array.filter(curr => curr.id !== id);
+  };
+
+  const getRandomDish = (meal, randomDishesSource) => {
+    var dishes;
+
+    // If isFilterMode, get dishes from search result
+    if (isFilterMode) {
+      dishes = findDishesForMeal(randomDishesSource.search, meal);
+    }
+    // Otherwise get dishes from private + public
+    else {
+      dishes = getDishesFromAll(meal, randomDishesSource);
+    }
+
+    var randomDish = dishes[Math.floor(Math.random() * dishes.length)];
+
+    if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
+
+    return randomDish;
+  };
+
+  const getDishesFromAll = (meal, randomDishesSource) => {
+    // First find a random dish from favorites that matches this meal
+    const mealsFavoriteDishes = findDishesForMeal(
+      randomDishesSource.private,
+      meal
+    );
+    var mergedDishes = mealsFavoriteDishes;
+
+    // If mealsFavoriteDishes length is less then days length, use public dishes as well
+    if (mealsFavoriteDishes.length < menuData.days.length) {
+      const mealsPublicDishes = findDishesForMeal(
+        randomDishesSource.public,
+        meal
+      );
+      mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
+    }
+
+    return mergedDishes;
   };
 
   const findDishesForMeal = (dishes, meal) => {
@@ -327,6 +438,8 @@ const GenerateMenu = props => {
    */
   const handleRandomClick = () => {
     var copy = { ...randomDishes };
+    var randomDishesSource = createRandomDishesSource();
+
     menuData.meals.map((meal, mealIndex) => {
       menuData.days.map((day, dayIndex) => {
         // Don't assign a dish for a disabled day
@@ -337,45 +450,19 @@ const GenerateMenu = props => {
         )
           return copy[mealIndex][dayIndex];
 
-        const randomDish = getRandomDish(meal);
-
+        const randomDish = getRandomDish(meal, randomDishesSource);
+        // Remove random dish from the source so we won't pick it up again
+        if (randomDish)
+          randomDishesSource = removeDishFromRandomSource(
+            randomDishesSource,
+            randomDish.id
+          );
         copy[mealIndex][dayIndex] = randomDish;
       });
     });
 
     // Set result
     setRandomDishes(copy);
-  };
-
-  const getRandomDish = meal => {
-    var dishes;
-
-    // If isFilterMode, get dishes from search result
-    if (isFilterMode) {
-      dishes = findDishesForMeal(props.searchResult, meal);
-    }
-    // Otherwise get dishes from private + public
-    else {
-      dishes = getDishesFromAll(meal);
-    }
-
-    var randomDish = dishes[Math.floor(Math.random() * dishes.length)];
-    if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
-    return randomDish;
-  };
-
-  const getDishesFromAll = meal => {
-    // First find a random dish from favorites that matches this meal
-    const mealsFavoriteDishes = findDishesForMeal(props.favoriteDishes, meal);
-    var mergedDishes = mealsFavoriteDishes;
-
-    // If mealsFavoriteDishes length is less then days length, use public dishes as well
-    if (mealsFavoriteDishes.length < menuData.days.length) {
-      const mealsPublicDishes = findDishesForMeal(props.publicDishes, meal);
-      mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
-    }
-
-    return mergedDishes;
   };
 
   /**
@@ -641,6 +728,12 @@ const GenerateMenu = props => {
     setShareModalShow(true);
   };
 
+  const onTourClose = () => {
+    setShowTour(false);
+    if (!auth.authState.user) return;
+    props.setUserSeeTour(auth.authState.user.uid);
+  };
+
   /**
    * If there's no days and meals data in menu
    */
@@ -741,6 +834,12 @@ const GenerateMenu = props => {
           // Set as public locally
           setMenuData({ ...menuData, sharePublic: true });
         }}
+      />
+
+      <Tour
+        steps={tourSteps}
+        isOpen={showTour}
+        onRequestClose={() => onTourClose()}
       />
 
       <div
@@ -875,6 +974,18 @@ const GenerateMenu = props => {
     </>
   );
 };
+
+const tourSteps = [
+  {
+    selector: ".random-btn",
+    content: "Click 'Random' button to generate more random dishes!"
+  },
+  {
+    selector: ".fa-lock-open",
+    content:
+      "When you are happy with this choice, click to lock so it won't change in the next `Random` round!"
+  }
+];
 
 GenerateMenu.propTypes = {
   menuData: PropTypes.shape({

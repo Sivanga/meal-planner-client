@@ -26,7 +26,10 @@ function useProvideAuth() {
       setAuthState({ authStatusReported: true, user: user });
 
       if (user) {
-        userDbRef(user.uid).set({ name: user.displayName, email: user.email });
+        userDbRef(user.uid).update({
+          name: user.displayName,
+          email: user.email
+        });
       }
     });
     return () => unsubscribe();
