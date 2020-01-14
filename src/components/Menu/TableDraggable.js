@@ -15,7 +15,8 @@ const TableDraggable = ({
   showPlusButton,
   isEditMode,
   handleDishUnlock,
-  handleDishLock
+  handleDishLock,
+  onDishClicked
 }) => {
   return (
     <Draggable
@@ -44,6 +45,9 @@ const TableDraggable = ({
               isEditMode={isEditMode}
               handleDishLock={handleDishLock}
               handleDishUnlock={handleDishUnlock}
+              onClick={dish => {
+                onDishClicked(dish);
+              }}
             />
           ) : (
             isEditMode && (

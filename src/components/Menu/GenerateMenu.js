@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import DishesPanel from "./DishesPanel";
 import {
+  addDish,
   fetchDishes,
   fetchPublicDishes,
   searchAllDishes,
@@ -16,6 +17,7 @@ import {
   didUserSeeTour
 } from "../../store/actions/Actions";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
+import EditDishModal from "../dishes/EditDishModal";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
@@ -52,6 +54,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   fetchDishes: (uid, selectedFilters) =>
     dispatch(fetchDishes(uid, selectedFilters)),
+  addDish: (dish, uid) => dispatch(addDish(dish, uid)),
   fetchPublicDishes: (uid, selectedFilters) =>
     dispatch(fetchPublicDishes(uid, selectedFilters)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
@@ -168,6 +171,12 @@ const GenerateMenu = props => {
   /** Tour is shown */
   const [showTour, setShowTour] = useState(false);
 
+  /** Show editDishModal */
+  const [showEditDishModal, setShowEditDishModal] = useState({
+    show: false,
+    dish: null
+  });
+
   /** Merged favorite and public dishes to be used in paenl */
   const [allDishes, setAllDishes] = useState([]);
 
@@ -199,7 +208,8 @@ const GenerateMenu = props => {
   var mergePrivateAndPublic = () => {
     var mergedDishes = props.favoriteDishes.concat(props.publicDishes);
     var map = new Map(mergedDishes.map(dish => [dish.id, dish]));
-    setAllDishes([...map.values()]);
+    var allDishes = [...map.values()];
+    setAllDishes(allDishes);
   };
 
   /**
@@ -316,6 +326,11 @@ const GenerateMenu = props => {
       props.didUserSeeTour(uid);
     }
   }, [props.seenTour, auth, isEditMode]);
+
+  // Merge private and public dishes everytime there's a change in one of the lists
+  useEffect(() => {
+    mergePrivateAndPublic();
+  }, [props.favoriteDishes, props.publicDishes]);
 
   /**
    * Close the panel when drag starts
@@ -496,7 +511,7 @@ const GenerateMenu = props => {
 
   const onSearchClear = (filters = selectedFilters) => {
     // If there's filters are on, search for filters only without a query
-    if (filters) {
+    if (filters && filters.length > 0) {
       handleSelectedFilters(filters);
     }
 
@@ -697,6 +712,18 @@ const GenerateMenu = props => {
         onRequestClose={() => onTourClose()}
       />
 
+      <EditDishModal
+        show={showEditDishModal.show}
+        dish={showEditDishModal.dish}
+        onEditDishHide={() =>
+          setShowEditDishModal({
+            show: false,
+            dish: null
+          })
+        }
+        edit={false}
+      />
+
       <div
         ref={componentRef}
         className={classNames({
@@ -804,6 +831,9 @@ const GenerateMenu = props => {
               setShowPanel={setShowPanel}
               showPlusButton={showPlusButton}
               isEditMode={isEditMode}
+              onDishClicked={dish => {
+                setShowEditDishModal({ show: true, dish: dish });
+              }}
             />
 
             <div
@@ -821,6 +851,7 @@ const GenerateMenu = props => {
                 filters={props.suggestedFilters}
                 removeFilter={filter => removeFilter(filter)}
                 applyFilter={filter => applyFilter(filter)}
+                onDishAdd={dish => props.addDish(dish, auth.authState.user.uid)}
               />
             </div>
           </div>

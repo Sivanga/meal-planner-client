@@ -143,11 +143,15 @@ const NewDish = props => {
       if (!dish.hasOwnProperty("sharePublic")) dish.sharePublic = true;
 
       props.onDishAdded(dish);
-    }
 
-    history.push("/myFavorites", {
-      activeView: "ACTIVE_VIEW_DISHES"
-    });
+      // Check if redirect is wanted
+      if (typeof props.allowRedirect !== "undefined" && !props.allowRedirect)
+        return;
+
+      history.push("/myFavorites", {
+        activeView: "ACTIVE_VIEW_DISHES"
+      });
+    }
   };
 
   /** Call Click on fileUploader ref */

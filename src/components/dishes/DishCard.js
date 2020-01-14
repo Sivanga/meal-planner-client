@@ -109,7 +109,7 @@ const DishCard = ({
       })}
       onClick={() => {
         if (onClick) {
-          onClick(dish.id);
+          onClick(dish);
         }
       }}
     >

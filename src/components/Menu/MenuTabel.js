@@ -12,7 +12,8 @@ const MenuTabel = ({
   handleDishUnlock,
   setShowPanel,
   showPlusButton,
-  isEditMode
+  isEditMode,
+  onDishClicked
 }) => {
   return (
     <ol className="generateMenuTable">
@@ -48,6 +49,7 @@ const MenuTabel = ({
           onPlusClick={dayIndex => setShowPanel(true)}
           showPlusButton={showPlusButton}
           isEditMode={isEditMode}
+          onDishClicked={dish => onDishClicked(dish)}
         />
       ))}
     </ol>

@@ -2,6 +2,7 @@ import React from "react";
 import SearchComponent from "../SearchComponent";
 import PanelDroppable from "./PanelDroppable";
 import FiltersPanel from "./FiltersPanel";
+import ImportDish from "../dishes/ImportDish";
 
 import "../../scss/Panel.scss";
 
@@ -17,7 +18,8 @@ const DishesPanel = ({
   filters,
   handleFilterChange,
   applyFilter,
-  removeFilter
+  removeFilter,
+  onDishAdd
 }) => {
   return (
     <>
@@ -37,6 +39,7 @@ const DishesPanel = ({
           applyFilter={applyFilter}
           removeFilter={removeFilter}
         />
+        <ImportDish addDish={dish => onDishAdd(dish)} allowRedirect={false} />
       </div>
       <div className="panel-content">
         {isSearchMode && !searchReceived && (

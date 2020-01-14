@@ -8,7 +8,7 @@ import "../../scss/PlusItem.scss";
 import { useAuth } from "../auth/UseAuth";
 import LoginAlert from "../auth/LoginAlert";
 
-const ImportDish = ({ addDish }) => {
+const ImportDish = ({ addDish, allowRedirect }) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -165,7 +165,12 @@ const ImportDish = ({ addDish }) => {
           <Modal.Title className="w-100 m-auto">Add new dish</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <NewDish onDishAdded={dish => onDishAdd(dish)} dish={dishFromUrl} edit={true}/>
+          <NewDish
+            onDishAdded={dish => onDishAdd(dish)}
+            dish={dishFromUrl}
+            edit={true}
+            allowRedirect={allowRedirect}
+          />
         </Modal.Body>
       </Modal>
       <i
