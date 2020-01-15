@@ -10,6 +10,7 @@ import {
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import "../../scss/DishCard.scss";
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 
 export const DishListEnum = {
   MY_FAVORITES_LIST: 1,
@@ -190,6 +191,13 @@ const DishCard = ({
               </span>
             )}
           </div>
+        )}
+
+        {(dishListEnum === DishListEnum.NO_LIST ||
+          dishListEnum === DishListEnum.GENERATE_MENU_LIST) && (
+          <span>
+            <i className="fas fa-grip-vertical"></i>
+          </span>
         )}
         {dishListEnum === DishListEnum.EXTRA_DISH_INFO && (
           <span

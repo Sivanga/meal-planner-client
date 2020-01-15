@@ -5,13 +5,12 @@ import FiltersPanel from "./FiltersPanel";
 
 import "../../scss/Panel.scss";
 
-const DishesPanel = ({
+const SearchPanel = ({
   onSearch,
   onSearchClear,
   isSearchMode,
   searchReceived,
   searchResult,
-  allDishes,
   isEditMode,
   onPanelClose,
   filters,
@@ -48,13 +47,10 @@ const DishesPanel = ({
             Couldn't find what you've search for.
           </div>
         )}
-        <PanelDroppable
-          dishes={isSearchMode ? searchResult : allDishes}
-          isEditMode={isEditMode}
-        />
+        <PanelDroppable dishes={searchResult} isEditMode={isEditMode} />
       </div>
     </>
   );
 };
 
-export default DishesPanel;
+export default SearchPanel;

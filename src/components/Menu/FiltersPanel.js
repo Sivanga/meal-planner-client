@@ -25,16 +25,6 @@ const FiltersPanel = ({
 
   return (
     <>
-      <span
-        className="btn btn-flat red-text p-1 my-1 mr-0 ml-1 mml-1 collapsed read-more bc-white"
-        onClick={e => {
-          setExpandFiltersState(!expandFiltersState);
-        }}
-        aria-controls="More filters"
-        aria-expanded={expandFiltersState}
-      >
-        {expandFiltersState ? "HIDE FILTERS" : "SHOW FILTERS"}
-      </span>
       <Collapse in={expandFiltersState} className="filter-container">
         <Card>
           <Card.Body>
@@ -54,6 +44,16 @@ const FiltersPanel = ({
           </Card.Body>
         </Card>
       </Collapse>
+      <span
+        className="btn btn-flat red-text p-1 my-1 mr-0 ml-1 mml-1 collapsed read-more bc-white"
+        onClick={e => {
+          setExpandFiltersState(!expandFiltersState);
+        }}
+        aria-controls="More filters"
+        aria-expanded={expandFiltersState}
+      >
+        {expandFiltersState ? "HIDE FILTERS" : "SHOW FILTERS"}
+      </span>
     </>
   );
 };

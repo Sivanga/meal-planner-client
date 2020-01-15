@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import DishesPanel from "./DishesPanel";
+import SearchPanel from "./SearchPanel";
 import {
   addDish,
   fetchDishes,
@@ -783,13 +783,16 @@ const GenerateMenu = props => {
           )}
 
           {isEditMode && (
-            <div
-              className={classNames("panel-handle", "filters-and-search", {
-                "is-open": showPanel
-              })}
-              onClick={() => setShowPanel(!showPanel)}
-            >
-              + Search and Filter
+            <div className="panel-wrapper">
+              <div className="dummy" />
+              <div
+                className={classNames("panel-handle", "filters-and-search", {
+                  "is-open": showPanel
+                })}
+                onClick={() => setShowPanel(!showPanel)}
+              >
+                + Search and Filter
+              </div>
             </div>
           )}
 
@@ -848,13 +851,12 @@ const GenerateMenu = props => {
             <div
               className={classNames("panel-wrap", showPanel ? "show" : "hide")}
             >
-              <DishesPanel
+              <SearchPanel
                 onSearch={onSearch}
                 onSearchClear={onSearchClear}
                 isSearchMode={isSearchMode}
                 searchReceived={props.searchReceived}
                 searchResult={props.searchResult}
-                allDishes={allDishes}
                 isEditMode={isEditMode}
                 onPanelClose={() => setShowPanel(false)}
                 filters={props.suggestedFilters}
@@ -878,6 +880,14 @@ const tourSteps = [
     selector: ".fa-lock-open",
     content:
       "When you are happy with this choice, click to lock so it won't change in the next `Random` round!"
+  },
+  {
+    selector: ".fa-grip-vertical",
+    content: "Hold here to drag dishes to different days or meals!"
+  },
+  {
+    selector: ".panel-handle",
+    content: "Click here to search for more dishes"
   }
 ];
 

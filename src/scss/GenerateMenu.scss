@@ -34,7 +34,7 @@ $panel-width-small: 12rem;
   bottom: 0;
   right: 0;
   width: $panel-width-small;
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
   transform: translate(100%);
   transition: 0.3s ease-out;
   background: white;
@@ -133,14 +133,20 @@ li {
   font-size: 0.5rem;
 }
 
+.panel-wrapper {
+  display: flex;
+}
+
+.dummy {
+  flex: 1;
+}
+
 .filters-and-search {
-  text-align: end;
   font-size: 0.9rem;
 }
 
 @media screen and (min-width: 768px) {
-  .item-container,
-  .filters-and-search {
+  .item-container {
     width: 100%;
   }
 }
@@ -168,6 +174,7 @@ li {
   background-color: white !important;
   border: solid $primary 2px !important;
   color: $primary;
+  font-size: 0.8rem;
 
   &:hover,
   &:focus,

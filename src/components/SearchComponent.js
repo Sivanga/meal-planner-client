@@ -13,18 +13,14 @@ const SearcComponent = ({ onSearch, onSearchClear, isFullLength }) => {
   };
 
   return (
-    <MDBCol sm={isFullLength ? "12" : "4"} className="mx-auto">
+    <MDBCol sm={isFullLength ? "12" : "6"} className="mx-auto">
       <form
         className={classNames("form-inline", { "mt-4 mb-4": !isFullLength })}
         onSubmit={e => e.preventDefault()}
       >
-        <MDBIcon
-          onClick={() => onSearchClick(formInput.current.value)}
-          icon="search"
-        />
         <input
           ref={formInput}
-          className="form-control form-control-sm ml-2 w-75"
+          className="form-control"
           type="text"
           placeholder="Search"
           aria-label="Search"
@@ -32,6 +28,7 @@ const SearcComponent = ({ onSearch, onSearchClear, isFullLength }) => {
             e.preventDefault();
             onSearchClick(e.target.value);
           }}
+          style={{ width: "100%", marginRight: "0.2rem" }}
         />
       </form>
     </MDBCol>
