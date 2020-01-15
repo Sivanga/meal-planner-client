@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { DishListEnum } from "./DishCard";
 import LoginAlert from "../auth/LoginAlert";
 import "../../scss/DishesList.scss";
+import ImportDish from "../dishes/ImportDish";
 
 const DishesList = ({
   dishes,
@@ -15,7 +16,8 @@ const DishesList = ({
   currentUid,
   onDishEditClick,
   onDishViewClick,
-  onDishAddToMenuClick
+  onDishAddToMenuClick,
+  onDishAdd
 }) => {
   /**
    * Show/ hide login alert
@@ -37,6 +39,8 @@ const DishesList = ({
         onClose={() => setShowLoginAlert(false)}
       />
       <CardColumns>
+        <ImportDish addDish={dish => onDishAdd(dish)} />
+
         {dishes.map((dish, index) => (
           <DishCard
             key={index}

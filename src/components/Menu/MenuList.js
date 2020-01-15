@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MenuItem from "./MenuItem";
+import CreateNewMenu from "./CreateNewMenu";
 import "../../scss/MenuList.scss";
 
 const MenuList = ({
@@ -20,6 +21,8 @@ const MenuList = ({
 
   return (
     <div className="menu-list-container">
+      <CreateNewMenu />
+
       {menus.map(menu => {
         return (
           <MenuItem

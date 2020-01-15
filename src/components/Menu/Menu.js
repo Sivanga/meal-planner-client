@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MenuList from "./MenuList";
 import { MenuListEnum } from "./MenuItem";
-import CreateNewMenu from "./CreateNewMenu";
 import { connect } from "react-redux";
 import {
   removeMenu,
@@ -133,11 +132,14 @@ function Menu({
       {dataReceived &&
         dataReceived.next &&
         dataReceived.next !== END_PAGINATION && (
-          <Button className="meal-plan-btn" type="button" onClick={onNextPage}>
+          <Button
+            className="meal-plan-btn more-btn"
+            type="button"
+            onClick={onNextPage}
+          >
             More
           </Button>
         )}
-      <CreateNewMenu />
     </>
   );
 }

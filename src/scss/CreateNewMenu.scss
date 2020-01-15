@@ -1,3 +1,17 @@
 .menu-plus-item {
   bottom: 2rem;
 }
+
+.create-menu-card {
+  text-align: center;
+  width: 280px;
+  justify-self: center;
+
+  .card-body {
+    display: flex;
+  }
+  i {
+    margin: auto;
+    padding: 2rem;
+  }
+}

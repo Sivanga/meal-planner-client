@@ -128,18 +128,7 @@ const FavoriteDishes = ({
    * No dishes saved for user
    */
   if (dataReceived.received && dishes.length === 0)
-    return (
-      <>
-        <div className="empty-dishes">
-          <div>
-            You don't have any dishes saved yet
-            <br />
-            Would you like to add one?
-            <ImportDish addDish={dish => onDishAdd(dish)} />
-          </div>
-        </div>
-      </>
-    );
+   return <ImportDish addDish={dish => onDishAdd(dish)} />;
 
   /**
    * Dishes list */
@@ -193,15 +182,19 @@ const FavoriteDishes = ({
         onDishAddToMenuClick={(dish, menuId) =>
           handleAddToMenuClick(dish, menuId)
         }
+        onDishAdd={dish => onDishAdd(dish)}
       />
       {dataReceived &&
         dataReceived.next &&
         dataReceived.next !== END_PAGINATION && (
-          <Button className="meal-plan-btn" type="button" onClick={onNextPage}>
+          <Button
+            className="meal-plan-btn more-btn"
+            type="button"
+            onClick={onNextPage}
+          >
             More
           </Button>
         )}
-      <ImportDish addDish={dish => onDishAdd(dish)} />
     </>
   );
 };

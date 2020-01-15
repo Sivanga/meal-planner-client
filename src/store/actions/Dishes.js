@@ -404,7 +404,6 @@ export const addToFavorites = (dish, uid) => async dispatch => {
 export const getPopularTags = () => async dispatch => {
   const popularTags = firebase.functions().httpsCallable("getPopularTags");
   popularTags().then(result => {
-    console.log("popularTags: ", result);
     var tags = [];
     result.data.map(tag => {
       return tags.push(tag.key);

@@ -88,7 +88,7 @@ li {
 }
 
 .attribute {
-  border-bottom: 1px solid gray;
+  border-bottom: solid $primary 2px;
   padding: 5px;
   overflow: hidden;
   white-space: nowrap;
@@ -112,6 +112,11 @@ li {
 
 /* Last child of day header */
 .generateMenuTable > .item-container:first-child > .attribute:last-child {
+  border-right: solid $primary 2px;
+}
+
+/* Last child of all lists */
+.generateMenuTable > .item-container > .attribute:last-child {
   border-right: solid $primary 2px;
 }
 
@@ -165,11 +170,26 @@ li {
   color: $primary;
 
   &:hover,
+  &:focus,
+  &.focus,
   &:not(.disabled):active:active {
     background-color: white !important;
     border: solid $primary 1px !important;
     color: $primary;
   }
+}
+
+.btn-primary {
+  &:focus,
+  &.focus {
+    box-shadow: 0 0 0 0.06rem $primary !important;
+  }
+}
+
+.more-btn {
+  display: flex;
+  margin: auto;
+  margin-top: 1rem;
 }
 
 .generate-btn {

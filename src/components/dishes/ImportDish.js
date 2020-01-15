@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Form, Button, Row, Col, Spinner } from "react-bootstrap";
+import { Modal, Form, Button, Row, Col, Spinner, Card } from "react-bootstrap";
 import { getDishFromUrl } from "../../firebase";
 import NewDish from "./NewDish";
 import classNames from "classnames";
@@ -8,7 +8,12 @@ import "../../scss/PlusItem.scss";
 import { useAuth } from "../auth/UseAuth";
 import LoginAlert from "../auth/LoginAlert";
 
-const ImportDish = ({ addDish, allowRedirect }) => {
+export const ImportDishType = {
+  CARD: 1, // Default
+  BUTTON: 2
+};
+
+const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -60,7 +65,11 @@ const ImportDish = ({ addDish, allowRedirect }) => {
         localImageUrl: result.data.imageUrl,
         link: urlState.content
       });
-      setModalsShowState({ ...modalsShowState, import: false, new: true });
+      setModalsShowState({
+        ...modalsShowState,
+        import: false,
+        new: true
+      });
     });
   };
 
@@ -75,15 +84,22 @@ const ImportDish = ({ addDish, allowRedirect }) => {
 
   const onDishAdd = dish => {
     addDish(dish);
-    setModalsShowState({ ...modalsShowState, new: false });
+    setModalsShowState({
+      ...modalsShowState,
+      new: false
+    });
   };
 
-  const onPlusClicked = () => {
+  const onAddClicked = () => {
     // Login if needed
     if (!auth.authState.user || !auth.authState.user.uid) {
-      setModalsShowState({ ...modalsShowState, login: true });
+      setModalsShowState({
+        ...modalsShowState,
+        login: true
+      });
     } else {
       setModalsShowState({
+        ...modalsShowState,
         import: true,
         new: false
       });
@@ -94,12 +110,18 @@ const ImportDish = ({ addDish, allowRedirect }) => {
     <>
       <LoginAlert
         showLoginAlert={modalsShowState.login}
-        onClose={() => setModalsShowState({ ...modalsShowState, login: false })}
+        onClose={() =>
+          setModalsShowState({
+            ...modalsShowState,
+            login: false
+          })
+        }
       />
       <Modal
         show={modalsShowState.import}
         onHide={() =>
           setModalsShowState({
+            ...modalsShowState,
             import: false
           })
         }
@@ -159,7 +181,12 @@ const ImportDish = ({ addDish, allowRedirect }) => {
       </Modal>
       <Modal
         show={modalsShowState.new}
-        onHide={() => setModalsShowState({ ...modalsShowState, new: false })}
+        onHide={() =>
+          setModalsShowState({
+            ...modalsShowState,
+            new: false
+          })
+        }
       >
         <Modal.Header className="text-center" closeButton>
           <Modal.Title className="w-100 m-auto">Add new dish</Modal.Title>
@@ -173,10 +200,22 @@ const ImportDish = ({ addDish, allowRedirect }) => {
           />
         </Modal.Body>
       </Modal>
-      <i
-        className="fas fa-plus-circle plus-item"
-        onClick={() => onPlusClicked()}
-      />
+      {type && type === ImportDishType.BUTTON && (
+        <Button className="meal-plan-btn" onClick={() => onAddClicked()}>
+          Create Dish
+        </Button>
+      )}
+      {type === ImportDishType.CARD && (
+        <Card className="import-dish-card">
+          <Card.Body>
+            <i
+              className="fas fa-plus-circle plus-item"
+              onClick={() => onAddClicked()}
+            />
+          </Card.Body>
+          <Card.Footer>Create Dish</Card.Footer>
+        </Card>
+      )}
     </>
   );
 };

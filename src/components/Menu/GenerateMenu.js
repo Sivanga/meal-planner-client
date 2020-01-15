@@ -17,6 +17,7 @@ import {
   didUserSeeTour
 } from "../../store/actions/Actions";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
+import ImportDish, { ImportDishType } from "../dishes/ImportDish";
 import EditDishModal from "../dishes/EditDishModal";
 import { useAuth } from "../auth/UseAuth";
 import { connect } from "react-redux";
@@ -661,6 +662,14 @@ const GenerateMenu = props => {
             <i className="fas fa-share-alt" ref={triggerShareRef}></i>
           </Button>
         )}
+
+        <ImportDish
+          addDish={dish => {
+            props.addDish(dish, auth.authState.user.uid);
+          }}
+          hideButton={true}
+          type={ImportDishType.BUTTON}
+        />
       </>
     );
   };
@@ -851,7 +860,6 @@ const GenerateMenu = props => {
                 filters={props.suggestedFilters}
                 removeFilter={filter => removeFilter(filter)}
                 applyFilter={filter => applyFilter(filter)}
-                onDishAdd={dish => props.addDish(dish, auth.authState.user.uid)}
               />
             </div>
           </div>
