@@ -295,7 +295,6 @@ export const clearSearchPublicDishes = () => async dispatch => {
 };
 
 export const searchAllDishes = (uid, query, tags) => async dispatch => {
-  console.log("searchAllDishes. query: ", query);
   const search = firebase.functions().httpsCallable("searchAllDishes");
   search({ query: query, uid: uid, tags: tags })
     .then(result => {

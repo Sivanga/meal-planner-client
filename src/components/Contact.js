@@ -134,7 +134,7 @@ const Contact = () => {
               required
             />
             <div className="text-center mt-4">
-              <MDBBtn className="contactUsButton" outline type="submit">
+              <MDBBtn className="meal-plan-btn" outline type="submit">
                 Send
                 <MDBIcon far icon="paper-plane" className="ml-2" />
               </MDBBtn>
@@ -142,6 +142,9 @@ const Contact = () => {
           </Form>
         </MDBCol>
       </MDBRow>
+      <div className="version-code">
+        {"Version code: " + process.env.REACT_APP_WEBSITE_VERSION_CODE}
+      </div>
     </MDBContainer>
   );
 };

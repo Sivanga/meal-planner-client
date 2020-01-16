@@ -193,6 +193,21 @@ li {
   }
 }
 
+.random-btn {
+  background-color: white !important;
+  color: $accent-color;
+  border: solid $accent-color 2px !important;
+
+  &:hover,
+  &:focus,
+  &.focus,
+  &:not(.disabled):active:active {
+    background-color: white !important;
+    color: $accent-color;
+    border: solid $accent-color 2px !important;
+    box-shadow: 0 0 0 0.06rem $accent-color !important;
+  }
+}
 .more-btn {
   display: flex;
   margin: auto;

@@ -206,7 +206,7 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
         </Button>
       )}
       {type === ImportDishType.CARD && (
-        <Card className="import-dish-card">
+        <Card className="dish-card">
           <Card.Body>
             <i
               className="fas fa-plus-circle plus-item"

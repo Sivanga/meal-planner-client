@@ -874,12 +874,12 @@ const GenerateMenu = props => {
 const tourSteps = [
   {
     selector: ".random-btn",
-    content: "Click 'Random' button to generate more random dishes!"
+    content: "Click Random button to generate more random dishes!"
   },
   {
     selector: ".fa-lock-open",
     content:
-      "When you are happy with this choice, click to lock so it won't change in the next `Random` round!"
+      "When you are happy with this choice, lock so it won't change in the next Random click!"
   },
   {
     selector: ".fa-grip-vertical",
