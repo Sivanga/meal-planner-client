@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../auth/UseAuth";
-import { useHistory } from "react-router-dom";
 
-function useMenus(menusReceived, fetchMenus, menusCleanUpListener, addMenu) {
-  /** Show editDishModal */
-  const [showEditDishModal, setShowEditDishModal] = useState({
-    show: false,
-    dish: null,
-    edit: false
-  });
+function useMenus(
+  menusReceived,
+  fetchMenus,
+  menusCleanUpListener,
+  searchMenus,
+  clearSearchMenus
+) {
+  /** Used to determine if to show results from searchResult object */
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   /**
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
-
-  /** Used to redirect to specific menu after choosing add dish to a menu */
-  let history = useHistory();
 
   /**
    * Fetch menus
@@ -43,12 +41,24 @@ function useMenus(menusReceived, fetchMenus, menusCleanUpListener, addMenu) {
   };
 
   const onNextPage = () => {
-    console.log("use menus onNextPage. menusReceived: ", menusReceived);
     fetchMenus(auth.authState.user.uid, menusReceived.next);
   };
 
+  const onSearch = query => {
+    setIsSearchMode(true);
+    searchMenus(auth.authState.user.uid, query);
+  };
+
+  const onSearchClear = () => {
+    clearSearchMenus();
+    setIsSearchMode(false);
+  };
+
   return {
-    onNextPage
+    onNextPage,
+    onSearch,
+    onSearchClear,
+    isSearchMode
   };
 }
 

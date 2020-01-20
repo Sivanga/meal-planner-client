@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MenuList from "./MenuList";
 import { MenuListEnum } from "./MenuItem";
 import { connect } from "react-redux";
@@ -47,10 +47,12 @@ function Menu({
   clearSearchMenus,
   auth
 }) {
-  const { onNextPage } = useMenus(
+  const { onNextPage, onSearch, onSearchClear, isSearchMode } = useMenus(
     dataReceived,
     fetchPublicMenus,
-    cleanupListenerPublicMenus
+    cleanupListenerPublicMenus,
+    searchPublicMenus,
+    clearSearchMenus
   );
 
   var currentUid = null;
@@ -58,25 +60,12 @@ function Menu({
     currentUid = auth.authState.user.uid;
   }
 
-  /** Used to determine if to use search result */
-  const [isSearchMode, setIsSearchMode] = useState(false);
-
   const handleMenuFavorite = (menu, uid) => {
     addToFavorites(menu, uid);
   };
 
   const handleMenuUnfavorite = id => {
     removeFromFavorites(id, auth.authState.user.uid);
-  };
-
-  const onSearch = query => {
-    setIsSearchMode(true);
-    searchPublicMenus(currentUid, query);
-  };
-
-  const onSearchClear = () => {
-    setIsSearchMode(false);
-    clearSearchMenus();
   };
 
   /**

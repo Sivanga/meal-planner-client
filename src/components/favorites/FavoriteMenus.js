@@ -46,14 +46,13 @@ const FavoriteMenus = ({
   searchResult,
   clearSearchMenus
 }) => {
-  const { onNextPage } = useMenus(
+  const { onNextPage, onSearch, onSearchClear, isSearchMode } = useMenus(
     dataReceived,
     fetchMenus,
-    cleanUpFetchMenusListener
+    cleanUpFetchMenusListener,
+    searchPrivateMenus,
+    clearSearchMenus
   );
-
-  /** Used to determine if to show results from searchResult object */
-  const [isSearchMode, setIsSearchMode] = useState(false);
 
   const handleMenuRemove = id => {
     removeMenu(id, auth.authState.user.uid);
@@ -81,17 +80,6 @@ const FavoriteMenus = ({
   if (auth.authState.user && auth.authState.user.uid) {
     currentUid = auth.authState.user.uid;
   }
-
-  const onSearch = query => {
-    setIsSearchMode(true);
-    searchPrivateMenus(auth.authState.user.uid, query);
-  };
-
-  const onSearchClear = () => {
-        clearSearchMenus();
-
-    setIsSearchMode(false);
-  };
 
   if (!menus || menus.length === 0) {
     return (
