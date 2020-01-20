@@ -62,15 +62,23 @@ const FavoriteDishes = ({
   searchResult,
   clearSearchPrivateDishes
 }) => {
-  /** Used to determine if to show results from searchResult object */
-  const [isSearchMode, setIsSearchMode] = useState(false);
-
   const {
     showEditDishModal,
     setShowEditDishModal,
     addToMenu,
-    onNextPage
-  } = useDishes(dataReceived, fetchDishes, null, menuDataReceived, fetchMenus);
+    onNextPage,
+    isSearchMode,
+    onSearch,
+    onSearchClear
+  } = useDishes(
+    dataReceived,
+    fetchDishes,
+    null,
+    menuDataReceived,
+    fetchMenus,
+    searchPrivateDishes,
+    clearSearchPrivateDishes
+  );
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -83,16 +91,6 @@ const FavoriteDishes = ({
 
   const handleDishRemove = id => {
     removeDish(id, auth.authState.user.uid);
-  };
-
-  const onSearch = query => {
-    setIsSearchMode(true);
-    searchPrivateDishes(auth.authState.user.uid, query);
-  };
-
-  const onSearchClear = () => {
-    setIsSearchMode(false);
-    clearSearchPrivateDishes();
   };
 
   const handleAddToMenuClick = (dish, menuId) => {

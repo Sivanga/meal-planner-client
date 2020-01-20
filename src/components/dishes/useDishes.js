@@ -8,7 +8,8 @@ function useDishes(
   dishesCleanUpListener,
   menuReceived,
   fetchMenus,
-  addDish
+  searchDishes,
+  clearSearchDishes
 ) {
   /** Show editDishModal */
   const [showEditDishModal, setShowEditDishModal] = useState({
@@ -16,6 +17,9 @@ function useDishes(
     dish: null,
     edit: false
   });
+
+  /** Used to determine if to show results from searchResult object */
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   /**
    * Auth hook to get update for changes from auth provider
@@ -77,15 +81,27 @@ function useDishes(
   };
 
   const onNextPage = () => {
-    console.log("with dishes onNextPage. dishesReceived: ", dishesReceived);
     fetchDishes(auth.authState.user.uid, null, dishesReceived.next);
+  };
+
+  const onSearch = query => {
+    setIsSearchMode(true);
+    searchDishes(auth.authState.user.uid, query);
+  };
+
+  const onSearchClear = () => {
+    setIsSearchMode(false);
+    clearSearchDishes();
   };
 
   return {
     showEditDishModal,
     setShowEditDishModal,
     addToMenu,
-    onNextPage
+    onNextPage,
+    isSearchMode,
+    onSearch,
+    onSearchClear
   };
 }
 

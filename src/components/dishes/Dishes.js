@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   addDish,
   fetchPublicDishes,
@@ -61,21 +61,23 @@ const Dishes = ({
   clearSearchPublicDishes,
   auth
 }) => {
-  /** Used to determine if to use search result */
-  const [isSearchMode, setIsSearchMode] = useState(false);
-
   /** Show editDishModal */
   const {
     showEditDishModal,
     setShowEditDishModal,
     addToMenu,
-    onNextPage
+    onNextPage,
+    isSearchMode,
+    onSearch,
+    onSearchClear
   } = useDishes(
     dataReceived,
     fetchPublicDishes,
     cleanUpFetchPublicDishesListener,
     privateMenusDataReceived,
-    fetchMenus
+    fetchMenus,
+    searchPublicDishes,
+    clearSearchPublicDishes
   );
 
   const onDishAdd = dish => {
@@ -90,24 +92,9 @@ const Dishes = ({
     removeFromFavorites(id, auth.authState.user.uid);
   };
 
-  const onSearch = value => {
-    setIsSearchMode(true);
-    var uid = null;
-    if (auth.authState.user && auth.authState.user.uid) {
-      uid = auth.authState.user.uid;
-    }
-    searchPublicDishes(uid, value);
-  };
-
-  const onSearchClear = () => {
-    setIsSearchMode(false);
-    clearSearchPublicDishes();
-  };
-
   const handleAddToMenuClick = (dish, menuId) => {
     // Add public dish under this user
     addToFavorites(dish, auth.authState.user.uid);
-
     addToMenu(dish, menuId, privateMenus);
   };
 
