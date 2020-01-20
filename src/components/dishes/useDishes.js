@@ -31,7 +31,7 @@ function useDishes(
   useEffect(() => {
     var uid = getUid();
 
-    if (!dishesReceived) fetchDishes(uid);
+    if (!dishesReceived.received) fetchDishes(uid);
 
     // Clean up listener
     return () => {
@@ -77,7 +77,8 @@ function useDishes(
   };
 
   const onNextPage = () => {
-    fetchDishes(auth.authState.user.uid, dishesReceived);
+    console.log("with dishes onNextPage. dishesReceived: ", dishesReceived);
+    fetchDishes(auth.authState.user.uid, null, dishesReceived.next);
   };
 
   return {

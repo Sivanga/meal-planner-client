@@ -28,7 +28,6 @@ const MyFavorites = props => {
    */
   const auth = useAuth();
 
-  // Get active view from props.history
   const propsActiveView = getActiveViewFromProps();
   const [activeView, setActiveView] = useState(propsActiveView);
 

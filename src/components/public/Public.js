@@ -5,12 +5,17 @@ import { MDBBadge } from "mdbreact";
 import classNames from "classnames";
 import Menu from "../Menu/Menu";
 import Dishes from "../../components/dishes/Dishes";
+import { useAuth } from "../auth/UseAuth";
 
 const ACTIVE_VIEW_DISHES = "ACTIVE_VIEW_DISHES";
 const ACTIVE_VIEW_MENUS = "ACTIVE_VIEW_MENUS";
 
 const MyFavorites = props => {
-  // Get active view from props.history
+  /**
+   * Auth hook to get update for changes from auth provider
+   */
+  const auth = useAuth();
+
   const [activeView, setActiveView] = useState(ACTIVE_VIEW_DISHES);
 
   return (
@@ -39,8 +44,8 @@ const MyFavorites = props => {
           Menus
         </MDBBadge>
       </div>
-      {activeView === ACTIVE_VIEW_DISHES && <Dishes />}
-      {activeView === ACTIVE_VIEW_MENUS && <Menu />}
+      {activeView === ACTIVE_VIEW_DISHES && <Dishes auth={auth} />}
+      {activeView === ACTIVE_VIEW_MENUS && <Menu auth={auth} />}
     </div>
   );
 };

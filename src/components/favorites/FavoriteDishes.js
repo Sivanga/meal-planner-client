@@ -19,7 +19,7 @@ import { DishListEnum } from "../dishes/DishCard";
 import ImportDish from "../dishes/ImportDish";
 import SearchComponent from "../SearchComponent";
 import { Button } from "react-bootstrap";
-import withDishes from "../dishes/withDishes";
+import useDishes from "../dishes/useDishes";
 
 const mapStateToProps = state => {
   return {
@@ -36,7 +36,8 @@ const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
   updateDish: (dish, uid) => dispatch(updateDish(dish, uid)),
   removeDish: (id, uid) => dispatch(removeDish(id, uid)),
-  fetchDishes: (uid, next) => dispatch(fetchDishes(uid, next)),
+  fetchDishes: (uid, filters, next) =>
+    dispatch(fetchDishes(uid, filters, next)),
   fetchMenus: uid => dispatch(fetchMenus(uid)),
   cleanUpFetchMenusListener: uid => dispatch(cleanUpFetchMenusListener(uid)),
   searchPrivateDishes: (uid, query) =>
@@ -64,19 +65,12 @@ const FavoriteDishes = ({
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
 
-  /** Show editDishModal */
   const {
     showEditDishModal,
     setShowEditDishModal,
     addToMenu,
-    nextPage
-  } = withDishes(
-    dataReceived.received,
-    fetchDishes,
-    null,
-    menuDataReceived,
-    fetchMenus
-  );
+    onNextPage
+  } = useDishes(dataReceived, fetchDishes, null, menuDataReceived, fetchMenus);
 
   const onDishAdd = dish => {
     addDish(dish, auth.authState.user.uid);
@@ -105,10 +99,6 @@ const FavoriteDishes = ({
     addToMenu(dish, menuId, privateMenus);
   };
 
-  const onNextPage = () => {
-    nextPage();
-  };
-
   /**
    * If there's no logged in user, show message
    */
@@ -128,7 +118,7 @@ const FavoriteDishes = ({
    * No dishes saved for user
    */
   if (dataReceived.received && dishes.length === 0)
-   return <ImportDish addDish={dish => onDishAdd(dish)} />;
+    return <ImportDish addDish={dish => onDishAdd(dish)} />;
 
   /**
    * Dishes list */

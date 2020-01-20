@@ -12,8 +12,8 @@ import {
   END_PAGINATION
 } from "../../store/actions/Actions";
 import { Button } from "react-bootstrap";
-import { useAuth } from "../auth/UseAuth";
 import SearchComponent from "../SearchComponent";
+import useMenus from "../Menu/useMenus";
 
 const mapStateToProps = state => {
   return {
@@ -44,31 +44,22 @@ function Menu({
   searchResult,
   searchReceived,
   searchPublicMenus,
-  clearSearchMenus
+  clearSearchMenus,
+  auth
 }) {
-  /**
-   * Auth hook to get update for changes from auth provider
-   */
-  const auth = useAuth();
+  const { onNextPage } = useMenus(
+    dataReceived,
+    fetchPublicMenus,
+    cleanupListenerPublicMenus
+  );
+
+  var currentUid = null;
+  if (auth.authState.user && auth.authState.user.uid) {
+    currentUid = auth.authState.user.uid;
+  }
 
   /** Used to determine if to use search result */
   const [isSearchMode, setIsSearchMode] = useState(false);
-
-  /**
-   * Fetch public menus in first render.
-   * FETCH_PUBLIC_MENUS Action creator will have an observable to notify for further changes
-   */
-  useEffect(() => {
-    var uid = null;
-    if (auth.authState.user && auth.authState.user.uid) {
-      uid = auth.authState.user.uid;
-    }
-    if (!dataReceived) fetchPublicMenus(uid);
-
-    return () => {
-      cleanupListenerPublicMenus(uid);
-    };
-  }, [auth, dataReceived]);
 
   const handleMenuFavorite = (menu, uid) => {
     addToFavorites(menu, uid);
@@ -80,11 +71,7 @@ function Menu({
 
   const onSearch = query => {
     setIsSearchMode(true);
-    var uid = null;
-    if (auth.authState.user && auth.authState.user.uid) {
-      uid = auth.authState.user.uid;
-    }
-    searchPublicMenus(uid, query);
+    searchPublicMenus(currentUid, query);
   };
 
   const onSearchClear = () => {
@@ -92,20 +79,11 @@ function Menu({
     clearSearchMenus();
   };
 
-  const onNextPage = () => {
-    fetchPublicMenus(auth.authState.user.uid, dataReceived.next);
-  };
-
   /**
    * If menu data is still loading, show message
    */
   if (!dataReceived) {
     return <div className="center-text">Loading...</div>;
-  }
-
-  var currentUid = null;
-  if (auth.authState.user && auth.authState.user.uid) {
-    currentUid = auth.authState.user.uid;
   }
 
   return (

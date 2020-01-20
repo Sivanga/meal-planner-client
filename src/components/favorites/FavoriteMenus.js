@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   removeMenu,
   fetchMenus,
@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 import MenuList from "../Menu/MenuList";
 import CreateNewMenu from "../Menu/CreateNewMenu";
 import SearchComponent from "../SearchComponent";
+import useMenus from "../Menu/useMenus";
 
 const mapStateToProps = state => {
   return {
@@ -45,24 +46,14 @@ const FavoriteMenus = ({
   searchResult,
   clearSearchMenus
 }) => {
+  const { onNextPage } = useMenus(
+    dataReceived,
+    fetchMenus,
+    cleanUpFetchMenusListener
+  );
+
   /** Used to determine if to show results from searchResult object */
   const [isSearchMode, setIsSearchMode] = useState(false);
-
-  /**
-   * Fetch menus in first render.
-   * FETCH_MENUS Action creator will have an observable to notify for further changes
-   */
-  useEffect(() => {
-    if (!auth.authState.user) return;
-
-    const uid = auth.authState.user.uid;
-    if (!dataReceived.received) fetchMenus(auth.authState.user.uid);
-
-    // Clean up listener
-    return () => {
-      cleanUpFetchMenusListener(uid);
-    };
-  }, [auth, dataReceived]);
 
   const handleMenuRemove = id => {
     removeMenu(id, auth.authState.user.uid);
@@ -97,12 +88,9 @@ const FavoriteMenus = ({
   };
 
   const onSearchClear = () => {
-    setIsSearchMode(false);
-    clearSearchMenus();
-  };
+        clearSearchMenus();
 
-  const onNextPage = () => {
-    fetchMenus(auth.authState.user.uid, dataReceived.next);
+    setIsSearchMode(false);
   };
 
   if (!menus || menus.length === 0) {

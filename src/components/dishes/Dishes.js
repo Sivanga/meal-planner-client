@@ -18,8 +18,7 @@ import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
 import SearchComponent from "../SearchComponent";
-import withDishes from "./withDishes";
-import { useAuth } from "../auth/UseAuth";
+import useDishes from "./useDishes";
 
 const mapStateToProps = state => {
   return {
@@ -34,7 +33,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
-  fetchPublicDishes: (uid, next) => dispatch(fetchPublicDishes(uid, next)),
+  fetchPublicDishes: (uid, filters, next) =>
+    dispatch(fetchPublicDishes(uid, filters, next)),
   cleanUpFetchPublicDishesListener: () =>
     dispatch(cleanUpFetchPublicDishesListener()),
   fetchMenus: uid => dispatch(fetchMenus(uid)),
@@ -58,13 +58,9 @@ const Dishes = ({
   addToFavorites,
   removeFromFavorites,
   searchPublicDishes,
-  clearSearchPublicDishes
+  clearSearchPublicDishes,
+  auth
 }) => {
-  /**
-   * Auth hook to get update for changes from auth provider
-   */
-  const auth = useAuth();
-
   /** Used to determine if to use search result */
   const [isSearchMode, setIsSearchMode] = useState(false);
 
@@ -73,9 +69,9 @@ const Dishes = ({
     showEditDishModal,
     setShowEditDishModal,
     addToMenu,
-    nextPage
-  } = withDishes(
-    dataReceived.received,
+    onNextPage
+  } = useDishes(
+    dataReceived,
     fetchPublicDishes,
     cleanUpFetchPublicDishesListener,
     privateMenusDataReceived,
@@ -113,10 +109,6 @@ const Dishes = ({
     addToFavorites(dish, auth.authState.user.uid);
 
     addToMenu(dish, menuId, privateMenus);
-  };
-
-  const onNextPage = () => {
-    nextPage();
   };
 
   /**
