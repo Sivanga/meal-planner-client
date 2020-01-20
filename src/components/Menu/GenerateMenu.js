@@ -714,6 +714,7 @@ const GenerateMenu = props => {
             sharePublic: true
           });
         }}
+        menuName={menuData.name}
       />
 
       <Tour

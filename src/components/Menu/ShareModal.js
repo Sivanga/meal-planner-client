@@ -16,6 +16,7 @@ import classNames from "classnames";
 import { storageRef } from "../../firebase.js";
 import htmlToImage from "html-to-image";
 import { useHistory } from "react-router-dom";
+import download from "downloadjs";
 
 const ShareModal = ({
   isPrivateMenu,
@@ -25,7 +26,8 @@ const ShareModal = ({
   meals,
   randomDishes,
   uid,
-  handleMakePublic
+  handleMakePublic,
+  menuName
 }) => {
   // Used to take a screenshot of the menu
   const componentRef = useRef();
@@ -61,9 +63,20 @@ const ShareModal = ({
       });
   };
 
+  const downloadImage = () => {
+    htmlToImage
+      .toPng(componentRef.current, {
+        useCORS: true
+      })
+      .then(function(dataUrl) {
+        var name = menuName ? menuName : "pure-meal-plan-menu";
+        download(dataUrl, name + ".png");
+      });
+  };
+
   const getGridStyle = () => {
     return {
-      gridTemplateColumns: "75px 85px 85px 85px 85px 85px 85px 85px"
+      gridTemplateColumns: "80px 85px 85px 85px 85px 85px 85px 85px"
     };
   };
 
@@ -124,10 +137,26 @@ const ShareModal = ({
             >
               <EmailIcon size={32} round />
             </EmailShareButton>
+            <div style={{ "margin-top": "1rem" }}>
+              Or download image:
+              <span
+                class="fa-stack"
+                style={{ "margin-left": "5px" }}
+                onClick={() => downloadImage()}
+              >
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa fa-download fa-stack-1x fa-inverse"></i>
+              </span>
+            </div>
           </div>
         )}
       </Modal.Body>
       <div ref={componentRef} style={{ height: "100%" }}>
+        <div className="menu-title">
+          <span>Pure Meal Plan</span>
+          <br />
+          <span>https://puremealplan.com/</span>
+        </div>
         <ol className="generateMenuTable shareMenuTable">
           <li className="item-container" style={getGridStyle()}>
             <div key="day/meal" className="attribute">
