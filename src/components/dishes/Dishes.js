@@ -17,7 +17,6 @@ import PropTypes from "prop-types";
 import "../../scss/Dishes.scss";
 import DishesList from "./DishesList";
 import { DishListEnum } from "./DishCard";
-import ImportDish from "./ImportDish";
 import SearchComponent from "../SearchComponent";
 import withDishes from "./withDishes";
 import { useAuth } from "../auth/UseAuth";
@@ -177,6 +176,7 @@ const Dishes = ({
         onDishViewClick={dish =>
           setShowEditDishModal({ show: true, dish: dish, edit: false })
         }
+        onDishAdd={dish => onDishAdd(dish)}
       />
       {dataReceived &&
         dataReceived.next &&
