@@ -194,11 +194,12 @@ const DishCard = ({
         )}
 
         {(dishListEnum === DishListEnum.NO_LIST ||
-          dishListEnum === DishListEnum.GENERATE_MENU_LIST) && (
-          <span>
-            <i className="fas fa-grip-vertical"></i>
-          </span>
-        )}
+          dishListEnum === DishListEnum.GENERATE_MENU_LIST) &&
+          isEditMode && (
+            <span>
+              <i className="fas fa-grip-vertical"></i>
+            </span>
+          )}
         {dishListEnum === DishListEnum.EXTRA_DISH_INFO && (
           <span
             className="close-extra-dish fa-stack fa-xs"
