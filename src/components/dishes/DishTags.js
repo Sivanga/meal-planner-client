@@ -7,7 +7,7 @@ import TextField from "@material-ui/core/TextField";
 
 import "../../scss/DishTags.scss";
 
-const DishTags = ({ tags, onChange }) => {
+const DishTags = ({ tags, onChange, canEdit }) => {
   const [tagsState, setTagsState] = useState(tags ? tags : []);
   const [suggestions] = useState([
     { name: "Kids" },
@@ -40,6 +40,7 @@ const DishTags = ({ tags, onChange }) => {
   return (
     <div id="tags-auto-complete">
       <Autocomplete
+        disabled={!canEdit}
         multiple
         options={suggestions.map(item => item.name)}
         defaultValue={tagsState.map(item => item.name)}
@@ -47,6 +48,7 @@ const DishTags = ({ tags, onChange }) => {
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
             <Chip
+              disabled={!canEdit}
               variant="outlined"
               label={option}
               {...getTagProps({ index })}

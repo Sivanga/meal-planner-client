@@ -669,6 +669,7 @@ const GenerateMenu = props => {
           }}
           hideButton={true}
           type={ImportDishType.BUTTON}
+          allowRedirect={false}
         />
       </>
     );

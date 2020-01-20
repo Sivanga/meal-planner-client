@@ -128,6 +128,11 @@ const NewDish = props => {
     event.preventDefault();
     event.stopPropagation();
 
+    if (!props.edit) {
+      props.onClose();
+      return;
+    }
+
     setSelectedMealsErrors();
 
     const form = event.currentTarget;
@@ -200,6 +205,7 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <Form.Control
+            readOnly={!props.edit}
             type="text"
             value={dish && dish.name ? dish.name : ""}
             placeholder=""
@@ -237,7 +243,11 @@ const NewDish = props => {
                         currMeal => currMeal.name === meal.name
                       )
                     })}
-                    onClick={() => toggleMealSelection(meal)}
+                    onClick={() => {
+                      if (props.edit) {
+                        toggleMealSelection(meal);
+                      }
+                    }}
                   >
                     {meal.name}
                   </MDBBadge>
@@ -246,6 +256,7 @@ const NewDish = props => {
 
               {/** Add new meal */}
               <Form.Control
+                readOnly={!props.edit}
                 type="text"
                 placeholder="New"
                 onKeyPress={event => {
@@ -269,12 +280,15 @@ const NewDish = props => {
           </Form.Label>
           <Col sm="8">
             <DishTags
+              canEdit={props.edit}
               tags={dish && dish.tags ? dish.tags : []}
               onChange={tags => {
-                setDish({
-                  ...dish,
-                  tags: tags
-                });
+                if (props.edit) {
+                  setDish({
+                    ...dish,
+                    tags: tags
+                  });
+                }
               }}
             />
           </Col>
@@ -286,6 +300,7 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <Form.Control
+            readOnly={!props.edit}
             type="text"
             value={dish && dish.link ? dish.link : ""}
             onChange={event =>
@@ -303,6 +318,7 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <Form.Control
+            readOnly={!props.edit}
             as="textarea"
             value={dish && dish.ingredient ? dish.ingredient : ""}
             onChange={event =>
@@ -321,6 +337,7 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <Form.Check
+            disabled={!props.edit}
             className="dish-public-share"
             type="checkbox"
             checked={

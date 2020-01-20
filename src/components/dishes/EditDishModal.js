@@ -13,8 +13,13 @@ const EditDishModal = ({ show, dish, edit, onEditDishHide, onDishEdit }) => {
       <Modal.Body>
         <NewDish
           dish={dish}
-          onDishAdded={dish => onDishEdit(dish)}
+          onDishAdded={dish => {
+            if (onDishEdit) {
+              onDishEdit(dish);
+            }
+          }}
           edit={edit}
+          onClose={onEditDishHide}
         />
       </Modal.Body>
     </Modal>
