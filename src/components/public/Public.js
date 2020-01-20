@@ -1,40 +1,21 @@
 import React, { useState } from "react";
-import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
 import "../../scss/MyFavorite.scss";
 import { MDBBadge } from "mdbreact";
-import FavoriteDishes from "./FavoriteDishes";
-import FavoriteMenus from "./FavoriteMenus";
 import classNames from "classnames";
+import Menu from "../Menu/Menu";
+import Dishes from "../../components/dishes/Dishes";
 
 const ACTIVE_VIEW_DISHES = "ACTIVE_VIEW_DISHES";
 const ACTIVE_VIEW_MENUS = "ACTIVE_VIEW_MENUS";
 
 const MyFavorites = props => {
-  const getActiveViewFromProps = () => {
-    return props &&
-      props.history &&
-      props.history.location &&
-      props.history.location.state &&
-      props.history.location.state.activeView &&
-      (props.history.location.state.activeView === ACTIVE_VIEW_DISHES ||
-        props.history.location.state.activeView === ACTIVE_VIEW_MENUS)
-      ? props.history.location.state.activeView
-      : ACTIVE_VIEW_DISHES;
-  };
-
-  /**
-   * Auth hook to get update for changes from auth provider
-   */
-  const auth = useAuth();
-
   // Get active view from props.history
-  const propsActiveView = getActiveViewFromProps();
-  const [activeView, setActiveView] = useState(propsActiveView);
+  const [activeView, setActiveView] = useState(ACTIVE_VIEW_DISHES);
 
   return (
     <div>
-      <h5 className="sub-title"> My Favorite</h5>
+      <h5 className="sub-title">Other's dishes and menus</h5>
       <div className="favorite-pills">
         <MDBBadge
           pill
@@ -58,8 +39,8 @@ const MyFavorites = props => {
           Menus
         </MDBBadge>
       </div>
-      {activeView === ACTIVE_VIEW_DISHES && <FavoriteDishes auth={auth} />}
-      {activeView === ACTIVE_VIEW_MENUS && <FavoriteMenus auth={auth} />}
+      {activeView === ACTIVE_VIEW_DISHES && <Dishes />}
+      {activeView === ACTIVE_VIEW_MENUS && <Menu />}
     </div>
   );
 };

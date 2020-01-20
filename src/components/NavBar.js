@@ -22,13 +22,8 @@ function NavBar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link as={Link} to="/menu" href="/menu">
-                Menus
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link as={Link} to="/dishes" href="/dishes">
-                Dishes
+              <Nav.Link as={Link} to="/public" href="/public">
+                Public
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
