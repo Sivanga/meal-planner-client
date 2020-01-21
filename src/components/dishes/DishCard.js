@@ -10,7 +10,6 @@ import {
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import "../../scss/DishCard.scss";
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 
 export const DishListEnum = {
   MY_FAVORITES_LIST: 1,
@@ -38,7 +37,8 @@ const DishCard = ({
   onDishEditClick,
   onDishViewClick,
   onDishAddToMenuClick,
-  handleCloseExtraDishClick
+  handleCloseExtraDishClick,
+  setComment
 }) => {
   /**
    * Show ingredients for chosen card
@@ -49,6 +49,9 @@ const DishCard = ({
    * Show delete overlay on top of the dish
    */
   const [showDeleteOverlay, setShowDeletOverlay] = useState(false);
+
+  /** Used to ref the comment value */
+  const dishCommentRef = React.createRef();
 
   /**
    * Toggle the card open state by id
@@ -100,6 +103,26 @@ const DishCard = ({
   const handleAddToMenu = (eventKey, event) => {
     event.stopPropagation();
     onDishAddToMenuClick(dish, eventKey);
+  };
+
+  const preventDishClick = event => {
+    event.stopPropagation();
+  };
+
+  const handleCommentAdd = event => {
+    if (dishCommentRef && dishCommentRef.current && setComment) {
+      setComment(dishCommentRef.current.innerText);
+    }
+  };
+
+  const onKeyDown = (event, index) => {
+    // Loose focus on Enter key
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.target.blur();
+      handleCommentAdd(event);
+    }
   };
 
   return (
@@ -313,6 +336,27 @@ const DishCard = ({
             <div id="ingredient">{dish.ingredient}</div>
           </Collapse>
         </Card.Body>
+
+        {/** Show footer id there's a comment or it's edit mode */}
+        {dishListEnum === DishListEnum.NO_LIST &&
+          ((isEditMode || dish.comment) && (
+            <Card.Footer onClick={preventDishClick}>
+              {/* {dish.comment ? ( */}
+              {isEditMode ? (
+                <div
+                  ref={dishCommentRef}
+                  contentEditable="true"
+                  onKeyDown={event => onKeyDown(event, index)}
+                  data-text="Add comment"
+                  className="dish-comment"
+                >
+                  {dish.comment}
+                </div>
+              ) : (
+                <div>{dish.comment}</div>
+              )}
+            </Card.Footer>
+          ))}
       </Card>
       <div
         className={classNames("deleteOverlay", {

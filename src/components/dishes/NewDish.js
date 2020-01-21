@@ -300,8 +300,8 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <Form.Control
+            type="url"
             readOnly={!props.edit}
-            type="text"
             value={dish && dish.link ? dish.link : ""}
             onChange={event =>
               setDish({
@@ -309,7 +309,12 @@ const NewDish = props => {
                 link: event.target.value
               })
             }
-          />
+            onClick={() => {
+              if (dish && dish.link) {
+                window.open(dish.link);
+              }
+            }}
+          ></Form.Control>
         </Col>
       </Form.Group>
       <Form.Group as={Row} controlId="dishTextArea">

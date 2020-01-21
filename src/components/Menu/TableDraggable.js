@@ -16,7 +16,8 @@ const TableDraggable = ({
   isEditMode,
   handleDishUnlock,
   handleDishLock,
-  onDishClicked
+  onDishClicked,
+  setComment
 }) => {
   return (
     <Draggable
@@ -48,6 +49,7 @@ const TableDraggable = ({
               onClick={dish => {
                 onDishClicked(dish);
               }}
+              setComment={comment => setComment(comment)}
             />
           ) : (
             isEditMode && (

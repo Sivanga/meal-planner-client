@@ -16,7 +16,8 @@ const TableDroppable = ({
   handleDishUnlock,
   showPlusButton,
   isEditMode,
-  onDishClicked
+  onDishClicked,
+  setComment
 }) => {
   /**
    * Used to create unique index from the matrix
@@ -65,6 +66,7 @@ const TableDroppable = ({
               handleDishUnlock={() => handleDishUnlock(dayIndex)}
               showPlusButton={showPlusButton}
               onDishClicked={dish => onDishClicked(dish)}
+              setComment={comment => setComment(dayIndex, comment)}
             />
           ))}
           {provided.placeholder}

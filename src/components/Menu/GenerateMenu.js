@@ -602,6 +602,14 @@ const GenerateMenu = props => {
     props.setUserSeeTour(auth.authState.user.uid);
   };
 
+  const setComment = (mealIndex, dayIndex, comment) => {
+    var previousDish = { ...randomDishes[mealIndex][dayIndex] };
+    previousDish.comment = comment;
+    var previousRandom = [...randomDishes];
+    previousRandom[mealIndex][dayIndex] = previousDish;
+    setRandomDishes(previousRandom);
+  };
+
   /**
    * If there's no days and meals data in menu
    */
@@ -848,6 +856,9 @@ const GenerateMenu = props => {
               onDishClicked={dish => {
                 setShowEditDishModal({ show: true, dish: dish });
               }}
+              setComment={(mealIndex, dayIndex, comment) =>
+                setComment(mealIndex, dayIndex, comment)
+              }
             />
 
             <div

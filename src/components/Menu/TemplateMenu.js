@@ -169,7 +169,6 @@ const TemplateMenu = props => {
    * Set addingNewValue to false when edit is done (Tab key)
    */
   const onKeyDown = (event, index) => {
-    // console.log("onKeyDown: ", event.keyCode);
     // When Tab or Enter are pressed, not new value is being added, this helps to focus on the next value at Render
     if (event.keyCode === 9 || event.keyCode === 13) {
       setAddingNewValue(false);

@@ -126,3 +126,18 @@
     font-size: 1.1rem;
   }
 }
+
+.card-footer {
+  padding: 0.2rem;
+  padding-bottom: 1.5rem;
+}
+
+[contentEditable="true"]:empty:not(:focus):before {
+  content: attr(data-text);
+}
+
+.dish-comment {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
