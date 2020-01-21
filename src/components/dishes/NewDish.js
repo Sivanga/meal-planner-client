@@ -300,7 +300,6 @@ const NewDish = props => {
         </Form.Label>
         <Col sm="8">
           <Form.Control
-            type="url"
             readOnly={!props.edit}
             value={dish && dish.link ? dish.link : ""}
             onChange={event =>

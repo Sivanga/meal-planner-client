@@ -60,11 +60,12 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
 
       // Move to new dish dialog and send the data
       setDishFromUrl({
-        name: result.data.name,
-        imageUrl: result.data.imageUrl,
-        localImageUrl: result.data.imageUrl,
+        name: result.data.name ? result.data.name : "",
+        imageUrl: result.data.imageUrl ? result.data.imageUrl : "",
+        localImageUrl: result.data.imageUrl ? result.data.imageUrl : "",
         link: urlState.content
       });
+
       setModalsShowState({
         ...modalsShowState,
         import: false,
