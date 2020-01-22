@@ -14,7 +14,7 @@ if (!document.body) {
 }
 document.body.appendChild(portal);
 
-const PortalDishCard = ({ provided, snapshot, dish, index }) => {
+const PortalDishCard = ({ provided, snapshot, dish, index, isEditMode }) => {
   const usePortal: boolean = snapshot.isDragging;
 
   const child = (
@@ -28,6 +28,7 @@ const PortalDishCard = ({ provided, snapshot, dish, index }) => {
         dish={dish}
         index={index}
         dishListEnum={DishListEnum.GENERATE_MENU_LIST}
+        isEditMode={isEditMode}
       />
     </div>
   );

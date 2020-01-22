@@ -34,7 +34,10 @@ const FiltersPanel = ({
                   <FormControlLabel
                     key={index}
                     control={
-                      <Checkbox onChange={e => handleCheck(e, filter)} />
+                      <Checkbox
+                        style={{ width: 30, height: 30 }}
+                        onChange={e => handleCheck(e, filter)}
+                      />
                     }
                     label={filter}
                   />
