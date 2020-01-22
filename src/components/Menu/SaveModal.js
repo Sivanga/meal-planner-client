@@ -16,7 +16,7 @@ const SaveModal = ({ saveModalShow, toggle, onSaveClick }) => {
 
   return (
     <MDBModal isOpen={saveModalShow} toggle={toggle}>
-      <MDBModalHeader toggle={toggle}>One Last Step!</MDBModalHeader>
+      <MDBModalHeader toggle={toggle}>Save Menu</MDBModalHeader>
       <MDBModalBody>
         <Form.Group controlId="menuName" as={Row}>
           <Form.Label column sm="2">

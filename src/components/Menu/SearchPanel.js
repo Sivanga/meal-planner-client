@@ -27,6 +27,7 @@ const SearchPanel = ({
             onSearch={value => onSearch(value)}
             onSearchClear={onSearchClear}
             isFullLength={true}
+            placeholder="Search for dishes"
           />
         </div>
 

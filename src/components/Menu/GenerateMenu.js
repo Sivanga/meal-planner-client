@@ -670,15 +670,6 @@ const GenerateMenu = props => {
             <i className="fas fa-share-alt" ref={triggerShareRef}></i>
           </Button>
         )}
-
-        <ImportDish
-          addDish={dish => {
-            props.addDish(dish, auth.authState.user.uid);
-          }}
-          hideButton={true}
-          type={ImportDishType.BUTTON}
-          allowRedirect={false}
-        />
       </>
     );
   };
@@ -764,7 +755,7 @@ const GenerateMenu = props => {
                 className="generate-btn random-btn"
                 onClick={() => handleRandomClick()}
               >
-                RANDOM!
+                RANDOM
               </MDBBtn>
               <Button
                 className="meal-plan-btn"
@@ -773,7 +764,7 @@ const GenerateMenu = props => {
                   setSaveModalShow(true);
                 }}
               >
-                Save
+                <i className="far fa-save"></i>
               </Button>
               <PrintAndShare />
             </div>
@@ -799,9 +790,21 @@ const GenerateMenu = props => {
                 className={classNames("panel-handle", "filters-and-search", {
                   "is-open": showPanel
                 })}
-                onClick={() => setShowPanel(!showPanel)}
               >
-                + Search and Filter
+                <ImportDish
+                  addDish={dish => {
+                    props.addDish(dish, auth.authState.user.uid);
+                  }}
+                  hideButton={true}
+                  type={ImportDishType.BUTTON}
+                  allowRedirect={false}
+                />
+                <Button
+                  onClick={() => setShowPanel(!showPanel)}
+                  className="meal-plan-btn"
+                >
+                  Search for dishes
+                </Button>
               </div>
             </div>
           )}

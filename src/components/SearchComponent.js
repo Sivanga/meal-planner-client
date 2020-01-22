@@ -1,8 +1,13 @@
 import React from "react";
-import { MDBCol, MDBIcon } from "mdbreact";
+import { MDBCol } from "mdbreact";
 import classNames from "classnames";
 
-const SearcComponent = ({ onSearch, onSearchClear, isFullLength }) => {
+const SearcComponent = ({
+  onSearch,
+  onSearchClear,
+  isFullLength,
+  placeholder = "Search"
+}) => {
   const formInput = React.createRef();
 
   const onSearchClick = value => {
@@ -22,7 +27,7 @@ const SearcComponent = ({ onSearch, onSearchClear, isFullLength }) => {
           ref={formInput}
           className="form-control"
           type="text"
-          placeholder="Search"
+          placeholder={placeholder}
           aria-label="Search"
           onChange={e => {
             e.preventDefault();

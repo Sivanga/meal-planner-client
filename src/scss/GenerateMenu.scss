@@ -183,6 +183,7 @@ li {
     background-color: white !important;
     border: solid $primary 1px !important;
     color: $primary;
+    box-shadow: 0 0 0 0.06rem $primary !important;
   }
 }
 
@@ -197,6 +198,7 @@ li {
   background-color: white !important;
   color: $accent-color;
   border: solid $accent-color 2px !important;
+  font-size: 0.7rem !important;
 
   &:hover,
   &:focus,
