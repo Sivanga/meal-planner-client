@@ -522,12 +522,17 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                     multi_match: {
                       query: data.query,
                       type: "phrase_prefix",
-                      fields: ["name", "link", "ingredient", "meals"]
+                      fields: ["name", "link", "ingredient"]
                     }
                   },
                   {
-                    match: {
+                    term: {
                       "tags.name": data.query
+                    }
+                  },
+                  {
+                    term: {
+                      "meals.name": data.query
                     }
                   }
                 ],
@@ -579,8 +584,19 @@ const searchFilteredDishes = (data, context) => {
                           bool: {
                             must: [
                               {
-                                terms: {
-                                  "dishes.tags.name": data.tags
+                                bool: {
+                                  should: [
+                                    {
+                                      terms: {
+                                        "dishes.tags.name": data.tags
+                                      }
+                                    },
+                                    {
+                                      terms: {
+                                        "dishes.meals.name": data.tags
+                                      }
+                                    }
+                                  ]
                                 }
                               },
                               {
@@ -610,24 +626,35 @@ const searchFilteredDishes = (data, context) => {
             {
               query: {
                 bool: {
-                  should: [
+                  must: [
                     {
                       multi_match: {
                         query: data.query,
                         type: "phrase_prefix",
                         fields: ["name", "link", "ingredient", "meals"]
                       }
+                    },
+                    {
+                      bool: {
+                        should: [
+                          {
+                            terms: {
+                              "tags.name": data.tags
+                            }
+                          },
+                          {
+                            terms: {
+                              "meals.name": data.tags
+                            }
+                          }
+                        ]
+                      }
                     }
                   ],
                   must_not: [
                     { match: { ownerUid: data.uid } },
                     { match: { favoriteUsers: data.uid } }
-                  ],
-                  must: {
-                    terms: {
-                      "tags.name": data.tags
-                    }
-                  }
+                  ]
                 }
               }
             }
@@ -678,11 +705,18 @@ const searchFilteredDishes = (data, context) => {
                     { match: { ownerUid: data.uid } },
                     { match: { favoriteUsers: data.uid } }
                   ],
-                  must: {
-                    terms: {
-                      "tags.name": data.tags
+                  should: [
+                    {
+                      terms: {
+                        "tags.name": data.tags
+                      }
+                    },
+                    {
+                      terms: {
+                        "meals.name": data.tags
+                      }
                     }
-                  }
+                  ]
                 }
               }
             }

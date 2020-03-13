@@ -65,7 +65,7 @@ const mapDispatchToProps = dispatch => ({
   searchAllDishes: (uid, query, selectedFilters) =>
     dispatch(searchAllDishes(uid, query, selectedFilters)),
   clearSearchAllDishes: () => dispatch(clearSearchAllDishes()),
-  getPopularTags: uid => dispatch(getPopularTags(uid)),
+  getPopularTags: meals => dispatch(getPopularTags(meals)),
   didUserSeeTour: uid => dispatch(didUserSeeTour(uid)),
   setUserSeeTour: uid => dispatch(setUserSeeTour(uid))
 });
@@ -245,7 +245,7 @@ const GenerateMenu = props => {
 
     // Get popular tags
     if (props.suggestedFilters.length === 0) {
-      props.getPopularTags();
+      props.getPopularTags(menuData.meals);
     }
   }, [
     auth,

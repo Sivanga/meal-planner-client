@@ -432,12 +432,19 @@ export const addToFavorites = (dish, uid) => async dispatch => {
     });
 };
 
-export const getPopularTags = () => async dispatch => {
+export const getPopularTags = meals => async dispatch => {
   const popularTags = firebase.functions().httpsCallable("getPopularTags");
   popularTags().then(result => {
     var tags = [];
+
+    // Add the most poplar tags to the array
     result.data.map(tag => {
       return tags.push(tag.key);
+    });
+
+    // Add the meals names to the array
+    meals.map(meal => {
+      return tags.push(meal.name);
     });
     dispatch({
       type: POPULAR_TAGS,
