@@ -5,7 +5,7 @@ import SearchPanel from "./SearchPanel";
 import {
   addDish,
   fetchDishes,
-  fetchPublicDishes,
+  fetchPublicDishesForMeals,
   searchAllDishes,
   setMenu,
   makeMenuPublic,
@@ -43,8 +43,8 @@ const mapStateToProps = state => {
     menuData: state.menus.menu,
     favoriteDishes: state.dishes.dishes,
     favoriteDataReceived: state.dishes.privateDishesDataReceived,
-    publicDishes: state.dishes.publicDishes,
-    publicDataReceived: state.dishes.publicDishesDataReceived,
+    publicDishes: state.dishes.publicDishesPerMeal,
+    publicDataReceived: state.dishes.publicDishesPerMealDataReceived,
     searchReceived: state.dishes.allDishesSearchReceived,
     searchResult: state.dishes.allDishesSearchResult,
     suggestedFilters: state.dishes.popularTags,
@@ -56,8 +56,8 @@ const mapDispatchToProps = dispatch => ({
   fetchDishes: (uid, selectedFilters) =>
     dispatch(fetchDishes(uid, selectedFilters)),
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
-  fetchPublicDishes: (uid, selectedFilters) =>
-    dispatch(fetchPublicDishes(uid, selectedFilters)),
+  fetchPublicDishesForMeals: (uid, selectedFilters, meals) =>
+    dispatch(fetchPublicDishesForMeals(uid, selectedFilters, meals)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
   makeMenuPublic: (payload, uid) => dispatch(makeMenuPublic(payload, uid)),
   fetchMenu: (id, uid, type) => dispatch(fetchMenu(id, uid, type)),
@@ -226,8 +226,12 @@ const GenerateMenu = props => {
       return;
     }
 
-    if (!props.publicDataReceived.received) {
-      props.fetchPublicDishes(auth.authState.user.uid, selectedFilters);
+    if (!props.publicDataReceived) {
+      props.fetchPublicDishesForMeals(
+        auth.authState.user.uid,
+        selectedFilters,
+        menuData.meals
+      );
       return;
     }
 
@@ -636,6 +640,7 @@ const GenerateMenu = props => {
   /**
    * If dishes data is still loading, show loading message
    */
+
   if (
     !isSharedMenu &&
     (!props.favoriteDataReceived || !props.publicDataReceived || !randomDishes)
