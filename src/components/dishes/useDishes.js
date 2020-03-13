@@ -81,12 +81,12 @@ function useDishes(
   };
 
   const onNextPage = () => {
-    fetchDishes(getUid(), null, dishesReceived.next);
+    fetchDishes(auth.authState.user.uid, null, dishesReceived.next);
   };
 
   const onSearch = query => {
     setIsSearchMode(true);
-    searchDishes(getUid(), query);
+    searchDishes(auth.authState.user.uid, query);
   };
 
   const onSearchClear = () => {

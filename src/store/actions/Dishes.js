@@ -15,8 +15,6 @@ import {
   SEARCH_PUBLIC_DATA_RECEIVED,
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES,
-  PUBLIC_DISHES_FOR_MEAL_DATA_RECEIVED,
-  FETCH_PUBLIC_DISHES_FOR_MEAL,
   CLEAR_PUBLIC_DISHES,
   SEARCH_ALL_DISHES,
   SEARCH_ALL_DISHES_RECEIVED,
@@ -290,35 +288,6 @@ export const searchPublicDishes = (uid, query) => async dispatch => {
     });
 };
 
-export const fetchPublicDishesForMeals = (
-  uid,
-  filters,
-  meals
-) => async dispatch => {
-  const search = firebase
-    .functions()
-    .httpsCallable("searchPublicDishesForMeals");
-  search({ filters: filters, meals: meals, uid: uid })
-    .then(result => {
-      dispatch({
-        type: FETCH_PUBLIC_DISHES_FOR_MEAL,
-        payload: result.data
-      });
-    })
-    .catch(err => {
-      dispatch({
-        type: FETCH_PUBLIC_DISHES_FOR_MEAL,
-        payload: []
-      });
-    })
-    .finally(() => {
-      dispatch({
-        type: PUBLIC_DISHES_FOR_MEAL_DATA_RECEIVED,
-        payload: true
-      });
-    });
-};
-
 export const clearSearchPublicDishes = () => async dispatch => {
   dispatch({
     type: CLEAR_SEARCH_PUBLIC_DISHES
@@ -367,7 +336,6 @@ export const fetchPublicDishes = (
 ) => async dispatch => {
   // If prevNextPage is empty, the first page is being requested
   // Clear previous results
-
   if (!prevNextPage) {
     dispatch({
       type: CLEAR_PUBLIC_DISHES

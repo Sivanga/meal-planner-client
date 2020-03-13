@@ -155,7 +155,7 @@ exports.indexPublicDishesToElastic = functions.database
           {
             id: context.params.dishId,
             type: "_doc",
-            index: "public_dishes_v6",
+            index: "public_dishes_v4",
             body: change.after.val()
           },
           { ignore: 404 },
@@ -174,7 +174,7 @@ exports.indexPublicDishesToElastic = functions.database
           {
             id: context.params.dishId,
             type: "_doc",
-            index: "public_dishes_v6"
+            index: "public_dishes_v4"
           },
           { ignore: 404 },
           (err, result) => {
@@ -271,7 +271,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
   return new Promise((resolve, reject) => {
     esClient.search(
       {
-        index: "public_dishes_v6",
+        index: "public_dishes_v4",
         body: {
           query: {
             bool: {
@@ -280,7 +280,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
                   multi_match: {
                     query: data.query,
                     type: "phrase_prefix",
-                    fields: ["name", "link", "ingredient"]
+                    fields: ["name", "link", "ingredient", "meals.name"]
                   }
                 },
                 {
@@ -307,76 +307,15 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
           resolve(dishesToReturn);
         }
         if (err) {
-          console.log("err.meta.body.error: ", err.meta.body.error);
+          console.log(" err: ");
+          console.log(err);
           reject(err);
         }
       }
     );
   }).catch(err => {
-    console.log("catch err: ", err);
-  });
-});
-
-/** elastic - search in "public_dishes" index */
-exports.searchPublicDishesForMeals = functions.https.onCall((data, context) => {
-  console.log(
-    "Search for meals",
-    data.meals,
-    " with filters: ",
-    data.filters,
-    " in public_dishes"
-  );
-
-  let meals = data.meals.map(({ name }) => name);
-  // callback API
-  return new Promise((resolve, reject) => {
-    esClient.search(
-      {
-        index: "public_dishes_v6",
-        body: {
-          size: 100,
-          query: {
-            bool: {
-              should: [
-                {
-                  terms: {
-                    "meals.name": meals
-                  }
-                }
-              ],
-              must_not: {
-                match: { ownerUid: data.uid ? data.uid : "dummy" } // If there's no connected user, return all public result of all users
-              }
-            }
-          },
-          aggs: {
-            meals: {
-              terms: {
-                field: "meals.name",
-                size: 20
-              }
-            }
-          }
-        }
-      },
-      { ignore: [404] },
-      (err, result) => {
-        if (result.body.hits) {
-          console.log("result.body.hits: ", result.body.hits);
-          var dishesToReturn = [];
-          result.body.hits.hits.map(result => {
-            return dishesToReturn.push(result._source);
-          });
-          resolve(dishesToReturn);
-        }
-        if (err) {
-          console.log("err.meta.body.error: ", err.meta.body.error);
-          reject(err);
-        }
-      }
-    );
-  }).catch(err => {
-    console.log("catch err: ", err);
+    console.log("catch err: ");
+    console.log(err);
     reject(err);
   });
 });
@@ -409,7 +348,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
               }
             }
           },
-          { index: "public_dishes_v6" },
+          { index: "public_dishes_v4" },
           {
             query: {
               match_all: {}
@@ -437,15 +376,13 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
               result.body.responses[0].aggregations.dishes.popular_tags.buckets;
           }
 
-          if (
-            result.body.responses[1].aggregations &&
-            result.body.responses[1].aggregations.popular_tags.buckets
-          ) {
+          if (result.body.responses[1].aggregations.popular_tags.buckets) {
             tagsArray.concat(
               result.body.responses[1].aggregations.popular_tags.buckets
             );
           }
           console.log("tagsArray: ", tagsArray);
+
           resolve(tagsArray);
         }
 
@@ -513,7 +450,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
               }
             }
           },
-          { index: "public_dishes_v6" },
+          { index: "public_dishes_v4" },
           {
             query: {
               bool: {
@@ -606,7 +543,7 @@ const searchFilteredDishes = (data, context) => {
                 }
               }
             },
-            { index: "public_dishes_v6" },
+            { index: "public_dishes_v4" },
             {
               query: {
                 bool: {
@@ -670,7 +607,7 @@ const searchFilteredDishes = (data, context) => {
                 }
               }
             },
-            { index: "public_dishes_v6" },
+            { index: "public_dishes_v4" },
             {
               query: {
                 bool: {

@@ -16,8 +16,6 @@ import {
   PUBLIC_DISHES_DATA_RECEIVED,
   FETCH_PUBLIC_DISHES,
   CLEAR_PUBLIC_DISHES,
-  FETCH_PUBLIC_DISHES_FOR_MEAL,
-  PUBLIC_DISHES_FOR_MEAL_DATA_RECEIVED,
   SEARCH_ALL_DISHES_RECEIVED,
   SEARCH_ALL_DISHES,
   CLEAR_SEARCH_ALL_DISHES,
@@ -116,32 +114,12 @@ function publicDishes(state = [], action) {
   }
 }
 
-function publicDishesPerMeal(state = [], action) {
-  switch (action.type) {
-    case FETCH_PUBLIC_DISHES_FOR_MEAL:
-      // Append dishes to previos array
-      var dishesCopy = [...state];
-      return dishesCopy.concat(action.payload);
-    default:
-      return state;
-  }
-}
-
 function publicDishesDataReceived(
   state = { received: false, next: null },
   action
 ) {
   switch (action.type) {
     case PUBLIC_DISHES_DATA_RECEIVED:
-      return action.payload;
-    default:
-      return state;
-  }
-}
-
-function publicDishesPerMealDataReceived(state = false, action) {
-  switch (action.type) {
-    case PUBLIC_DISHES_FOR_MEAL_DATA_RECEIVED:
       return action.payload;
     default:
       return state;
@@ -208,11 +186,6 @@ export default function DishReducer(state = {}, action) {
     publicDishes: publicDishes(state.publicDishes, action),
     publicDishesDataReceived: publicDishesDataReceived(
       state.publicDishesDataReceived,
-      action
-    ),
-    publicDishesPerMeal: publicDishesPerMeal(state.publicDishesPerMeal, action),
-    publicDishesPerMealDataReceived: publicDishesPerMealDataReceived(
-      state.publicDishesPerMealDataReceived,
       action
     ),
     privateDishesDataReceived: privateDishesDataReceived(
