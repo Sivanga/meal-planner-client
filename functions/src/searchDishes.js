@@ -334,16 +334,9 @@ exports.searchPublicDishesForMeals = functions.https.onCall((data, context) => {
       {
         index: "public_dishes_v6",
         body: {
-          size: 100,
+          size: 0,
           query: {
             bool: {
-              should: [
-                {
-                  terms: {
-                    "meals.name": meals
-                  }
-                }
-              ],
               must_not: {
                 match: { ownerUid: data.uid ? data.uid : "dummy" } // If there's no connected user, return all public result of all users
               }
@@ -353,7 +346,42 @@ exports.searchPublicDishesForMeals = functions.https.onCall((data, context) => {
             meals: {
               terms: {
                 field: "meals.name",
-                size: 20
+                include: meals
+              },
+
+              aggs: {
+                top_hits: {
+                  top_hits: {
+                    _source: {
+                      includes: [
+                        "id",
+                        "meals",
+                        "name",
+                        "ownerUid",
+                        "sharePublic",
+                        "tags",
+                        "favoriteUsers",
+                        "imageFile",
+                        "recipe",
+                        "localImageUrl",
+                        "link",
+                        "imageUrl"
+                      ]
+                    },
+                    size: 30,
+                    sort: {
+                      _script: {
+                        type: "number",
+                        script: {
+                          lang: "painless",
+                          source:
+                            "(System.currentTimeMillis() + doc['_id'].value).hashCode()"
+                        },
+                        order: "asc"
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -361,11 +389,16 @@ exports.searchPublicDishesForMeals = functions.https.onCall((data, context) => {
       },
       { ignore: [404] },
       (err, result) => {
-        if (result.body.hits) {
-          console.log("result.body.hits: ", result.body.hits);
+        if (result.body.aggregations) {
+          console.log(
+            "result.body.aggregations: ",
+            result.body.aggregations.meals.buckets
+          );
           var dishesToReturn = [];
-          result.body.hits.hits.map(result => {
-            return dishesToReturn.push(result._source);
+          result.body.aggregations.meals.buckets.map(buckets => {
+            return buckets.top_hits.hits.hits.map(bucket => {
+              return dishesToReturn.push(bucket._source);
+            });
           });
           resolve(dishesToReturn);
         }
