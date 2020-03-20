@@ -1,4 +1,6 @@
 import * as firebase from "firebase/app";
+import "firebase/analytics";
+
 import "firebase/database";
 import "firebase/auth";
 import "firebase/storage";
