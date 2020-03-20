@@ -1,0 +1,7 @@
+.panel-cards {
+  column-count: 1;
+
+  @media (min-width: 1024px) {
+    column-count: 2;
+  }
+}
