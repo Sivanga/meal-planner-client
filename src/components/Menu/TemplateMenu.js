@@ -13,6 +13,7 @@ import GenerateMenu from "./GenerateMenu";
 import { connect } from "react-redux";
 import { setMeals, fetchMeals } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
+import LoginAlert from "../auth/LoginAlert";
 
 const mapStateToProps = state => {
   return {
@@ -61,6 +62,9 @@ const TemplateMenu = props => {
    * Used to focus on the new added value in order to allow editing
    */
   const [addingNewValue, setAddingNewValue] = useState(false);
+
+  /** Used to show login modal */
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   /**
    * Used when validate menu before generating a new one
@@ -199,11 +203,18 @@ const TemplateMenu = props => {
     if (auth.authState.user) {
       props.setMealsBackend(meals, auth.authState.user.uid);
       props.handleGenerateMenu(days, meals);
+    } else {
+      setShowLoginModal(true);
     }
   };
 
   return (
     <div className="wrapper">
+      <LoginAlert
+        showLoginAlert={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
+
       {/* Validation Error*/}
       {menuErrors.length > 0 && (
         <div>

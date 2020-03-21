@@ -80,8 +80,16 @@ const Dishes = ({
     clearSearchPublicDishes
   );
 
+  const getUid = () => {
+    var uid = null;
+    if (auth.authState.user && auth.authState.user.uid) {
+      uid = auth.authState.user.uid;
+    }
+    return uid;
+  };
+
   const onDishAdd = dish => {
-    addDish(dish, auth.authState.user.uid);
+    addDish(dish, getUid());
   };
 
   const handleDishFavorite = (dish, uid) => {
@@ -89,12 +97,12 @@ const Dishes = ({
   };
 
   const handleDishUnfavorite = id => {
-    removeFromFavorites(id, auth.authState.user.uid);
+    removeFromFavorites(id, getUid());
   };
 
   const handleAddToMenuClick = (dish, menuId) => {
     // Add public dish under this user
-    addToFavorites(dish, auth.authState.user.uid);
+    addToFavorites(dish, getUid());
     addToMenu(dish, menuId, privateMenus);
   };
 
@@ -103,13 +111,6 @@ const Dishes = ({
    */
   if (dataReceived && !dataReceived.received) {
     return <div className="center-text">Loading...</div>;
-  }
-
-  /**
-   * Dishes list */
-  var currentUid = null;
-  if (auth.authState.user && auth.authState.user.uid) {
-    currentUid = auth.authState.user.uid;
   }
 
   return (
@@ -146,7 +147,7 @@ const Dishes = ({
         dishes={isSearchMode ? searchResult : publicDishes}
         menus={privateMenus}
         dishListEnum={DishListEnum.PUBLIC_LIST}
-        currentUid={currentUid}
+        currentUid={getUid()}
         handleDishFavorite={(dish, uid) => handleDishFavorite(dish, uid)}
         handleDishRemove={id => handleDishUnfavorite(id)}
         onDishAddToMenuClick={(dish, menuId) =>

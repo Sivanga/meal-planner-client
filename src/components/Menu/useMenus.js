@@ -21,7 +21,6 @@ function useMenus(
    */
   useEffect(() => {
     var uid = getUid();
-    if (!uid) return;
 
     if (!menusReceived.received) {
       fetchMenus(uid);

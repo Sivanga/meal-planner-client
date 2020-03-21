@@ -292,7 +292,6 @@ const DishCard = ({
                       ? "READ LESS"
                       : "READ MORE"}
                   </span>
-
                   {/** Show unfavorite icon for my favorite or public dishes that were favorite by current user */}
                   {(dishListEnum === DishListEnum.MY_FAVORITES_LIST ||
                     (dishListEnum === DishListEnum.PUBLIC_LIST &&
@@ -311,8 +310,9 @@ const DishCard = ({
                   {/** Show favorite icon for public dishes that aren't already favorite by the user
                    */}
                   {dishListEnum === DishListEnum.PUBLIC_LIST &&
-                    dish.favoriteUsers &&
-                    dish.favoriteUsers.indexOf(currentUid) === -1 && (
+                    (!dish.favoriteUsers ||
+                      (dish.favoriteUsers &&
+                        dish.favoriteUsers.indexOf(currentUid) === -1)) && (
                       <span
                         onClick={e => {
                           e.stopPropagation();

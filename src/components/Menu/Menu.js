@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import MenuList from "./MenuList";
 import { MenuListEnum } from "./MenuItem";
 import { connect } from "react-redux";

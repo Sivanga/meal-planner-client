@@ -397,6 +397,12 @@ export const fetchPublicDishes = (
 };
 
 export const addToFavorites = (dish, uid) => async dispatch => {
+  // If no UID, return
+  if (!uid) {
+    console.log("No UID, return");
+    return;
+  }
+
   // Add the dish locally
   dispatch({
     type: ADD_DISH,
