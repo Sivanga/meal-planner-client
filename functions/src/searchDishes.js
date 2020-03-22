@@ -450,7 +450,8 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
             aggs: {
               popular_tags: {
                 terms: {
-                  field: "tags.name"
+                  field: "tags.name",
+                  size: 5
                 }
               }
             }
@@ -497,6 +498,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
 /** elastic - search in both "dishes" and "public_dishes" index */
 exports.searchAllDishes = functions.https.onCall((data, context) => {
   console.log("Search for ", data.query, " in all dishes. tags: ", data.tags);
+
   if (data.tags && data.tags.length > 0) {
     return searchFilteredDishes(data);
   }
@@ -664,7 +666,7 @@ const searchFilteredDishes = (data, context) => {
                       multi_match: {
                         query: data.query,
                         type: "phrase_prefix",
-                        fields: ["name", "link", "ingredient", "meals"]
+                        fields: ["name", "link", "ingredient"]
                       }
                     },
                     {
@@ -718,8 +720,40 @@ const searchFilteredDishes = (data, context) => {
                     {
                       nested: {
                         query: {
-                          terms: {
-                            "dishes.tags.name": data.tags
+                          bool: {
+                            must: [
+                              {
+                                bool: {
+                                  should: [
+                                    {
+                                      terms: {
+                                        "dishes.tags.name": data.tags
+                                      }
+                                    },
+                                    {
+                                      terms: {
+                                        "dishes.meals.name": data.tags
+                                      }
+                                    },
+                                    {
+                                      terms: {
+                                        "dishes.name": data.tags
+                                      }
+                                    },
+                                    {
+                                      terms: {
+                                        "dishes.link": data.tags
+                                      }
+                                    },
+                                    {
+                                      terms: {
+                                        "dishes.ingredient": data.tags
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
                           }
                         },
                         path: "dishes",
@@ -747,6 +781,21 @@ const searchFilteredDishes = (data, context) => {
                     {
                       terms: {
                         "meals.name": data.tags
+                      }
+                    },
+                    {
+                      terms: {
+                        name: data.tags
+                      }
+                    },
+                    {
+                      terms: {
+                        link: data.tags
+                      }
+                    },
+                    {
+                      terms: {
+                        ingredient: data.tags
                       }
                     }
                   ]
