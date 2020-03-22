@@ -21,7 +21,7 @@ const PanelDroppable = ({ dishes, isEditMode }) => {
               <Draggable
                 draggableId={dish.id}
                 index={index}
-                key={index}
+                key={dish.id}
                 isDragDisabled={!isEditMode}
               >
                 {(draggebleProvided, draggebleSnapshot) => (

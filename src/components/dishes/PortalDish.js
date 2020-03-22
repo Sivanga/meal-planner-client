@@ -16,7 +16,6 @@ document.body.appendChild(portal);
 
 const PortalDishCard = ({ provided, snapshot, dish, index, isEditMode }) => {
   const usePortal: boolean = snapshot.isDragging;
-
   const child = (
     <div
       ref={provided.innerRef}
