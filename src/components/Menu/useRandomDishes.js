@@ -5,7 +5,8 @@ const useRandomDishes = (
   searchResult,
   favoriteDishes,
   publicDishes,
-  isFilterMode
+  isFilterMode,
+  isSearchMode
 ) => {
   /** Random dishes */
   const [randomDishes, setRandomDishes] = useState(
@@ -48,9 +49,8 @@ const useRandomDishes = (
 
   const getRandomDish = (meal, randomDishesSource) => {
     var dishes;
-
     // If isFilterMode, get dishes from search result
-    if (isFilterMode) {
+    if (isFilterMode || isSearchMode) {
       dishes = findDishesForMeal(randomDishesSource.search, meal);
     }
     // Otherwise get dishes from private + public

@@ -198,7 +198,8 @@ const GenerateMenu = props => {
     props.searchResult,
     props.favoriteDishes,
     props.publicDishes,
-    isFilterMode
+    isFilterMode,
+    isSearchMode
   );
 
   /** Use to fetch dishes and search result with selected filters */
