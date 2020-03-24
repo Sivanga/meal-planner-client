@@ -426,6 +426,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
             query: {
               match_all: {}
             },
+            size: 0,
             aggs: {
               dishes: {
                 nested: {
@@ -435,7 +436,8 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
                   popular_tags: {
                     terms: {
                       field: "dishes.tags.name",
-                      size: 5
+                      size: 5,
+                      min_doc_count: 2
                     }
                   }
                 }
@@ -447,10 +449,12 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
             query: {
               match_all: {}
             },
+            size: 0,
             aggs: {
               popular_tags: {
                 terms: {
                   field: "tags.name",
+                  min_doc_count: 2,
                   size: 5
                 }
               }
@@ -461,7 +465,7 @@ exports.getPopularTags = functions.https.onCall((data, context) => {
       { ignore: [404] },
       (err, result) => {
         if (result) {
-          console.log(result);
+          console.log(result.body.responses);
 
           var tagsArray = [];
           if (
@@ -640,8 +644,7 @@ const searchFilteredDishes = (data, context) => {
                                   fields: [
                                     "dishes.name^3",
                                     "dishes.link",
-                                    "dishes.ingredient",
-                                    "dishes.meals.name"
+                                    "dishes.ingredient"
                                   ],
                                   type: "phrase_prefix"
                                 }
@@ -650,7 +653,7 @@ const searchFilteredDishes = (data, context) => {
                           }
                         },
                         path: "dishes",
-                        inner_hits: { size: 30 } // Search in keyword tags
+                        inner_hits: { size: 30 }
                       }
                     }
                   ]
@@ -757,7 +760,7 @@ const searchFilteredDishes = (data, context) => {
                           }
                         },
                         path: "dishes",
-                        inner_hits: { size: 30 } // Search in keyword tags
+                        inner_hits: { size: 30 }
                       }
                     }
                   ]
