@@ -422,6 +422,9 @@ export const addToFavorites = (dish, uid) => async dispatch => {
     .then(function(snapshot) {
       var dishToUpdate = (snapshot.val() && snapshot.val()) || {};
       var favoriteUsers = dishToUpdate.favoriteUsers;
+      if (!favoriteUsers) {
+        favoriteUsers = [];
+      }
       favoriteUsers.push(uid);
       ref.child(`${dish.id}`).update({
         favoriteUsers: favoriteUsers
