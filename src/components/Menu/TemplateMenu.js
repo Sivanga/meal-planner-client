@@ -201,8 +201,12 @@ const TemplateMenu = props => {
 
   const handleGenerateMenu = () => {
     if (auth.authState.user) {
-      props.setMealsBackend(meals, auth.authState.user.uid);
-      props.handleGenerateMenu(days, meals);
+      // Filter empty meals
+      var finalMeals = meals.filter(meal => {
+        return meal.name.length > 0;
+      });
+      props.setMealsBackend(finalMeals, auth.authState.user.uid);
+      props.handleGenerateMenu(days, finalMeals);
     } else {
       setShowLoginModal(true);
     }
@@ -228,7 +232,7 @@ const TemplateMenu = props => {
 
       <MDBTable id="template-menu-table">
         <Button
-          className={classNames("save-template-btn", {
+          className={classNames("save-template-btn", "meal-plan-btn", {
             disabled: menuErrors.length > 0
           })}
           onClick={() => handleGenerateMenu(days, meals)}

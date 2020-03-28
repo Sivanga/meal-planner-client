@@ -75,7 +75,6 @@ const EXTRA_DISH_DRAGGABLE_ID = "EXTRA_DISH_DRAGGABLE_ID";
 
 const GenerateMenu = props => {
   let { menuId, type, ownerId } = useParams();
-
   /** Used to redirect to menus list after saving the menu */
   let history = useHistory();
 
@@ -214,22 +213,27 @@ const GenerateMenu = props => {
     setAllDishes(allDishes);
   };
 
+  const getUid = () => {
+    return auth.authState && auth.authState && auth.authState.user
+      ? auth.authState.user.uid
+      : null;
+  };
+
   /**
    * Fetch private and public dishes. Compute random dishes after all data is received
    */
   useEffect(() => {
-    if (!auth.authState.user || !menuData || !menuData.meals || !menuData.days)
-      return;
+    if (!menuData || !menuData.meals || !menuData.days) return;
 
     // Fetch private and public dishes
     if (!props.favoriteDataReceived.received) {
-      props.fetchDishes(auth.authState.user.uid, selectedFilters);
+      props.fetchDishes(getUid(), selectedFilters);
       return;
     }
 
     if (!props.publicDataReceived) {
       props.fetchPublicDishesForMeals(
-        auth.authState.user.uid,
+        getUid(),
         selectedFilters,
         menuData.meals
       );
@@ -307,20 +311,15 @@ const GenerateMenu = props => {
     if (isSharedMenu) return;
     if (props.menuData.id) {
       setMenuData(props.menuData);
-      history.push(
-        `/menu/generate/private/${props.menuData.id}/${auth.authState.user.uid}`,
-        {
-          menuData
-        }
-      );
+      history.push(`/menu/generate/private/${props.menuData.id}/${getUid()}`, {
+        menuData
+      });
     }
   }, [props.menuData, auth]);
 
   /** Handle tour show */
   useEffect(() => {
     if (!auth.authState.user) return;
-    const uid = auth.authState.user.uid;
-
     // If seenTour value was fetch, use it
     if (props.seenTour === false || props.seenTour === true) {
       // Show tour if needed and if menu is in Edit mode
@@ -329,7 +328,7 @@ const GenerateMenu = props => {
 
     // Otherwise fetch seenTour value
     else {
-      props.didUserSeeTour(uid);
+      props.didUserSeeTour(getUid());
     }
   }, [props.seenTour, auth, isEditMode]);
 
@@ -496,7 +495,7 @@ const GenerateMenu = props => {
       name: menuNameState
     };
 
-    props.setMenu(menu, auth.authState.user.uid);
+    props.setMenu(menu, getUid());
 
     setSaveModalShow(false); // Hide the modal
   };
@@ -512,7 +511,7 @@ const GenerateMenu = props => {
 
   const onSearch = (query, filters = selectedFilters) => {
     setIsSearchMode(true);
-    props.searchAllDishes(auth.authState.user.uid, query, filters);
+    props.searchAllDishes(getUid(), query, filters);
   };
 
   const onSearchClear = (filters = selectedFilters) => {
@@ -573,7 +572,7 @@ const GenerateMenu = props => {
   };
 
   const isUserLoggedIn = () => {
-    if (auth.authState.user && auth.authState.user.uid) {
+    if (getUid()) {
       return true;
     } else {
       return false;
@@ -604,7 +603,7 @@ const GenerateMenu = props => {
   const onTourClose = () => {
     setShowTour(false);
     if (!auth.authState.user) return;
-    props.setUserSeeTour(auth.authState.user.uid);
+    props.setUserSeeTour(getUid());
   };
 
   const setComment = (mealIndex, dayIndex, comment) => {
@@ -639,13 +638,10 @@ const GenerateMenu = props => {
   }
 
   /**
-   * If dishes data is still loading, show loading message
+   * If randomDishes isn't loaded yet
    */
 
-  if (
-    !isSharedMenu &&
-    (!props.favoriteDataReceived || !props.publicDataReceived || !randomDishes)
-  ) {
+  if (!randomDishes) {
     return <div className="center-text">Loading...</div>;
   }
 
@@ -704,14 +700,10 @@ const GenerateMenu = props => {
         days={menuData.days}
         meals={menuData.meals}
         randomDishes={randomDishes}
-        uid={
-          auth.authState && auth.authState && auth.authState.user
-            ? auth.authState.user.uid
-            : null
-        }
+        uid={getUid()}
         handleMakePublic={() => {
           // Set as public in backend
-          props.makeMenuPublic(menuData.id, auth.authState.user.uid);
+          props.makeMenuPublic(menuData.id, getUid());
 
           // Set as public locally
           setMenuData({
@@ -721,6 +713,8 @@ const GenerateMenu = props => {
         }}
         menuName={menuData.name}
       />
+
+      {menuData && menuData.name && <h5>{menuData.name}</h5>}
 
       <Tour
         steps={tourSteps}
@@ -782,6 +776,7 @@ const GenerateMenu = props => {
                 onClick={() => {
                   onEditClick();
                 }}
+                style={{ marginLeft: 0 }}
               >
                 EDIT
               </Button>
@@ -799,7 +794,7 @@ const GenerateMenu = props => {
               >
                 <ImportDish
                   addDish={dish => {
-                    props.addDish(dish, auth.authState.user.uid);
+                    props.addDish(dish, getUid());
                   }}
                   hideButton={true}
                   type={ImportDishType.BUTTON}

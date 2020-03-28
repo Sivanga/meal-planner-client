@@ -27,6 +27,11 @@ function NavBar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
+              <Nav.Link as={Link} to="/menu/newMenu" href="/menu/newMenu">
+                Create Menu
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={Link} to="/about" href="/about">
                 About
               </Nav.Link>
