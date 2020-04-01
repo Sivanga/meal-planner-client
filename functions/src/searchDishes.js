@@ -833,7 +833,9 @@ const handleAllDishesResult = (err, result, resolve, reject) => {
 
   var dishesToReturn = [];
   dishes.map(result => {
-    return dishesToReturn.push(result._source);
+    if (result._source.id) {
+      return dishesToReturn.push(result._source);
+    }
   });
 
   resolve(dishesToReturn);

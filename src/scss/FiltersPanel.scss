@@ -27,3 +27,22 @@
     }
   }
 }
+
+.panel-header > span {
+  display: block;
+}
+
+.random-btn-panel-wrapper {
+  margin: 0px;
+  margin-bottom: 5px;
+
+  .random-btn-panel {
+    margin-bottom: 0px;
+    margin-left: 3px !important;
+  }
+
+  span {
+    font-size: 0.8rem;
+    margin-left: 8px;
+  }
+}

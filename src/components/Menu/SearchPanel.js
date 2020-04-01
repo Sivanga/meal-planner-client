@@ -14,9 +14,9 @@ const SearchPanel = ({
   isEditMode,
   onPanelClose,
   filters,
-  handleFilterChange,
   applyFilter,
-  removeFilter
+  removeFilter,
+  handleRandomClick
 }) => {
   return (
     <>
@@ -33,9 +33,12 @@ const SearchPanel = ({
 
         <FiltersPanel
           filters={filters}
-          handleFilterChange={handleFilterChange}
           applyFilter={applyFilter}
           removeFilter={removeFilter}
+          handleRandomClick={handleRandomClick}
+          showSearchResult={
+            isSearchMode && searchReceived && searchResult.length > 0
+          }
         />
       </div>
       <div className="panel-content">
@@ -46,6 +49,11 @@ const SearchPanel = ({
         {isSearchMode && searchReceived && searchResult.length === 0 && (
           <div className="center-text">
             Couldn't find what you've search for.
+          </div>
+        )}
+        {!isSearchMode && (
+          <div className="center-text">
+            Select a filter or search for keyword
           </div>
         )}
         <PanelDroppable dishes={searchResult} isEditMode={isEditMode} />

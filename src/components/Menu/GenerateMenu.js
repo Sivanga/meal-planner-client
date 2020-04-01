@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import "../../scss/TemplateMenu.scss";
+import "../../scss/GenerateMenu.scss";
 import SearchPanel from "./SearchPanel";
 import {
   addDish,
@@ -35,8 +37,6 @@ import useRandomDishes from "./useRandomDishes";
 import { Button, MDBBtn } from "mdbreact";
 import { useHistory } from "react-router-dom";
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
-import "../../scss/TemplateMenu.scss";
-import "../../scss/GenerateMenu.scss";
 
 const mapStateToProps = state => {
   return {
@@ -750,13 +750,7 @@ const GenerateMenu = props => {
           onDragStart={e => onDragStart(e)}
         >
           {isEditMode && (
-            <div className="generate-btn-wrapper">
-              <MDBBtn
-                className="generate-btn random-btn"
-                onClick={() => handleRandomClick()}
-              >
-                RANDOM
-              </MDBBtn>
+            <div className="generate-menu-btns-wrapper">
               <Button
                 className="meal-plan-btn"
                 onClick={() => {
@@ -767,8 +761,17 @@ const GenerateMenu = props => {
                 <i className="far fa-save"></i>
               </Button>
               <PrintAndShare />
+              <ImportDish
+                addDish={dish => {
+                  props.addDish(dish, getUid());
+                }}
+                hideButton={true}
+                type={ImportDishType.BUTTON}
+                allowRedirect={false}
+              />
             </div>
           )}
+
           {!isEditMode && (
             <div className="generate-menu-edit">
               <Button
@@ -786,25 +789,23 @@ const GenerateMenu = props => {
 
           {isEditMode && (
             <div className="panel-wrapper">
+              <MDBBtn
+                className="generate-btn random-btn"
+                onClick={() => handleRandomClick()}
+              >
+                RANDOM
+              </MDBBtn>
               <div className="dummy" />
               <div
                 className={classNames("panel-handle", "filters-and-search", {
                   "is-open": showPanel
                 })}
               >
-                <ImportDish
-                  addDish={dish => {
-                    props.addDish(dish, getUid());
-                  }}
-                  hideButton={true}
-                  type={ImportDishType.BUTTON}
-                  allowRedirect={false}
-                />
                 <Button
                   onClick={() => setShowPanel(!showPanel)}
                   className="meal-plan-btn"
                 >
-                  Search for dishes
+                  Search and filter
                 </Button>
               </div>
             </div>
@@ -879,6 +880,7 @@ const GenerateMenu = props => {
                 filters={props.suggestedFilters}
                 removeFilter={filter => removeFilter(filter)}
                 applyFilter={filter => applyFilter(filter)}
+                handleRandomClick={handleRandomClick}
               />
             </div>
           </div>

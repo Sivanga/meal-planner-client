@@ -1,16 +1,19 @@
 import React, { useState } from "react";
-import "../../scss/FiltersPanel.scss";
 import { Card, Collapse } from "react-bootstrap";
+import { MDBBtn } from "mdbreact";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormGroup from "@material-ui/core/FormGroup";
+import "../../scss/FiltersPanel.scss";
 
 const FiltersPanel = ({
   filters,
   selectedFilters,
   removeFilter,
   applyFilter,
-  handleToggleFilterView
+  handleToggleFilterView,
+  handleRandomClick,
+  showSearchResult
 }) => {
   /** Is filter view expan or hidden */
   const [expandFiltersState, setExpandFiltersState] = useState(true);
@@ -57,6 +60,17 @@ const FiltersPanel = ({
       >
         {expandFiltersState ? "HIDE FILTERS" : "SHOW FILTERS"}
       </span>
+      {showSearchResult && (
+        <div className="random-btn-panel-wrapper">
+          <MDBBtn
+            className="generate-btn random-btn random-btn-panel"
+            onClick={() => handleRandomClick()}
+          >
+            RANDOMLY APPLY ALL SEARCH RESULTS TO MENU
+          </MDBBtn>
+          <span>Or drag a single dish to the menu</span>
+        </div>
+      )}
     </>
   );
 };

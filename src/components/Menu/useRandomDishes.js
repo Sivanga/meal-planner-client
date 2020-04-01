@@ -31,7 +31,7 @@ const useRandomDishes = (
         // Don't assign a dish for a disabled day
         if (!day.enabled) return (randomDishes[mealIndex][dayIndex] = null);
 
-        const randomDish = getRandomDish(meal, randomDishesSource);
+        const randomDish = getRandomDish(meal, randomDishesSource, true);
         // Remove random dish from the source so we won't pick it up again
         if (randomDish)
           randomDishesSource = removeDishFromRandomSource(
@@ -47,29 +47,88 @@ const useRandomDishes = (
     setRandomDishes(randomDishes);
   };
 
-  const getRandomDish = (meal, randomDishesSource) => {
+  /** Recompute all unlocked dishes
+   */
+  const handleRandomClick = () => {
+    var copy = { ...randomDishes };
+    var randomDishesSource = createRandomDishesSource();
+
+    menuData.meals.map((meal, mealIndex) => {
+      menuData.days.map((day, dayIndex) => {
+        // Don't assign a dish for a disabled day
+        // Don't replace a locked dish
+        if (
+          !day.enabled ||
+          (copy[mealIndex][dayIndex] && copy[mealIndex][dayIndex].locked)
+        )
+          return copy[mealIndex][dayIndex];
+
+        // No more dishes in search result to be used
+        if (
+          randomDishesSource.search.length === 0 &&
+          (isFilterMode || isSearchMode)
+        ) {
+          return copy[mealIndex][dayIndex];
+        }
+        const randomDish = getRandomDish(meal, randomDishesSource, false);
+        // Remove random dish from the source so we won't pick it up again
+        if (randomDish) {
+          randomDishesSource = removeDishFromRandomSource(
+            randomDishesSource,
+            randomDish.id
+          );
+          copy[mealIndex][dayIndex] = randomDish;
+        }
+      });
+    });
+
+    // Set result
+    setRandomDishes(copy);
+  };
+
+  /**
+   * @param  {The wanted meal for the retrned dish} meal
+   * @param  {The source of dishes to choose from} randomDishesSource
+   * @param  {If no dish was found for wanted meal, return any dish from source} returnAnyIfMealNotFound
+   */
+  const getRandomDish = (meal, randomDishesSource, returnAnyIfMealNotFound) => {
     var dishes;
-    // If isFilterMode, get dishes from search result
+
+    // If isFilterMode, get dishes from search result. If there isn't any dishes
+    // in the search result, get from all dishes source
     if (isFilterMode || isSearchMode) {
-      dishes = findDishesForMeal(randomDishesSource.search, meal);
+      dishes = findDishesForMeal(
+        randomDishesSource.search,
+        meal,
+        returnAnyIfMealNotFound
+      );
     }
     // Otherwise get dishes from private + public
     else {
-      dishes = getDishesFromAll(meal, randomDishesSource);
+      dishes = findDishesForMealFromAllResorces(
+        randomDishesSource,
+        meal,
+        returnAnyIfMealNotFound
+      );
     }
 
-    var randomDish = dishes[Math.floor(Math.random() * dishes.length)];
-
-    if (!randomDish) randomDish = null; // Make sure dish isn't undefiend as the whole menu won't be able to be written to Firedbase
-
+    var randomDish = null;
+    if (dishes) {
+      randomDish = dishes[Math.floor(Math.random() * dishes.length)];
+    }
     return randomDish;
   };
 
-  const getDishesFromAll = (meal, randomDishesSource) => {
+  const findDishesForMealFromAllResorces = (
+    randomDishesSource,
+    meal,
+    returnAnyIfMealNotFound
+  ) => {
     // First find a random dish from favorites that matches this meal
     const mealsFavoriteDishes = findDishesForMeal(
       randomDishesSource.private,
-      meal
+      meal,
+      returnAnyIfMealNotFound
     );
     var mergedDishes = mealsFavoriteDishes;
 
@@ -77,7 +136,8 @@ const useRandomDishes = (
     if (mealsFavoriteDishes.length < menuData.days.length) {
       const mealsPublicDishes = findDishesForMeal(
         randomDishesSource.public,
-        meal
+        meal,
+        returnAnyIfMealNotFound
       );
       mergedDishes = mealsFavoriteDishes.concat(mealsPublicDishes);
     }
@@ -114,53 +174,23 @@ const useRandomDishes = (
     };
   };
 
-  const findDishesForMeal = (dishes, meal) => {
+  const findDishesForMeal = (dishes, meal, returnAnyIfMealNotFound) => {
     var dishesToReturn = dishes.filter(dish =>
       dish.meals.some(
         currMeal => currMeal.name.toUpperCase() === meal.name.toUpperCase()
       )
     );
-
     // Return dishes for meal if found any
     if (dishesToReturn.length > 0) {
       return dishesToReturn;
     }
 
-    // Otherwise - didn't find dish for this specific meal, return all dishes
-    else {
+    // Otherwise - didn't find dish for this specific meal
+    else if (returnAnyIfMealNotFound) {
       return dishes;
+    } else {
+      return null;
     }
-  };
-
-  /** Recompute all unlocked dishes
-   */
-  const handleRandomClick = () => {
-    var copy = { ...randomDishes };
-    var randomDishesSource = createRandomDishesSource();
-
-    menuData.meals.map((meal, mealIndex) => {
-      menuData.days.map((day, dayIndex) => {
-        // Don't assign a dish for a disabled day
-        // Don't replace a locked dish
-        if (
-          !day.enabled ||
-          (copy[mealIndex][dayIndex] && copy[mealIndex][dayIndex].locked)
-        )
-          return copy[mealIndex][dayIndex];
-
-        const randomDish = getRandomDish(meal, randomDishesSource);
-        // Remove random dish from the source so we won't pick it up again
-        if (randomDish)
-          randomDishesSource = removeDishFromRandomSource(
-            randomDishesSource,
-            randomDish.id
-          );
-        copy[mealIndex][dayIndex] = randomDish;
-      });
-    });
-
-    // Set result
-    setRandomDishes(copy);
   };
 
   const removeObjectFromArray = (array, id) => {

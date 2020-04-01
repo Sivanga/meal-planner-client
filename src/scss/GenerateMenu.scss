@@ -195,7 +195,6 @@ li {
 }
 
 .random-btn {
-  background-color: white !important;
   color: $accent-color;
   border: solid $accent-color 2px !important;
   font-size: 0.7rem !important;
@@ -204,7 +203,6 @@ li {
   &:focus,
   &.focus,
   &:not(.disabled):active:active {
-    background-color: white !important;
     color: $accent-color;
     border: solid $accent-color 2px !important;
     box-shadow: 0 0 0 0.06rem $accent-color !important;
@@ -222,7 +220,9 @@ li {
   }
 }
 
-.generate-btn-wrapper {
+
+
+.generate-menu-btns-wrapper {
   display: flex;
   flex-direction: row;
 }
@@ -241,7 +241,7 @@ li {
 
   .generate-menu-edit,
   .panel-handle,
-  .generate-btn-wrapper,
+  .generate-menu-btns-wrapper,
   .fa-stack,
   .fa-minus-circle,
   .fa-grip-vertical {
