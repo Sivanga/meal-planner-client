@@ -32,7 +32,7 @@ import {
 import * as firebase from "firebase/app";
 
 export const END_PAGINATION = "END_PAGINATION";
-export const PAGINATION_SIZE = 20;
+export const PAGINATION_SIZE = 40;
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
@@ -150,10 +150,14 @@ export const removeDish = (payload, uid) => async dispatch => {
       else {
         var favoriteUsers = dishToUpdate.favoriteUsers;
         if (!favoriteUsers) return;
+        var favoriteUsersCount = favoriteUsers.length;
         favoriteUsers = favoriteUsers.filter(function(id) {
           return id !== uid;
         });
-        ref.child(`${payload}/`).update({ favoriteUsers: favoriteUsers });
+        ref.child(`${payload}/`).update({
+          favoriteUsers: favoriteUsers,
+          favoriteUsersCount: favoriteUsersCount - 1
+        });
 
         // This is usuful to update search result as elasticsearch doesn't refresh frequently
         dispatch({
@@ -193,7 +197,15 @@ export const fetchDishes = (uid, filters, prevNextPage) => async dispatch => {
 
   // Fetch data once
   ref.limitToLast(PAGINATION_SIZE).once("value", snapshot => {
-    var nextKey = getNextKey(snapshot);
+    // Get the next key, this will be used to fetch the next page.
+    // We get the First key and not last because firebase only retrieve data in asc order,
+    // we will reverse the data in client side
+    var nextKey = END_PAGINATION;
+
+    // if we got a full page it means there are more docs to fetch for next page
+    if (snapshot.numChildren() === PAGINATION_SIZE) {
+      nextKey = Object.keys(snapshot.val())[0];
+    }
     var dishes = getArrayFromSnapshot(snapshot, nextKey);
 
     dispatch({
@@ -210,36 +222,23 @@ export const fetchDishes = (uid, filters, prevNextPage) => async dispatch => {
   });
 };
 
-export const getNextKey = snapshot => {
-  // Get the next key, this will be used to fetch the next page.
-  // We get the First key and not last because firebase only retrieve data in asc order,
-  // we will reverse the data in client side
-  var nextKey = END_PAGINATION;
-
-  // if we got a full page it means there are more docs to fetch for next page
-  if (snapshot.numChildren() === PAGINATION_SIZE) {
-    nextKey = Object.keys(snapshot.val())[0];
-  }
-  return nextKey;
-};
-
 export const getArrayFromSnapshot = (snapshot, nextKey) => {
   // Give each item it's backend generated id for future reference
   var items = [];
   snapshot.forEach(item => {
     var itemVal = item.val();
-    itemVal.id = item.key;
     items.unshift(itemVal);
   });
 
   // If there are more documents for next page, remove the last item,
   // We only use it's key for fetching the next page and we won't show it
-  if (nextKey !== END_PAGINATION) items.pop();
+  if (nextKey !== END_PAGINATION) {
+    items.pop();
+  }
   return items;
 };
 
 export const searchPrivateDishes = (uid, query, filters) => async dispatch => {
-  console.log("searchPrivateDishes");
   const search = firebase.functions().httpsCallable("searchPrivateDishes");
   search({ query: query, uid: uid, filters: filters })
     .then(result => {
@@ -363,21 +362,48 @@ export const cleanUpFetchPublicDishesListener = () => async dispatch => {
 export const fetchPublicDishes = (
   uid,
   filters,
-  prevNextPage
+  prevNextPage,
+  prevLastFavCount
 ) => async dispatch => {
+  console.log(
+    "fetchPublicDishes prevNextPage: ",
+    prevNextPage,
+    "prevLastFavCount: ",
+    prevLastFavCount
+  );
   // If prevNextPage is empty, the first page is being requested
   // Clear previous results
-
   if (!prevNextPage) {
     dispatch({
       type: CLEAR_PUBLIC_DISHES
     });
   }
-  var ref = publicDishesDbRef().orderByKey();
-  if (prevNextPage) ref = ref.endAt(prevNextPage);
+  var ref = publicDishesDbRef().orderByChild("favoriteUsersCount");
+  // var ref = publicDishesDbRef().orderByKey();
+
+  if (prevNextPage) ref = ref.endAt(prevLastFavCount, prevNextPage);
   ref.limitToLast(PAGINATION_SIZE).once("value", snapshot => {
-    var nextKey = getNextKey(snapshot);
-    var dishes = getArrayFromSnapshot(snapshot, nextKey);
+    // Get the next key, this will be used to fetch the next page.
+    // We get the First key and not last because firebase only retrieve data in asc order,
+    // we will reverse the data in client side
+    var nextKey = END_PAGINATION;
+    var lastFavCount = 0;
+
+    // Get array from snapshot
+    var dishes = [];
+    snapshot.forEach(item => {
+      var itemVal = item.val();
+      console.log("itemVal: ", itemVal);
+      dishes.unshift(itemVal);
+    });
+
+    // Get next key - if we got a full page it means there are more docs to fetch for next page
+    if (dishes.length === PAGINATION_SIZE) {
+      var lastDish = dishes.pop();
+      nextKey = lastDish.id;
+      lastFavCount = lastDish.favoriteUsersCount;
+      console.log("nextKey: ", nextKey, " lastFavCount: ", lastFavCount);
+    }
 
     // Return only public dishes that aren't the current user's
     dishes = dishes.filter(dish => dish.ownerUid !== uid);
@@ -390,7 +416,8 @@ export const fetchPublicDishes = (
       type: PUBLIC_DISHES_DATA_RECEIVED,
       payload: {
         received: true,
-        next: nextKey
+        next: nextKey,
+        lastFavCount: lastFavCount
       }
     });
   });
@@ -425,9 +452,11 @@ export const addToFavorites = (dish, uid) => async dispatch => {
       if (!favoriteUsers) {
         favoriteUsers = [];
       }
+      var favoriteUsersCount = favoriteUsers.length;
       favoriteUsers.push(uid);
       ref.child(`${dish.id}`).update({
-        favoriteUsers: favoriteUsers
+        favoriteUsers: favoriteUsers,
+        favoriteUsersCount: favoriteUsersCount + 1
       });
 
       // This is usuful to update search result as elasticsearch doesn't refresh frequently
@@ -460,4 +489,17 @@ export const getPopularTags = meals => async dispatch => {
       payload: tags
     });
   });
+};
+
+export const getNextKey = snapshot => {
+  // Get the next key, this will be used to fetch the next page.
+  // We get the First key and not last because firebase only retrieve data in asc order,
+  // we will reverse the data in client side
+  var nextKey = END_PAGINATION;
+
+  // if we got a full page it means there are more docs to fetch for next page
+  if (snapshot.numChildren() === PAGINATION_SIZE) {
+    nextKey = Object.keys(snapshot.val())[0];
+  }
+  return nextKey;
 };

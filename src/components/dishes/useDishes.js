@@ -81,7 +81,12 @@ function useDishes(
   };
 
   const onNextPage = () => {
-    fetchDishes(getUid(), null, dishesReceived.next);
+    fetchDishes(
+      getUid(),
+      null,
+      dishesReceived.next,
+      dishesReceived.lastFavCount
+    );
   };
 
   const onSearch = query => {

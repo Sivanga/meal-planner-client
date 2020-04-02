@@ -128,7 +128,7 @@ function publicDishesPerMeal(state = [], action) {
 }
 
 function publicDishesDataReceived(
-  state = { received: false, next: null },
+  state = { received: false, next: null, lastFavCount: null },
   action
 ) {
   switch (action.type) {

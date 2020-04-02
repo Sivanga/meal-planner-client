@@ -33,8 +33,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
-  fetchPublicDishes: (uid, filters, next) =>
-    dispatch(fetchPublicDishes(uid, filters, next)),
+  fetchPublicDishes: (uid, filters, next, lastFavCount) =>
+    dispatch(fetchPublicDishes(uid, filters, next, lastFavCount)),
   cleanUpFetchPublicDishesListener: () =>
     dispatch(cleanUpFetchPublicDishesListener()),
   fetchMenus: uid => dispatch(fetchMenus(uid)),
