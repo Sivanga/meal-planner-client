@@ -393,7 +393,6 @@ export const fetchPublicDishes = (
     var dishes = [];
     snapshot.forEach(item => {
       var itemVal = item.val();
-      console.log("itemVal: ", itemVal);
       dishes.unshift(itemVal);
     });
 
@@ -402,7 +401,6 @@ export const fetchPublicDishes = (
       var lastDish = dishes.pop();
       nextKey = lastDish.id;
       lastFavCount = lastDish.favoriteUsersCount;
-      console.log("nextKey: ", nextKey, " lastFavCount: ", lastFavCount);
     }
 
     // Return only public dishes that aren't the current user's
