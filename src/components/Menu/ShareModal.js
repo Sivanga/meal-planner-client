@@ -137,15 +137,15 @@ const ShareModal = ({
             >
               <EmailIcon size={32} round />
             </EmailShareButton>
-            <div style={{ "margin-top": "1rem" }}>
+            <div style={{ marginTop: "1rem" }}>
               Or download image:
               <span
-                class="fa-stack"
-                style={{ "margin-left": "5px" }}
+                className="fa-stack"
+                style={{ marginLeft: "5px" }}
                 onClick={() => downloadImage()}
               >
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa fa-download fa-stack-1x fa-inverse"></i>
+                <i className="fa fa-circle fa-stack-2x"></i>
+                <i className="fa fa fa-download fa-stack-1x fa-inverse"></i>
               </span>
             </div>
           </div>
