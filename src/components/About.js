@@ -1,7 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import "../scss/About.scss";
-import SivanGalamidiMenu from "../images/SivanGalamidiMenu.png";
 import SivanGalamidiImage from "../images/SivanGalamidi.jpg";
 import SivanGalamidiFavMenu from "../components/Menu/sivanGalamidiFavMenu.json";
 import MenuItem from "../components/Menu/MenuItem";
@@ -75,6 +74,7 @@ const About = () => {
                   className="px-2 fa-lg li-ic fa-sm"
                   href="https://www.linkedin.com/in/sivan-galamidi-00006258/"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <i className="fab fa-linkedin-in"></i>
                 </a>
@@ -82,6 +82,7 @@ const About = () => {
                   className="px-2 fa-lg tw-ic fa-sm"
                   href="https://github.com/Sivanga"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <i className="fab fa-github"></i>
                 </a>
@@ -89,6 +90,7 @@ const About = () => {
                   className="px-2 fa-lg fb-ic fa-sm"
                   href="https://www.facebook.com/sivan.galamidi"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <i className="fab fa-facebook-f"></i>
                 </a>
