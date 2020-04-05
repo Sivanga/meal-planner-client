@@ -20,6 +20,7 @@ import ImportDish from "../dishes/ImportDish";
 import SearchComponent from "../SearchComponent";
 import { Button } from "react-bootstrap";
 import useDishes from "../dishes/useDishes";
+import LoginRedirect from "../auth/LoginRedirect";
 
 const mapStateToProps = state => {
   return {
@@ -101,9 +102,7 @@ const FavoriteDishes = ({
    * If there's no logged in user, show message
    */
   if (!auth.authState.user && auth.authState.authStatusReported) {
-    return (
-      <div className="center-text">Please log in to see your favorites!</div>
-    );
+    return <LoginRedirect />;
   }
   /**
    * If dishes data is still loading, show message

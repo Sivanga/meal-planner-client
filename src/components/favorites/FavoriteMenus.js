@@ -15,6 +15,7 @@ import MenuList from "../Menu/MenuList";
 import CreateNewMenu from "../Menu/CreateNewMenu";
 import SearchComponent from "../SearchComponent";
 import useMenus from "../Menu/useMenus";
+import LoginRedirect from "../auth/LoginRedirect";
 
 const mapStateToProps = state => {
   return {
@@ -62,9 +63,7 @@ const FavoriteMenus = ({
    * If there's no logged in user, show message
    */
   if (!auth.authState.user && auth.authState.authStatusReported) {
-    return (
-      <div className="center-text">Please log in to see your favorites!</div>
-    );
+    return <LoginRedirect />;
   }
 
   /**

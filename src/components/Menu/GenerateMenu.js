@@ -22,6 +22,7 @@ import DishCard, { DishListEnum } from "../dishes/DishCard";
 import ImportDish, { ImportDishType } from "../dishes/ImportDish";
 import EditDishModal from "../dishes/EditDishModal";
 import { useAuth } from "../auth/UseAuth";
+import LoginRedirect from "../auth/LoginRedirect";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
@@ -632,9 +633,7 @@ const GenerateMenu = props => {
     !auth.authState.user &&
     auth.authState.authStatusReported
   ) {
-    return (
-      <div className="center-text">Please log in to create your own menu!</div>
-    );
+    return <LoginRedirect />;
   }
 
   /**
