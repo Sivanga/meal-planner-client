@@ -48,7 +48,8 @@ const ShareModal = ({
   const takeScreenshot = () => {
     htmlToImage
       .toBlob(componentRef.current, {
-        useCORS: true
+        useCORS: true,
+        cacheBust: true
       })
       .then(function(blob) {
         // Save to backend
@@ -66,7 +67,8 @@ const ShareModal = ({
   const downloadImage = () => {
     htmlToImage
       .toPng(componentRef.current, {
-        useCORS: true
+        useCORS: true,
+        cacheBust: true
       })
       .then(function(dataUrl) {
         var name = menuName ? menuName : "pure-meal-plan-menu";
