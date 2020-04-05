@@ -714,7 +714,9 @@ const GenerateMenu = props => {
         menuName={menuData.name}
       />
 
-      {menuData && menuData.name && <h5>{menuData.name}</h5>}
+      {menuData && menuData.name && (
+        <h5 className="menuName">{menuData.name}</h5>
+      )}
 
       <Tour
         steps={tourSteps}
@@ -741,6 +743,11 @@ const GenerateMenu = props => {
         })}
       >
         <div className="print-only page-title">
+          {menuData && menuData.name && (
+            <div>
+              <span>{menuData.name}</span>
+            </div>
+          )}
           <span>Pure Meal Plan</span>
           <br />
           <span>https://puremealplan.com/</span>

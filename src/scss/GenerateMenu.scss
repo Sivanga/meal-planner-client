@@ -220,8 +220,6 @@ li {
   }
 }
 
-
-
 .generate-menu-btns-wrapper {
   display: flex;
   flex-direction: row;
@@ -244,7 +242,8 @@ li {
   .generate-menu-btns-wrapper,
   .fa-stack,
   .fa-minus-circle,
-  .fa-grip-vertical {
+  .fa-grip-vertical,
+  .menuName {
     display: none !important;
   }
 

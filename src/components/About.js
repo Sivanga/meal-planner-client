@@ -1,7 +1,6 @@
 import React from "react";
 import "../scss/About.scss";
-import kaleImage from "../images/kale.jpg";
-import SpicesImage from "../images/spices.jpg";
+import SivanGalamidiMenu from "../images/SivanGalamidiMenu.png";
 import SivanGalamidiImage from "../images/SivanGalamidi.jpg";
 
 const About = () => {
@@ -30,11 +29,21 @@ const About = () => {
             </p>
           </div>
           <div className="col-12">
-            <img
-              src={kaleImage}
-              alt="kaleImage"
-              style={{ width: "100%", height: "auto" }}
-            />
+            <p>
+              {" "}
+              <strong>Click here for one of my own favorite menus: </strong>
+            </p>
+            <a
+              href="https://puremealplan.com/menu/generate/private/-M3tuS1cWPTfK1PlBgzh/LjTiuSPAOsMmr0iy4EoOyqegdN43"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={SivanGalamidiMenu}
+                alt="SivanGalamidiMenu"
+                style={{ width: "100%", height: "auto" }}
+              />
+            </a>
           </div>
         </div>
         <div className="col-12 col-md-5">
