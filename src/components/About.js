@@ -1,16 +1,27 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import "../scss/About.scss";
 import SivanGalamidiMenu from "../images/SivanGalamidiMenu.png";
 import SivanGalamidiImage from "../images/SivanGalamidi.jpg";
+import SivanGalamidiFavMenu from "../components/Menu/sivanGalamidiFavMenu.json";
+import MenuItem from "../components/Menu/MenuItem";
 
 const About = () => {
+  let history = useHistory();
+
+  const onFavMenuClick = () => {
+    history.push(`/menu/generate/public/${SivanGalamidiFavMenu.id}`, {
+      menuData: SivanGalamidiFavMenu
+    });
+  };
+
   return (
     <div id="about" className="container">
       <h4>About Pure Meal Plan</h4>
       <br />
 
       <div className="row">
-        <div className="col-12 col-md-7 main-text">
+        <div className="col-12 col-sm-7 main-text">
           <div className="col-12">
             <h5>Eating healthy requires planning</h5>
             <p>
@@ -31,22 +42,12 @@ const About = () => {
           <div className="col-12">
             <p>
               {" "}
-              <strong>Click here for one of my own favorite menus: </strong>
+              <strong>Click here for my own favorite menu: </strong>
             </p>
-            <a
-              href="https://puremealplan.com/menu/generate/private/-M3tuS1cWPTfK1PlBgzh/LjTiuSPAOsMmr0iy4EoOyqegdN43"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src={SivanGalamidiMenu}
-                alt="SivanGalamidiMenu"
-                style={{ width: "100%", height: "auto" }}
-              />
-            </a>
+            <MenuItem menu={SivanGalamidiFavMenu} onClick={onFavMenuClick} />
           </div>
         </div>
-        <div className="col-12 col-md-5">
+        <div className="col-9 col-sm-5 col-md-4 col-lg-3">
           <div className="card card-cascade wider">
             <div className="view view-cascade overlay">
               <img

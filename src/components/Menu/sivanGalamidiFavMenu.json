@@ -1,0 +1,429 @@
+{
+  "date" : 1585814551747,
+  "days" : [ {
+    "day" : "Monday",
+    "enabled" : true
+  }, {
+    "day" : "Tuesday",
+    "enabled" : true
+  }, {
+    "day" : "Wednesday",
+    "enabled" : true
+  }, {
+    "day" : "Thursday",
+    "enabled" : true
+  }, {
+    "day" : "Friday",
+    "enabled" : true
+  }, {
+    "day" : "Saturday",
+    "enabled" : true
+  }, {
+    "day" : "Sunday",
+    "enabled" : true
+  } ],
+  "dishes" : [ [ {
+    "id" : "-M0DFQifYC6jmTWtAUhf",
+    "imageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2016/09/Apple-Pie-Oatmeal-featured-450x450.jpg",
+    "ingredient" : "OatsBlue Diamond Almond Breeze Unsweetenedapple,maple syrupcinnamonApple slices and pecans for serving\nFor full recipe click here: https://www.hungryhealthyhappy.com/healthy-apple-pie-oats/",
+    "link" : "https://www.hungryhealthyhappy.com/healthy-apple-pie-oats/",
+    "localImageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2016/09/Apple-Pie-Oatmeal-featured-450x450.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Healthy Apple Pie Oatmeal",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DFQnur-Dl-Ckz9y0v",
+    "imageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2017/04/Dark-Chocolate-and-Cranberry-Granola-9-1024x684.jpg",
+    "ingredient" : "runny honeycoconut oilrolled oatsdried cranberriesalmonds80% dark chocolate,\nFor full recipe click here: https://www.hungryhealthyhappy.com/dark-chocolate-cranberry-granola/",
+    "link" : "https://www.hungryhealthyhappy.com/dark-chocolate-cranberry-granola/",
+    "localImageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2017/04/Dark-Chocolate-and-Cranberry-Granola-9-1024x684.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Dark Chocolate and Cranberry Granola",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DDH4hmDwLmCH_uiLC",
+    "imageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2018/09/Sweet-potato-pancakes.jpg",
+    "ingredient" : "500g (1.1 lbs) or 1 large sweet potato, peeled and cut into 2-3cm (1 in) chunks\n420ml (14.2 fl oz) Planted Oat and Banana Milk\n225g (7.9 oz) self-raising flour\n1/2 tsp baking powder\n1/2 tsp bicarbonate of soda\n3 tsp egg replacement powder\n2 tbsp oil, to fry\nFor full recipe click here: https://www.amummytoo.co.uk/easy-sweet-potato-pancakes/",
+    "link" : "https://www.amummytoo.co.uk/easy-sweet-potato-pancakes/",
+    "localImageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2018/09/Sweet-potato-pancakes.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Easy sweet potato pancakes",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DDH4hmDwLmCH_uiLC",
+    "imageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2018/09/Sweet-potato-pancakes.jpg",
+    "ingredient" : "500g (1.1 lbs) or 1 large sweet potato, peeled and cut into 2-3cm (1 in) chunks\n420ml (14.2 fl oz) Planted Oat and Banana Milk\n225g (7.9 oz) self-raising flour\n1/2 tsp baking powder\n1/2 tsp bicarbonate of soda\n3 tsp egg replacement powder\n2 tbsp oil, to fry\nFor full recipe click here: https://www.amummytoo.co.uk/easy-sweet-potato-pancakes/",
+    "link" : "https://www.amummytoo.co.uk/easy-sweet-potato-pancakes/",
+    "localImageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2018/09/Sweet-potato-pancakes.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Easy sweet potato pancakes",
+    "sharePublic" : true
+  }, {
+    "id" : "-M1_owlQatNmAirGRR1p",
+    "imageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/02/How-to-cook-porridge-in-the-microwave-quick-and-easy-5-minute-healthy-breakfast-recipe-from-Eats-Amazing-UK-1.jpg",
+    "link" : "https://www.eatsamazing.co.uk/family-friendly-recipes/healthy-breakfast-ideas-recipes/5-minute-microwave-porridge",
+    "localImageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/02/How-to-cook-porridge-in-the-microwave-quick-and-easy-5-minute-healthy-breakfast-recipe-from-Eats-Amazing-UK-1.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "5 Minute Microwave Porridge Recipe",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DDHCK_ESy_txXO1UP",
+    "imageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2015/01/granola-in-bowl.png",
+    "link" : "https://www.amummytoo.co.uk/homemade-banana-honey-coconut-granola/",
+    "localImageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2015/01/granola-in-bowl.png",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Homemade coconut and banana granola",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DDH8Wl_KkVWpeqUiQ",
+    "imageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2017/06/onken-fruit-muffins-main-web-size.jpg",
+    "ingredient" : "450g (1 pot) Onken Plain Grain yogurt\n3 medium eggs\n1 tbsp vanilla extract\n120ml maple syrup\n2 bananas\n400g (14 oz) oats\n1/4 tsp salt\n1 tbsp baking powder\n1.5 tbsp mixed spice\n50g (2 oz) chopped dried apricots\nFor full recipe click here: https://www.amummytoo.co.uk/yogurty-breakfast-muffins/",
+    "isLocal" : true,
+    "link" : "https://www.amummytoo.co.uk/yogurty-breakfast-muffins/",
+    "localImageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2017/06/onken-fruit-muffins-main-web-size.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Fruity breakfast muffins for kids",
+    "sharePublic" : true
+  } ], [ {
+    "favoriteUsers" : [ "LjTiuSPAOsMmr0iy4EoOyqegdN43" ],
+    "id" : "-LyOrqUaDVi0A1ADccAl",
+    "imageUrl" : "https://www.cleaneatingwithkids.com/wp-content/uploads/2017/02/clean-eating-cottage-pie-768x1024.jpg",
+    "link" : "https://www.cleaneatingwithkids.com/classic-cottage-pie-recipe/",
+    "localImageUrl" : "https://www.cleaneatingwithkids.com/wp-content/uploads/2017/02/clean-eating-cottage-pie-768x1024.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Classic Cottage Pie Recipe - Clean Eating with kids",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DCmYw23H83e-LghP_",
+    "imageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2017/01/Grilled-salmon-with-asparagus-and-feta-and-a-crème-fraîche-sauce.jpg",
+    "ingredient" : "1 pack of The Saucy Fish Co. Salmon with watercress, rocket & crème fraiche sauce\n10 asparagus tips\n1 courgette\n50g (1.75 oz) feta\n1 tbsp olive oil\nSalt and pepper\nFor full recipe click here: https://www.amummytoo.co.uk/the-saucy-fish-co-salmon-with-asparagus-and-feta/",
+    "isLocal" : true,
+    "link" : "https://www.amummytoo.co.uk/the-saucy-fish-co-salmon-with-asparagus-and-feta/",
+    "localImageUrl" : "https://www.amummytoo.co.uk/wp-content/uploads/2017/01/Grilled-salmon-with-asparagus-and-feta-and-a-crème-fraîche-sauce.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    } ],
+    "name" : "Grilled salmon with asparagus and feta, and a crème fraîche sauce",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DHDeOw-crrMkcq4Am",
+    "imageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2020/01/Meatball-Pasta-Bake-featured-300x300.jpg",
+    "ingredient" : "meatballspenne pastared onionwhite onioncourgettered peppergreen peppermushroomsspinachpassatadried oreganodried thymegarlic clovestomato pureebalsamic vinegargrated cheddargrated mozzarella\nFor full recipe click here: https://www.hungryhealthyhappy.com/meatball-pasta-bake/",
+    "isLocal" : true,
+    "link" : "https://www.hungryhealthyhappy.com/meatball-pasta-bake/",
+    "localImageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2020/01/Meatball-Pasta-Bake-featured-300x300.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    } ],
+    "name" : "Meatball Pasta Bake",
+    "sharePublic" : true
+  }, {
+    "id" : "-M2wDL2Dh44Z_diAZ-Xt",
+    "imageUrl" : "https://www.tamingtwins.com/wp-content/uploads/2018/06/homemade-fish-fingers-7-340x453.jpg",
+    "ingredient" : "Firm white fish filletPlain flourSalt and pepperMedium free range eggsBreadcrumbs\nFor full recipe click here: https://www.tamingtwins.com/homemade-fish-fingers-recipe/",
+    "isLocal" : true,
+    "link" : "https://www.tamingtwins.com/homemade-fish-fingers-recipe/",
+    "localImageUrl" : "https://www.tamingtwins.com/wp-content/uploads/2018/06/homemade-fish-fingers-7-340x453.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    } ],
+    "name" : "Homemade Fish Fingers Recipe",
+    "sharePublic" : true
+  }, {
+    "id" : "-M0DHDzy1Q2YYjWuuRAU",
+    "imageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2016/04/Eggplant-Parmesan-featured-300x300.jpg",
+    "ingredient" : "large aubergines (eggplants)Easy Tomato Pasta Saucefresh basilvegetarian parmesanreduced fat mozzarella\nFor full recipe click here: https://www.hungryhealthyhappy.com/eggplant-parmesan/",
+    "isLocal" : true,
+    "link" : "https://www.hungryhealthyhappy.com/eggplant-parmesan/",
+    "localImageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2016/04/Eggplant-Parmesan-featured-300x300.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    } ],
+    "name" : "Healthy Eggplant Parmesan",
+    "sharePublic" : true
+  }, {
+    "favoriteUsers" : [ "LjTiuSPAOsMmr0iy4EoOyqegdN43" ],
+    "id" : "-Lw8TzTZ1USyabODKloH",
+    "imageUrl" : "https://pinchofyum.com/wp-content/uploads/m2zybh4j7ia.jpg",
+    "link" : "https://pinchofyum.com/best-anytime-baked-chicken-meatballs",
+    "localImageUrl" : "https://pinchofyum.com/wp-content/uploads/m2zybh4j7ia.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Dinner"
+    }, {
+      "name" : "Lunch"
+    } ],
+    "name" : "Best Anytime Baked Chicken Meatballs - Pinch of Yum",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : true
+  }, {
+    "id" : "-M377mpyGzliIJz06SuO",
+    "imageUrl" : "https://www.gimmesomeoven.com/wp-content/uploads/2020/02/Tomato-Lentil-Curry-Collage-412x600.jpg",
+    "ingredient" : "1 tablespoon olive oil\n1 medium white or yellow onion, peeled and diced\n3 cloves garlic, minced\n1 tablespoon ground cumin\n1 tablespoon ground coriander\n1 tablespoon ground ginger\n2 teaspoons ground turmeric\n1/4 teaspoon cayenne\n2 (15-ounce) cans fire-roasted crushed tomatoes (or 1 can crushed tomatoes + 1 can diced tomatoes)\n1 (15-ounce) can coconut milk, divided\n1 small sweet potato, peeled and finely diced (about 1 1/2 cups or 8 ounces)\n3 cups veggie stock\n1 cup green or brown lentils, rinsed and picked over\nfine sea salt and freshly-cracked black pepper, to taste\nchopped fresh cilantro, for garnish\nFor full recipe click here: https://www.gimmesomeoven.com/tomato-lentil-curry/",
+    "link" : "https://www.gimmesomeoven.com/tomato-lentil-curry/",
+    "localImageUrl" : "https://www.gimmesomeoven.com/wp-content/uploads/2020/02/Tomato-Lentil-Curry-Collage-412x600.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Tomato Lentil Curry",
+    "sharePublic" : true,
+    "tags" : [ {
+      "name" : "Gluten free"
+    } ]
+  } ], [ {
+    "id" : "-M1_owk_-4PQSfN2DF7z",
+    "imageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/06/These-easy-coconut-and-raisin-banana-oat-cookie-bites-are-the-perfect-recipe-for-using-up-leftover-bananas-vegan-sugar-free-gluten-free-and-nut-free.jpg",
+    "ingredient" : "very ripe bananasoatsmixed spicedesiccated coconut2 boxes Organix raisins\nFor full recipe click here: https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/coconut-raisin-banana-oat-cookie-bites-recipe",
+    "link" : "https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/coconut-raisin-banana-oat-cookie-bites-recipe",
+    "localImageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/06/These-easy-coconut-and-raisin-banana-oat-cookie-bites-are-the-perfect-recipe-for-using-up-leftover-bananas-vegan-sugar-free-gluten-free-and-nut-free.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Coconut & Raisin Banana Oat Cookie Bites Recipe",
+    "sharePublic" : true
+  }, {
+    "id" : "-M3tuIPhk4CemxcIgEKJ",
+    "imageUrl" : "https://firebasestorage.googleapis.com/v0/b/meal-planner-80ef4.appspot.com/o/LjTiuSPAOsMmr0iy4EoOyqegdN43%2Fimages%2Fphoto-1533803779054-839aa3e212d7.jpeg?alt=media&token=936b88c7-0fb9-4347-9ae9-ee7af2496a3e",
+    "localImageUrl" : "blob:https://puremealplan.com/0614ebcb-d3b5-4abe-901d-831e40e91c93",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Snack"
+    } ],
+    "name" : "Fruit plate!",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : false,
+    "tags" : [ {
+      "name" : "kids"
+    } ]
+  }, {
+    "id" : "-M1_pc20Ou1q43RjCZBl",
+    "imageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/08/How-to-make-oven-baked-tortilla-chips-easy-cheese-tortilla-chips-recipe-with-Grana-Padano-cheese-and-homemade-guacamole.jpg",
+    "ingredient" : "rtilla wrapsVegetable oilGrana Padano cheese\nFor full recipe click here: https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/easy-cheese-baked-tortilla-chips-recipe-with-grana-padano",
+    "link" : "https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/easy-cheese-baked-tortilla-chips-recipe-with-grana-padano",
+    "localImageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/08/How-to-make-oven-baked-tortilla-chips-easy-cheese-tortilla-chips-recipe-with-Grana-Padano-cheese-and-homemade-guacamole.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    } ],
+    "name" : "Easy Cheese Baked Tortilla Chips Recipe with Grana Padano",
+    "sharePublic" : true
+  }, {
+    "id" : "-M1_owk_-4PQSfN2DF7z",
+    "imageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/06/These-easy-coconut-and-raisin-banana-oat-cookie-bites-are-the-perfect-recipe-for-using-up-leftover-bananas-vegan-sugar-free-gluten-free-and-nut-free.jpg",
+    "ingredient" : "very ripe bananasoatsmixed spicedesiccated coconut2 boxes Organix raisins\nFor full recipe click here: https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/coconut-raisin-banana-oat-cookie-bites-recipe",
+    "link" : "https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/coconut-raisin-banana-oat-cookie-bites-recipe",
+    "localImageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2018/06/These-easy-coconut-and-raisin-banana-oat-cookie-bites-are-the-perfect-recipe-for-using-up-leftover-bananas-vegan-sugar-free-gluten-free-and-nut-free.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Breakfast"
+    } ],
+    "name" : "Coconut & Raisin Banana Oat Cookie Bites Recipe",
+    "sharePublic" : true
+  }, {
+    "id" : "-M3tuIPhk4CemxcIgEKJ",
+    "imageUrl" : "https://firebasestorage.googleapis.com/v0/b/meal-planner-80ef4.appspot.com/o/LjTiuSPAOsMmr0iy4EoOyqegdN43%2Fimages%2Fphoto-1533803779054-839aa3e212d7.jpeg?alt=media&token=936b88c7-0fb9-4347-9ae9-ee7af2496a3e",
+    "localImageUrl" : "blob:https://puremealplan.com/0614ebcb-d3b5-4abe-901d-831e40e91c93",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Snack"
+    } ],
+    "name" : "Fruit plate!",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : false,
+    "tags" : [ {
+      "name" : "kids"
+    } ]
+  }, {
+    "id" : "-M1_pc5xJASG8QePnUkn",
+    "imageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2017/09/Easy-monster-energy-balls-fun-and-healthy-snack-for-kids-vegan-nut-free-gluten-free-and-dairy-free-fun-food-for-kids-from-Eats-Amazing-UK.jpg",
+    "ingredient" : "oatsdried apple ringsdried apricotsraisinsmaple syrupmixed spicehomemade coconut sprinkles or desiccated coconutGoogly Eye Bento Picks\nFor full recipe click here: https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/fun-and-easy-monster-energy-bites-recipe",
+    "link" : "https://www.eatsamazing.co.uk/family-friendly-recipes/snack-ideas-recipes/fun-and-easy-monster-energy-bites-recipe",
+    "localImageUrl" : "https://www.eatsamazing.co.uk/wp-content/uploads/2017/09/Easy-monster-energy-balls-fun-and-healthy-snack-for-kids-vegan-nut-free-gluten-free-and-dairy-free-fun-food-for-kids-from-Eats-Amazing-UK.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    } ],
+    "name" : "Fun and Easy Monster Energy Bites Recipe",
+    "sharePublic" : true
+  }, {
+    "id" : "-M3tuIPhk4CemxcIgEKJ",
+    "imageUrl" : "https://firebasestorage.googleapis.com/v0/b/meal-planner-80ef4.appspot.com/o/LjTiuSPAOsMmr0iy4EoOyqegdN43%2Fimages%2Fphoto-1533803779054-839aa3e212d7.jpeg?alt=media&token=936b88c7-0fb9-4347-9ae9-ee7af2496a3e",
+    "localImageUrl" : "blob:https://puremealplan.com/0614ebcb-d3b5-4abe-901d-831e40e91c93",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Snack"
+    } ],
+    "name" : "Fruit plate!",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : false,
+    "tags" : [ {
+      "name" : "kids"
+    } ]
+  } ], [ {
+    "favoriteUsers" : [ "LjTiuSPAOsMmr0iy4EoOyqegdN43" ],
+    "id" : "-LyOtWbdp9mpUHv2jQGf",
+    "imageUrl" : "https://www.myfussyeater.com/wp-content/uploads/2017/03/Lentil-Veggie-Nuggets-Kids_PIN1.jpg",
+    "link" : "https://www.myfussyeater.com/cauliflower-cheese-nuggets-2/",
+    "localImageUrl" : "https://www.myfussyeater.com/wp-content/uploads/2017/03/Lentil-Veggie-Nuggets-Kids_PIN1.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Cauliflower Cheese Nuggets - My Fussy Eater | Easy Kids Recipes",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : true
+  }, {
+    "favoriteUsers" : [ "LjTiuSPAOsMmr0iy4EoOyqegdN43" ],
+    "id" : "-LyOrqUaDVi0A1ADccAl",
+    "imageUrl" : "https://www.cleaneatingwithkids.com/wp-content/uploads/2017/02/clean-eating-cottage-pie-768x1024.jpg",
+    "link" : "https://www.cleaneatingwithkids.com/classic-cottage-pie-recipe/",
+    "localImageUrl" : "https://www.cleaneatingwithkids.com/wp-content/uploads/2017/02/clean-eating-cottage-pie-768x1024.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Classic Cottage Pie Recipe - Clean Eating with kids",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : true
+  }, {
+    "favoriteUsers" : [ "CIWJiN5WQQYUhdXUwq2bYuARqJw1", "1n2prIWCDffYmghskObtP2w9Had2" ],
+    "id" : "-LtwChjOyKxitucjS8xT",
+    "imageFile" : "",
+    "imageUrl" : "https://static.wixstatic.com/media/26357d_0d763ed0349543e2bf31614e99971bdd~mv2_d_4000_6000_s_4_2.jpg/v1/fit/w_2500,h_1330,al_c/26357d_0d763ed0349543e2bf31614e99971bdd~mv2_d_4000_6000_s_4_2.jpg",
+    "link" : "https://www.pickuplimes.com/single-post/2019/10/24/Mexican-Pizza",
+    "localImageUrl" : "https://static.wixstatic.com/media/26357d_0d763ed0349543e2bf31614e99971bdd~mv2_d_4000_6000_s_4_2.jpg/v1/fit/w_2500,h_1330,al_c/26357d_0d763ed0349543e2bf31614e99971bdd~mv2_d_4000_6000_s_4_2.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Mexican Pizza",
+    "ownerUid" : "CIWJiN5WQQYUhdXUwq2bYuARqJw1",
+    "recipe" : "INGREDIENTS\n\n2 ready-made pizza crusts\n\n5 Tbsp (75 mL) tomato paste, divided\n\n \n\n1 tsp (5 mL) vegetable oil\n\n3 cloves garlic, crushed\n\n1 package (200 g) vegan mock ground beef \n\n2 Tbsp (10 g) taco seasoning mix\n\n \n\n1 red bell pepper, diced\n\n1/2 small red onion, cut into thin strips\n\n1/3 cup (60 g) corn\n\n1/4 cup (25 g) pickled jalapeños \n\n10 cherry tomatoes, halved\n\n \n\n1 avocado, thinly sliced\n\n1/4 cup (25 g) thinly sliced green onions \n\n \n\nCilantro yogurt Mayo\n\n1/4 cup (60 mL) unsweetened plant-based yogurt (we used soy) \n\n2 Tbsp (30 mL) vegan mayo\n\n2 Tbsp (8 g) chopped fresh cilantro\n\n1/4 tsp salt \n\n \n\nDirections\n\nPreheat the oven to 200C (390F).\n\nTo a small pan on high heat, add the vegetable oil and garlic and cook for 1-2 minutes until the garlic is lightly golden. Then add the vegan veggie ground, taco seasoning, and 2 tbsp (30 mL) water. Cook for another 2 minutes. \n\nLightly brush the top of the pizza crusts with some olive oil, then spread over top the tomato paste.\n\nNow come the toppings: divide the taco spiced veggie ground between the two pizzas, and top with the bell pepper, onion, corn, jalapeños and cherry tomatoes. Then cook in the oven for 12-15 minutes, or until the crush is lightly golden.  \n\nWhile pizza is baking, make cilantro sauce by mixing the ingredients in a small bowl.\n\nWhen the pizza is done, remove it from the oven, top it with dollops of the yogurt sauce, some freshly green onions slices, and the sliced avocado. Enjoy! \n\n \n\nNotes\n\nStorage: store in an air-tight container in the fridge for up to 3 days. ",
+    "sharePublic" : true,
+    "tags" : [ {
+      "id" : 1,
+      "name" : "Vegan"
+    } ]
+  }, {
+    "id" : "-M0DHDeOw-crrMkcq4Am",
+    "imageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2020/01/Meatball-Pasta-Bake-featured-300x300.jpg",
+    "ingredient" : "meatballspenne pastared onionwhite onioncourgettered peppergreen peppermushroomsspinachpassatadried oreganodried thymegarlic clovestomato pureebalsamic vinegargrated cheddargrated mozzarella\nFor full recipe click here: https://www.hungryhealthyhappy.com/meatball-pasta-bake/",
+    "link" : "https://www.hungryhealthyhappy.com/meatball-pasta-bake/",
+    "localImageUrl" : "https://www.hungryhealthyhappy.com/wp-content/uploads/2020/01/Meatball-Pasta-Bake-featured-300x300.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    } ],
+    "name" : "Meatball Pasta Bake",
+    "sharePublic" : true
+  }, {
+    "id" : "-Lv_CCjIPaZSsxnDy9Yr",
+    "imageUrl" : "https://shewearsmanyhats.com/wp-content/uploads/2015/12/beef-bean-soup-recipe-1.jpg",
+    "link" : "https://shewearsmanyhats.com/beef-bean-soup-recipe/",
+    "localImageUrl" : "https://shewearsmanyhats.com/wp-content/uploads/2015/12/beef-bean-soup-recipe-1.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Beef and Bean Soup Recipe | She Wears Many Hats",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "recipe" : "INGREDIENTS\n 2 tablespoons Canola oil, divided\n 2 pounds beef stew meat, trimmed and cut into 1-inch pieces\n 2 cups chopped onion\n 2 cups sliced or chopped carrot\n 4 garlic cloves, minced or grated\n 2 cups water\n 1 1/2 teaspoon salt\n 1 teaspoon black pepper\n 1 teaspoon dried thyme\n 1/2 teaspoon dried sage\n 4 bay leaves\n 32 ounces beef broth\n 3 (15.8) ounce cans Bush’s Cannellini Beans; drained (or Bush’s Great Northern Beans)",
+    "tags" : [ {
+      "id" : 1,
+      "name" : "kids"
+    } ]
+  }, {
+    "favoriteUsers" : [ "CIWJiN5WQQYUhdXUwq2bYuARqJw1" ],
+    "id" : "-M37uEZ7EaDf6zudPlGz",
+    "imageUrl" : "https://jessicainthekitchen.com/wp-content/uploads/2019/05/Vegan-Sushi-Rice-Bowl-Low-Carb.jpg",
+    "ingredient" : "1/2 teaspoon sesame oil\n1 1/2 tablespoons liquid aminos\n1 teaspoon water\n1/2 teaspoon rice wine vinegar\n1 teaspoon maple syrup\n1 cup cauliflower rice\n1/2 cucumber julienned\na few slices of sushi ginger\nabout 1/4 of an avocado sliced\n3-5 crispy nori sheets also known as sea snacks\n1 medium size carrot peeled then ribboned\n1/2 red bell pepper sliced\nFor full recipe click here: https://jessicainthekitchen.com/vegan-sushi-rice-bowl-with-sesame-soy-dressing/",
+    "link" : "https://jessicainthekitchen.com/vegan-sushi-rice-bowl-with-sesame-soy-dressing/",
+    "localImageUrl" : "https://jessicainthekitchen.com/wp-content/uploads/2019/05/Vegan-Sushi-Rice-Bowl-Low-Carb.jpg",
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Vegan Sushi Rice Bowl with Sesame Soy Dressing",
+    "sharePublic" : true,
+    "tags" : [ {
+      "name" : "Gluten free"
+    } ]
+  }, {
+    "favoriteUsers" : [ "LjTiuSPAOsMmr0iy4EoOyqegdN43" ],
+    "id" : "-LxpfSPdp9BWO5pfHWQi",
+    "imageUrl" : "https://justeasyrecipes.co.za/wp-content/uploads/2009/08/chicken-schnitzel.jpg",
+    "link" : "https://justeasyrecipes.co.za/2009/08/27/chicken-schnitzel/",
+    "localImageUrl" : "https://justeasyrecipes.co.za/wp-content/uploads/2009/08/chicken-schnitzel.jpg",
+    "locked" : true,
+    "meals" : [ {
+      "name" : "Lunch"
+    }, {
+      "name" : "Dinner"
+    } ],
+    "name" : "Easy Chicken Schnitzel Recipe Breaded Chicken Kids Favourite",
+    "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+    "sharePublic" : true,
+    "tags" : [ {
+      "name" : "kids"
+    } ]
+  } ] ],
+  "favoriteUsers" : [ "LjTiuSPAOsMmr0iy4EoOyqegdN43" ],
+  "id" : "-M3tuS1cWPTfK1PlBgzh",
+  "meals" : [ {
+    "name" : "Breakfast"
+  }, {
+    "name" : "Lunch"
+  }, {
+    "name" : "Snack"
+  }, {
+    "name" : "Dinner"
+  } ],
+  "name" : "Family menu!",
+  "ownerUid" : "LjTiuSPAOsMmr0iy4EoOyqegdN43",
+  "previewImages" : [ "https://www.hungryhealthyhappy.com/wp-content/uploads/2017/04/Dark-Chocolate-and-Cranberry-Granola-9-1024x684.jpg", "https://www.myfussyeater.com/wp-content/uploads/2017/03/Lentil-Veggie-Nuggets-Kids_PIN1.jpg", "https://firebasestorage.googleapis.com/v0/b/meal-planner-80ef4.appspot.com/o/LjTiuSPAOsMmr0iy4EoOyqegdN43%2Fimages%2Fphoto-1533803779054-839aa3e212d7.jpeg?alt=media&token=936b88c7-0fb9-4347-9ae9-ee7af2496a3e", "https://www.eatsamazing.co.uk/wp-content/uploads/2017/09/Easy-monster-energy-balls-fun-and-healthy-snack-for-kids-vegan-nut-free-gluten-free-and-dairy-free-fun-food-for-kids-from-Eats-Amazing-UK.jpg", "https://www.amummytoo.co.uk/wp-content/uploads/2017/06/onken-fruit-muffins-main-web-size.jpg", "https://www.eatsamazing.co.uk/wp-content/uploads/2018/02/How-to-cook-porridge-in-the-microwave-quick-and-easy-5-minute-healthy-breakfast-recipe-from-Eats-Amazing-UK-1.jpg", "https://www.tamingtwins.com/wp-content/uploads/2018/06/homemade-fish-fingers-7-340x453.jpg", "https://www.cleaneatingwithkids.com/wp-content/uploads/2017/02/clean-eating-cottage-pie-768x1024.jpg", "https://www.hungryhealthyhappy.com/wp-content/uploads/2020/01/Meatball-Pasta-Bake-featured-300x300.jpg", "https://www.amummytoo.co.uk/wp-content/uploads/2017/01/Grilled-salmon-with-asparagus-and-feta-and-a-crème-fraîche-sauce.jpg", "https://www.amummytoo.co.uk/wp-content/uploads/2018/09/Sweet-potato-pancakes.jpg", "https://www.amummytoo.co.uk/wp-content/uploads/2015/01/granola-in-bowl.png", "https://www.hungryhealthyhappy.com/wp-content/uploads/2016/04/Eggplant-Parmesan-featured-300x300.jpg", "https://jessicainthekitchen.com/wp-content/uploads/2019/05/Vegan-Sushi-Rice-Bowl-Low-Carb.jpg", "https://www.hungryhealthyhappy.com/wp-content/uploads/2016/09/Apple-Pie-Oatmeal-featured-450x450.jpg", "https://pinchofyum.com/wp-content/uploads/m2zybh4j7ia.jpg", "https://www.eatsamazing.co.uk/wp-content/uploads/2018/06/These-easy-coconut-and-raisin-banana-oat-cookie-bites-are-the-perfect-recipe-for-using-up-leftover-bananas-vegan-sugar-free-gluten-free-and-nut-free.jpg", "https://static.wixstatic.com/media/26357d_0d763ed0349543e2bf31614e99971bdd~mv2_d_4000_6000_s_4_2.jpg/v1/fit/w_2500,h_1330,al_c/26357d_0d763ed0349543e2bf31614e99971bdd~mv2_d_4000_6000_s_4_2.jpg", "https://shewearsmanyhats.com/wp-content/uploads/2015/12/beef-bean-soup-recipe-1.jpg", "https://www.gimmesomeoven.com/wp-content/uploads/2020/02/Tomato-Lentil-Curry-Collage-412x600.jpg", "https://justeasyrecipes.co.za/wp-content/uploads/2009/08/chicken-schnitzel.jpg", "https://www.eatsamazing.co.uk/wp-content/uploads/2018/08/How-to-make-oven-baked-tortilla-chips-easy-cheese-tortilla-chips-recipe-with-Grana-Padano-cheese-and-homemade-guacamole.jpg" ],
+  "sharePublic" : true
+}
