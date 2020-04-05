@@ -23,7 +23,7 @@ function NavBar() {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link as={Link} to="/public" href="/public">
-                Public
+                Browse
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
