@@ -802,6 +802,9 @@ const GenerateMenu = props => {
                 EDIT
               </Button>
               <PrintAndShare />
+              <h6>
+                Want to change dishes and move things around? Click Edit button
+              </h6>
             </div>
           )}
 
