@@ -23,6 +23,7 @@ import ImportDish, { ImportDishType } from "../dishes/ImportDish";
 import EditDishModal from "../dishes/EditDishModal";
 import { useAuth } from "../auth/UseAuth";
 import LoginRedirect from "../auth/LoginRedirect";
+import LoginAlert from "../auth/LoginAlert";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
@@ -186,6 +187,11 @@ const GenerateMenu = props => {
 
   /** Used to determine if to show results from searchResult object */
   const [isFilterMode, setIsFilterMode] = useState(false);
+
+  /**
+   * Show/ hide login alert
+   */
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   /** useRandomDishes hook */
   const {
@@ -582,7 +588,7 @@ const GenerateMenu = props => {
 
   const validateLoggedInUser = () => {
     if (isUserLoggedIn() === false) {
-      alert("Please Login first");
+      setShowLoginAlert(true);
       return false;
     }
 
@@ -608,7 +614,9 @@ const GenerateMenu = props => {
   };
 
   const setComment = (mealIndex, dayIndex, comment) => {
-    var previousDish = { ...randomDishes[mealIndex][dayIndex] };
+    var previousDish = {
+      ...randomDishes[mealIndex][dayIndex]
+    };
     previousDish.comment = comment;
     var previousRandom = [...randomDishes];
     previousRandom[mealIndex][dayIndex] = previousDish;
@@ -682,6 +690,10 @@ const GenerateMenu = props => {
         message={location =>
           `Are you sure you want to leave before saving changes?`
         }
+      />
+      <LoginAlert
+        showLoginAlert={showLoginAlert}
+        onClose={() => setShowLoginAlert(false)}
       />
       <SaveModal
         saveModalShow={saveModalShow}
@@ -865,7 +877,10 @@ const GenerateMenu = props => {
               showPlusButton={showPlusButton}
               isEditMode={isEditMode}
               onDishClicked={dish => {
-                setShowEditDishModal({ show: true, dish: dish });
+                setShowEditDishModal({
+                  show: true,
+                  dish: dish
+                });
               }}
               setComment={(mealIndex, dayIndex, comment) =>
                 setComment(mealIndex, dayIndex, comment)
