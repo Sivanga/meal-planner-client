@@ -6,15 +6,24 @@ import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import "../scss/Login.scss";
 import { useAuth } from "./auth/UseAuth";
 import { connect } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 
 const mapDispatchToProps = dispatch => ({
   logout: (dish, uid) => dispatch(logout())
 });
 
 const Login = ({ logout }) => {
+  const history = useHistory();
+  const location = useLocation();
   var uiConfig = {
     callbacks: {
-      signInSuccessWithAuthResult: () => false
+      signInSuccessWithAuthResult: () => {
+        // Check if redirect is needed
+        if (location.state && location.state.from) {
+          const from = location.state.from;
+          history.push(from);
+        }
+      }
     },
     signInFlow: "popup",
     signInOptions: authProviders

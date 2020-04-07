@@ -11,7 +11,7 @@ const About = () => {
   const onFavMenuClick = () => {
     history.push(`/menu/generate/public/${SivanGalamidiFavMenu.id}`, {
       menuData: SivanGalamidiFavMenu
-    });
+    }); 
   };
 
   return (

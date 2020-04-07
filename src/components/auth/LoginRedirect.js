@@ -1,16 +1,20 @@
 import React from "react";
 import { Button } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 const LoginRedirect = () => {
-  let history = useHistory();
+  const history = useHistory();
+  const location = useLocation();
 
   return (
     <div className="center-text">
       <span style={{ display: "block" }}>
         Please log in to see your favorites!
       </span>
-      <Button className="btn-modal" onClick={() => history.push(`/login`)}>
+      <Button
+        className="btn-modal"
+        onClick={() => history.push(`/login`, { from: location.pathname })}
+      >
         LOGIN
       </Button>
     </div>
