@@ -6,17 +6,28 @@ import classNames from "classnames";
 import Menu from "../Menu/Menu";
 import Dishes from "../../components/dishes/Dishes";
 import { useAuth } from "../auth/UseAuth";
+import { connect } from "react-redux";
+import {
+  setPreviousLocationPublic,
+  ACTIVE_VIEW_DISHES,
+  ACTIVE_VIEW_MENUS
+} from "../../store/actions/PreviousLocation";
 
-const ACTIVE_VIEW_DISHES = "ACTIVE_VIEW_DISHES";
-const ACTIVE_VIEW_MENUS = "ACTIVE_VIEW_MENUS";
+const mapStateToProps = state => {
+  return {
+    activeView: state.previousLocation.publicLocation
+  };
+};
 
-const MyFavorites = props => {
+const mapDispatchToProps = dispatch => ({
+  setActiveView: activeView => dispatch(setPreviousLocationPublic(activeView))
+});
+
+const Public = ({ activeView, setActiveView }) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
-
-  const [activeView, setActiveView] = useState(ACTIVE_VIEW_DISHES);
 
   return (
     <div>
@@ -50,4 +61,8 @@ const MyFavorites = props => {
   );
 };
 
-export default MyFavorites;
+const PublicComp = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Public);
+export default PublicComp;

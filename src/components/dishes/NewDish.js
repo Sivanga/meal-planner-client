@@ -13,6 +13,10 @@ import DishPlaceholder from "../../images/DishPlaceholder.png";
 import DishTags from "./DishTags";
 import PropTypes from "prop-types";
 import { fetchMeals } from "../../store/actions/Actions";
+import {
+  setPreviousLocationFavorites,
+  ACTIVE_VIEW_DISHES
+} from "../../store/actions/PreviousLocation";
 import { connect } from "react-redux";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/NewDish.scss";
@@ -30,7 +34,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  fetchMeals: uid => dispatch(fetchMeals(uid))
+  fetchMeals: uid => dispatch(fetchMeals(uid)),
+  setPreviousLocationFavorites: () =>
+    dispatch(setPreviousLocationFavorites(ACTIVE_VIEW_DISHES))
 });
 
 const NewDish = props => {
@@ -153,9 +159,9 @@ const NewDish = props => {
       if (typeof props.allowRedirect !== "undefined" && !props.allowRedirect)
         return;
 
-      history.push("/myFavorites", {
-        activeView: "ACTIVE_VIEW_DISHES"
-      });
+      // Go to My Favorites to Dishes view
+      props.setPreviousLocationFavorites();
+      history.push("/myFavorites");
     }
   };
 

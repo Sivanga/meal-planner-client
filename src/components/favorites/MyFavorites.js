@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/Dishes.scss";
 import "../../scss/MyFavorite.scss";
@@ -6,30 +6,29 @@ import { MDBBadge } from "mdbreact";
 import FavoriteDishes from "./FavoriteDishes";
 import FavoriteMenus from "./FavoriteMenus";
 import classNames from "classnames";
+import { connect } from "react-redux";
+import {
+  setPreviousLocationFavorites,
+  ACTIVE_VIEW_DISHES,
+  ACTIVE_VIEW_MENUS
+} from "../../store/actions/PreviousLocation";
 
-const ACTIVE_VIEW_DISHES = "ACTIVE_VIEW_DISHES";
-const ACTIVE_VIEW_MENUS = "ACTIVE_VIEW_MENUS";
-
-const MyFavorites = props => {
-  const getActiveViewFromProps = () => {
-    return props &&
-      props.history &&
-      props.history.location &&
-      props.history.location.state &&
-      props.history.location.state.activeView &&
-      (props.history.location.state.activeView === ACTIVE_VIEW_DISHES ||
-        props.history.location.state.activeView === ACTIVE_VIEW_MENUS)
-      ? props.history.location.state.activeView
-      : ACTIVE_VIEW_DISHES;
+const mapStateToProps = state => {
+  return {
+    activeView: state.previousLocation.myFavoriteLocation
   };
+};
 
+const mapDispatchToProps = dispatch => ({
+  setActiveView: activeView =>
+    dispatch(setPreviousLocationFavorites(activeView))
+});
+
+const MyFavorites = ({ activeView, setActiveView }) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
   const auth = useAuth();
-
-  const propsActiveView = getActiveViewFromProps();
-  const [activeView, setActiveView] = useState(propsActiveView);
 
   return (
     <div>
@@ -63,4 +62,8 @@ const MyFavorites = props => {
   );
 };
 
-export default MyFavorites;
+const MyFavoritesComp = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MyFavorites);
+export default MyFavoritesComp;
