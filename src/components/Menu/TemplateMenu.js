@@ -11,23 +11,37 @@ import classNames from "classnames/bind";
 import PropTypes from "prop-types";
 import GenerateMenu from "./GenerateMenu";
 import { connect } from "react-redux";
-import { setMeals, fetchMeals } from "../../store/actions/Actions";
+import {
+  setMealsBackend,
+  setMealsState,
+  fetchMeals
+} from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
 import LoginAlert from "../auth/LoginAlert";
 
 const mapStateToProps = state => {
   return {
-    backendMeals: state.meals.meals,
+    mealsBackend: state.meals.mealsBackend,
+    mealsState: state.meals.mealsState,
     dataReceived: state.meals.dataReceived
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  setMealsBackend: (payload, uid) => dispatch(setMeals(payload, uid)),
+  setMealsBackend: (payload, uid) => dispatch(setMealsBackend(payload, uid)),
+  setMealsState: payload => dispatch(setMealsState(payload)),
   fetchMeals: uid => dispatch(fetchMeals(uid))
 });
 
-const TemplateMenu = props => {
+const TemplateMenu = ({
+  mealsBackend,
+  mealsState,
+  dataReceived,
+  setMealsBackend,
+  setMealsState,
+  fetchMeals,
+  handleGenerateMenu
+}) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -45,16 +59,6 @@ const TemplateMenu = props => {
     { day: "Friday", enabled: true },
     { day: "Saturday", enabled: true },
     { day: "Sunday", enabled: true }
-  ]);
-
-  /**
-   * Maels of the day
-   */
-  const [meals, setMealsState] = useState([
-    { name: "Breakfast" },
-    { name: "Lunch" },
-    { name: "Snack" },
-    { name: "Dinner" }
   ]);
 
   /**
@@ -99,49 +103,36 @@ const TemplateMenu = props => {
     if (enabledDays.length < 1) {
       newMenuErros.push("Please enable at least one day");
     }
-    if (meals.length < 1) {
+    if (mealsState.length < 1) {
       newMenuErros.push("Please have at least one meal");
     }
 
     setMenuErrors(newMenuErros);
-  }, [days, meals]);
+  }, [days, mealsState]);
 
   /**
-   * Fetch only once the user's saved meals
-   */
-  useEffect(() => {
-    if (!auth.authState.user) return;
-    props.fetchMeals(auth.authState.user.uid);
-  }, []);
-
-  /**
-   * After the saved meals are fetched, set the result into local meals
+   * Fetch meals from store.
    */
   useEffect(() => {
     if (!auth.authState.user) return;
 
-    // If data already recieved set it to state
-    if (
-      props.dataReceived &&
-      props.backendMeals &&
-      props.backendMeals.length > 0
-    ) {
-      setMealsState(props.backendMeals);
+    if (!dataReceived) {
+      fetchMeals(auth.authState.user.uid);
     }
-  }, [props.dataReceived, props.backendMeals, auth]);
+  }, [dataReceived, auth, fetchMeals]);
 
   /**
    * Remove a meal from state
    */
   const removeMeal = index => {
     // Make sure there's at least one meal
-    if (meals.length === 1) {
+    if (mealsState.length === 1) {
       return;
     }
 
-    var newMeals = [...meals];
-    newMeals.splice(index, 1);
-    setMealsState(newMeals);
+    var newStateMeals = [...mealsState];
+    newStateMeals.splice(index, 1);
+    setMealsState(newStateMeals);
   };
 
   /**
@@ -149,7 +140,7 @@ const TemplateMenu = props => {
    */
   const addMeal = index => {
     // Generate new meal id
-    const mealsCopy = [...meals];
+    const mealsCopy = [...mealsState];
     mealsCopy.splice(index, 0, { name: "" });
     setMealsState(mealsCopy);
   };
@@ -192,21 +183,21 @@ const TemplateMenu = props => {
    */
   const onMealChange = (event, index) => {
     const newMealText = event.currentTarget.textContent;
-    const newMeal = { ...meals[index] };
+    const newMeal = { ...mealsState[index] };
     newMeal.name = newMealText;
-    const mealsCopy = [...meals];
+    const mealsCopy = [...mealsState];
     mealsCopy[index] = newMeal;
     setMealsState(mealsCopy);
   };
 
-  const handleGenerateMenu = () => {
+  const onGenerateMenuClick = () => {
     if (auth.authState.user) {
       // Filter empty meals
-      var finalMeals = meals.filter(meal => {
+      var finalMeals = mealsState.filter(meal => {
         return meal.name.length > 0;
       });
-      props.setMealsBackend(finalMeals, auth.authState.user.uid);
-      props.handleGenerateMenu(days, finalMeals);
+      setMealsBackend(finalMeals, auth.authState.user.uid);
+      handleGenerateMenu(days, finalMeals);
     } else {
       setShowLoginModal(true);
     }
@@ -235,7 +226,7 @@ const TemplateMenu = props => {
           className={classNames("save-template-btn", "meal-plan-btn", {
             disabled: menuErrors.length > 0
           })}
-          onClick={() => handleGenerateMenu(days, meals)}
+          onClick={() => onGenerateMenuClick()}
         >
           GO
         </Button>
@@ -265,7 +256,7 @@ const TemplateMenu = props => {
           </tr>
         </MDBTableHead>
         <MDBTableBody>
-          {meals.map((meal, index) => (
+          {mealsState.map((meal, index) => (
             <tr key={index} className="meal-row">
               {/* First cell is a button to remove meal row */}
               <th className="add-remove-meals">

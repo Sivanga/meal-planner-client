@@ -1,14 +1,31 @@
 import {
   FETCH_MEALS,
-  FETCH_MEALS_DATA_RECIEVED
+  FETCH_MEALS_DATA_RECIEVED,
+  SET_MEALS_STATE,
+  SET_MEALS_BACKEND
 } from "../constants/Action-types";
 import { mealsDbRef } from "../../firebase";
 
 /**
- * Set meals to backend
+  Set meals in backend
  */
-export const setMeals = (payload, uid) => async dispatch => {
+export const setMealsBackend = (payload, uid) => async dispatch => {
   mealsDbRef(uid).set(payload);
+
+  dispatch({
+    type: SET_MEALS_BACKEND,
+    payload: payload
+  });
+};
+
+/**
+Set meals in store
+ */
+export const setMealsState = payload => async dispatch => {
+  dispatch({
+    type: SET_MEALS_STATE,
+    payload: payload
+  });
 };
 
 /**
