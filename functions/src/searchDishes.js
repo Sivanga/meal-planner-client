@@ -507,6 +507,10 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
     return searchFilteredDishes(data);
   }
   console.log("data.uid: ", data.uid, " data.query: ", data.query);
+
+  // Use dummy uid in case user isn't logged in
+  var uid = data.uid ? data.uid : "dummy";
+
   // callback API
   return new Promise((resolve, reject) => {
     esClient.msearch(
@@ -516,7 +520,7 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
           {
             query: {
               bool: {
-                must: [{ match: { _id: data.uid } }],
+                must: [{ match: { _id: uid } }],
                 should: [
                   {
                     nested: {
@@ -576,8 +580,8 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
                   }
                 ],
                 must_not: [
-                  { match: { ownerUid: data.uid } },
-                  { match: { favoriteUsers: data.uid } }
+                  { match: { ownerUid: uid } },
+                  { match: { favoriteUsers: uid } }
                 ]
               }
             }
@@ -603,19 +607,26 @@ exports.searchAllDishes = functions.https.onCall((data, context) => {
 });
 
 const searchFilteredDishes = (data, context) => {
+  // Use dummy uid in case user isn't logged in
+  var uid = data.uid ? data.uid : "dummy";
   if (data.query) {
     console.log("searchFilteredDishes with query: ", data.query);
+
     return new Promise((resolve, reject) => {
       esClient.msearch(
         {
           body: [
-            { index: "dishes_v4" },
+            {
+              index: "dishes_v4"
+            },
             {
               query: {
                 bool: {
                   must: [
                     {
-                      match: { _id: data.uid }
+                      match: {
+                        _id: uid
+                      }
                     },
                     {
                       nested: {
@@ -653,14 +664,18 @@ const searchFilteredDishes = (data, context) => {
                           }
                         },
                         path: "dishes",
-                        inner_hits: { size: 30 }
+                        inner_hits: {
+                          size: 30
+                        }
                       }
                     }
                   ]
                 }
               }
             },
-            { index: "public_dishes_v6" },
+            {
+              index: "public_dishes_v6"
+            },
             {
               query: {
                 bool: {
@@ -690,8 +705,16 @@ const searchFilteredDishes = (data, context) => {
                     }
                   ],
                   must_not: [
-                    { match: { ownerUid: data.uid } },
-                    { match: { favoriteUsers: data.uid } }
+                    {
+                      match: {
+                        ownerUid: uid
+                      }
+                    },
+                    {
+                      match: {
+                        favoriteUsers: uid
+                      }
+                    }
                   ]
                 }
               }
@@ -712,13 +735,17 @@ const searchFilteredDishes = (data, context) => {
       esClient.msearch(
         {
           body: [
-            { index: "dishes_v4" },
+            {
+              index: "dishes_v4"
+            },
             {
               query: {
                 bool: {
                   must: [
                     {
-                      match: { _id: data.uid }
+                      match: {
+                        _id: uid
+                      }
                     },
                     {
                       nested: {
@@ -760,20 +787,32 @@ const searchFilteredDishes = (data, context) => {
                           }
                         },
                         path: "dishes",
-                        inner_hits: { size: 30 }
+                        inner_hits: {
+                          size: 30
+                        }
                       }
                     }
                   ]
                 }
               }
             },
-            { index: "public_dishes_v6" },
+            {
+              index: "public_dishes_v6"
+            },
             {
               query: {
                 bool: {
                   must_not: [
-                    { match: { ownerUid: data.uid } },
-                    { match: { favoriteUsers: data.uid } }
+                    {
+                      match: {
+                        ownerUid: uid
+                      }
+                    },
+                    {
+                      match: {
+                        favoriteUsers: uid
+                      }
+                    }
                   ],
                   should: [
                     {
