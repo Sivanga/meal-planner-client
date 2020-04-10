@@ -6,6 +6,7 @@ import {
   PRIVATE_MENUS_DATA_RECIEVED,
   PUBLIC_MENUS_DATA_RECIEVED,
   SET_MENU,
+  SET_MENU_LOCALLY,
   RESET_MENU,
   FETCH_MENU,
   REMOVE_MENU,
@@ -24,6 +25,17 @@ import {
   userDbRef
 } from "../../firebase";
 import * as firebase from "firebase/app";
+
+/**
+Set menu state in store
+ */
+export const setMenuInStore = menuData => async dispatch => {
+  console.log("setMenuInStore. menuData: ", menuData);
+  dispatch({
+    type: SET_MENU_LOCALLY,
+    payload: menuData
+  });
+};
 
 /**
  * Set menu to backend

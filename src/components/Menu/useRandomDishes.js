@@ -113,7 +113,7 @@ const useRandomDishes = (
     }
 
     var randomDish = null;
-    if (dishes) {
+    if (dishes && dishes.length > 0) {
       randomDish = dishes[Math.floor(Math.random() * dishes.length)];
     }
     return randomDish;
@@ -187,12 +187,11 @@ const useRandomDishes = (
     if (dishesToReturn.length > 0) {
       return dishesToReturn;
     }
-
     // Otherwise - didn't find dish for this specific meal
-    else if (returnAnyIfMealNotFound) {
+    if (returnAnyIfMealNotFound) {
       return dishes;
     } else {
-      return null;
+      return [];
     }
   };
 

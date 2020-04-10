@@ -1,17 +1,27 @@
 import React, { useState } from "react";
 import TemplateMenu from "./TemplateMenu";
 import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { setMenuInStore } from "../../store/actions/Menus";
 
-const NewMenu = props => {
-  /**
-   * Menu data to be generated
-   */
-  const [menuData, setMenuData] = useState(null);
+const mapStateToProps = state => {
+  return {
+    menuData: state.menus.menu
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  setMenuInStore: menuData => dispatch(setMenuInStore(menuData))
+});
+
+const NewMenu = ({ menuData, setMenuInStore }) => {
+  const location = useLocation();
 
   /** Used to hold extraDishInfo data and pass to generate menu*/
   const [extraDishInfo] = useState(
-    props.location && props.location.state && props.location.state.extraDishInfo
-      ? props.location.state.extraDishInfo
+    location.state && location.state.extraDishInfo
+      ? location.state.extraDishInfo
       : null
   );
 
@@ -25,7 +35,7 @@ const NewMenu = props => {
       meals: meals
     };
 
-    setMenuData(menuData);
+    setMenuInStore(menuData);
   };
 
   return (
@@ -51,4 +61,8 @@ const NewMenu = props => {
   );
 };
 
-export default NewMenu;
+const NewMenuComp = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NewMenu);
+export default NewMenuComp;

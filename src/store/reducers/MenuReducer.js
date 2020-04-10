@@ -1,5 +1,6 @@
 import {
   SET_MENU,
+  SET_MENU_LOCALLY,
   FETCH_MENU,
   RESET_MENU,
   REMOVE_MENU,
@@ -33,14 +34,14 @@ function menus(state = [], action) {
   }
 }
 
-function menu(state = {}, action) {
+function menu(state = null, action) {
   switch (action.type) {
     case SET_MENU:
-      return action.payload;
     case FETCH_MENU:
+    case SET_MENU_LOCALLY:
       return action.payload;
     case RESET_MENU:
-      return {};
+      return null;
     default:
       return state;
   }

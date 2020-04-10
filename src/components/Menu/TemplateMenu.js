@@ -17,7 +17,6 @@ import {
   fetchMeals
 } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
-import LoginAlert from "../auth/LoginAlert";
 
 const mapStateToProps = state => {
   return {
@@ -66,9 +65,6 @@ const TemplateMenu = ({
    * Used to focus on the new added value in order to allow editing
    */
   const [addingNewValue, setAddingNewValue] = useState(false);
-
-  /** Used to show login modal */
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   /**
    * Used when validate menu before generating a new one
@@ -191,25 +187,21 @@ const TemplateMenu = ({
   };
 
   const onGenerateMenuClick = () => {
+    // Filter empty meals
+    var finalMeals = mealsState.filter(meal => {
+      return meal.name.length > 0;
+    });
+
+    // Set meals in the backend if user is connected
+
     if (auth.authState.user) {
-      // Filter empty meals
-      var finalMeals = mealsState.filter(meal => {
-        return meal.name.length > 0;
-      });
       setMealsBackend(finalMeals, auth.authState.user.uid);
-      handleGenerateMenu(days, finalMeals);
-    } else {
-      setShowLoginModal(true);
     }
+    handleGenerateMenu(days, finalMeals);
   };
 
   return (
     <div className="wrapper">
-      <LoginAlert
-        showLoginAlert={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-      />
-
       {/* Validation Error*/}
       {menuErrors.length > 0 && (
         <div>

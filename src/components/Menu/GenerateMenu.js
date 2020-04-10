@@ -15,6 +15,7 @@ import {
   getPopularTags,
   fetchMenu,
   resetMenuState,
+  setMenuInStore,
   setUserSeeTour,
   didUserSeeTour
 } from "../../store/actions/Actions";
@@ -37,12 +38,13 @@ import SaveModal from "./SaveModal";
 import MenuTabel from "./MenuTabel";
 import useRandomDishes from "./useRandomDishes";
 import { Button, MDBBtn } from "mdbreact";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 
 const mapStateToProps = state => {
   return {
-    menuData: state.menus.menu,
+    menuDataProps: state.menus.menu,
     favoriteDishes: state.dishes.dishes,
     favoriteDataReceived: state.dishes.privateDishesDataReceived,
     publicDishes: state.dishes.publicDishesPerMeal,
@@ -63,6 +65,7 @@ const mapDispatchToProps = dispatch => ({
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
   makeMenuPublic: (payload, uid) => dispatch(makeMenuPublic(payload, uid)),
   fetchMenu: (id, uid, type) => dispatch(fetchMenu(id, uid, type)),
+  setMenuInStore: menuData => dispatch(setMenuInStore(menuData)),
   resetMenuState: () => dispatch(resetMenuState()),
   searchAllDishes: (uid, query, selectedFilters) =>
     dispatch(searchAllDishes(uid, query, selectedFilters)),
@@ -75,10 +78,35 @@ const mapDispatchToProps = dispatch => ({
 const EXTRA_DISH_DROPPABLE_ID = "EXTRA_DISH_DROPPABLE_ID";
 const EXTRA_DISH_DRAGGABLE_ID = "EXTRA_DISH_DRAGGABLE_ID";
 
-const GenerateMenu = props => {
+const GenerateMenu = ({
+  menuDataProps,
+  favoriteDishes,
+  favoriteDataReceived,
+  publicDishes,
+  publicDataReceived,
+  searchReceived,
+  searchResult,
+  suggestedFilters,
+  seenTour,
+  fetchDishes,
+  addDish,
+  fetchPublicDishesForMeals,
+  setMenu,
+  makeMenuPublic,
+  fetchMenu,
+  resetMenuState,
+  searchAllDishes,
+  clearSearchAllDishes,
+  getPopularTags,
+  didUserSeeTour,
+  setUserSeeTour,
+  setMenuInStore
+}) => {
   let { menuId, type, ownerId } = useParams();
+
   /** Used to redirect to menus list after saving the menu */
   let history = useHistory();
+  const location = useLocation();
 
   /**
    * Auth hook to get update for changes from auth provider
@@ -95,39 +123,42 @@ const GenerateMenu = props => {
   const triggerShareRef = useRef();
 
   /**
-  Get from history the Random dishes array if exist - this data comes from clicking an existing menu
-  Get from history days and meal - this data comes from previous page - menu template
-  Get menu data from props
+  Get from location the Random dishes array if exist - this data comes from clicking an existing menu
+  Get from location days and meal - this data comes from previous page - menu template
+  Get menu data from location
    */
   const readMenuData = () => {
-    var menuData = props.menuData;
+    console.log("readMenuData. menuDataProps: ", menuDataProps);
 
-    // Get menu data from location
-    if (
-      props.location &&
-      props.location.state &&
-      props.location.state.menuData
-    ) {
-      menuData = props.location.state.menuData;
+    // First read available men from store
+    var menu = menuDataProps;
+
+    // Read specific menu data from location
+    if (location.state && location.state.menuData) {
+      console.log(
+        "readMenuData. location.state.menuData: ",
+        location.state.menuData
+      );
+      menu = location.state.menuData;
     }
 
-    if (!menuData) return;
+    if (!menu) return;
 
     // menuData.dishes can arrive with undefined valus from backend, change it to empty array
-    if (menuData.meals && menuData.dishes) {
-      menuData.meals.map((meal, mealIndex) => {
-        if (!menuData.dishes[mealIndex]) {
-          menuData.dishes[mealIndex] = [];
-          menuData.days.map((day, dayIndex) => {
-            menuData.dishes[mealIndex][dayIndex] = null;
+    if (menu.meals && menu.dishes) {
+      menu.meals.map((meal, mealIndex) => {
+        if (!menu.dishes[mealIndex]) {
+          menu.dishes[mealIndex] = [];
+          menu.days.map((day, dayIndex) => {
+            menu.dishes[mealIndex][dayIndex] = null;
           });
         }
       });
     }
-    return menuData;
+    return menu;
   };
 
-  /** Set menu data from props.location or actual props */
+  /** Set menu data from location or actual props */
   const [menuData, setMenuData] = useState(readMenuData());
 
   /** Used to determine if the menu was opened via shared link */
@@ -135,12 +166,8 @@ const GenerateMenu = props => {
 
   /** Get from history extraDishInfo to add specific dish to menu */
   var extraDishInfoInitial = null;
-  if (
-    props.location &&
-    props.location.state &&
-    props.location.state.extraDishInfo
-  ) {
-    extraDishInfoInitial = props.location.state.extraDishInfo;
+  if (location.state && location.state.extraDishInfo) {
+    extraDishInfoInitial = location.state.extraDishInfo;
   }
 
   /** Used to hold dish info when adding dish into a menu  */
@@ -201,9 +228,9 @@ const GenerateMenu = props => {
     handleRandomClick
   } = useRandomDishes(
     menuData,
-    props.searchResult,
-    props.favoriteDishes,
-    props.publicDishes,
+    searchResult,
+    favoriteDishes,
+    publicDishes,
     isFilterMode,
     isSearchMode
   );
@@ -214,7 +241,7 @@ const GenerateMenu = props => {
   );
 
   var mergePrivateAndPublic = () => {
-    var mergedDishes = props.favoriteDishes.concat(props.publicDishes);
+    var mergedDishes = favoriteDishes.concat(publicDishes);
     var map = new Map(mergedDishes.map(dish => [dish.id, dish]));
     var allDishes = [...map.values()];
     setAllDishes(allDishes);
@@ -227,28 +254,36 @@ const GenerateMenu = props => {
   };
 
   /**
-   * Fetch private and public dishes. Compute random dishes after all data is received
+   * Fetch private and public dishes. 
+   Compute random dishes after all data is received
    */
   useEffect(() => {
+    console.log("fetch private and public menuData: ", menuData);
+
     if (!menuData || !menuData.meals || !menuData.days) return;
+    console.log(
+      "fetch private and public favoriteDataReceived: ",
+      favoriteDataReceived,
+      " publicDataReceived: ",
+      publicDataReceived
+    );
 
-    // Fetch private and public dishes
-    if (!props.favoriteDataReceived.received) {
-      props.fetchDishes(getUid(), selectedFilters);
+    // Fetch private dishes if user is connected
+    if (!favoriteDataReceived.received && getUid()) {
+      console.log("call fetch private dishes and retrn");
+      fetchDishes(getUid(), selectedFilters);
       return;
     }
 
-    if (!props.publicDataReceived) {
-      props.fetchPublicDishesForMeals(
-        getUid(),
-        selectedFilters,
-        menuData.meals
-      );
+    // Fetch public dishes
+    if (!publicDataReceived) {
+      console.log("call fetchPublicDishesForMeals");
+      fetchPublicDishesForMeals(getUid(), selectedFilters, menuData.meals);
       return;
     }
 
-    // Compute random dishes if both favorite and public dishes received
-    if (props.favoriteDataReceived && props.publicDataReceived) {
+    // Compute random dishes when both favorite (if user logged in) and public dishes received
+    if (publicDataReceived) {
       if (!menuData.dishes && !randomDishes) {
         computeRandomDishes();
       }
@@ -256,16 +291,10 @@ const GenerateMenu = props => {
     }
 
     // Get popular tags
-    if (props.suggestedFilters.length === 0) {
-      props.getPopularTags(menuData.meals);
+    if (suggestedFilters.length === 0) {
+      getPopularTags(menuData.meals);
     }
-  }, [
-    auth,
-    props.favoriteDataReceived,
-    props.publicDataReceived,
-    props.suggestedFilters,
-    menuData
-  ]);
+  }, [menuData, favoriteDataReceived, publicDataReceived]);
 
   /**
   Fetch menu from backEnd if there's no menuData but there's menuId
@@ -273,76 +302,97 @@ const GenerateMenu = props => {
   useEffect(() => {
     // There's no menuData - This can happen when a menu was opended from a shared link
     // Fetch menu from backend with menuId
+    console.log(
+      "set shared menu. menuData: ",
+      menuData,
+      " menuDataProps: ",
+      menuDataProps,
+      " menuId: ",
+      menuId
+    );
     if (
       (!menuData || !menuData.days) &&
-      (!props.menuData || !props.menuData.days)
+      (!menuDataProps || !menuDataProps.days) &&
+      menuId
     ) {
       setSharedMenu(true);
-      props.fetchMenu(menuId, ownerId, type);
+      fetchMenu(menuId, ownerId, type);
       return;
     }
 
-    // Menu was fetched succesfuly, set menu detauks to state
-    if (props.menuData.days && !menuData.days) {
+    // Shared link Menu was fetched succesfuly, set menu details to state
+    if (menuDataProps && menuDataProps.days && !menuData.days) {
       setMenuData(readMenuData());
-      setRandomDishes(props.menuData.dishes);
+      setRandomDishes(menuDataProps.dishes);
       setIsEditMode(false); // This menu was opened via shared link therefor Edit isn't allowed
     }
-  }, [menuData, props.menuData]);
+  }, [menuData, menuDataProps]);
 
   /** Only once: 
   if this menu was opened with PRINT option, trigger PRINT
   if this menu was opened with SHARE option, trigger SHARE
   if this menu is newly generated, delete the previous menu data state in store */
   useEffect(() => {
-    if (props.location && props.location.state) {
-      if (props.location.state.menuOption) {
-        if (props.location.state.menuOption === MenuOptions.PRINT) {
-          if (triggerPrintRef.current) triggerPrintRef.current.click();
-        }
-        if (props.location.state.menuOption === MenuOptions.SHARE) {
-          if (triggerShareRef.current) triggerShareRef.current.click();
-        }
+    console.log("Open options. location.state: ", location.state);
+    if (!location.state) return;
+    if (location.state.menuOption) {
+      if (location.state.menuOption === MenuOptions.PRINT) {
+        if (triggerPrintRef.current) triggerPrintRef.current.click();
       }
-      if (props.location.state.newGeneratedMenu) {
-        props.resetMenuState();
+      if (location.state.menuOption === MenuOptions.SHARE) {
+        if (triggerShareRef.current) triggerShareRef.current.click();
       }
     }
-  }, []);
+    if (location.state.newGeneratedMenu) {
+      resetMenuState();
+    }
+  }, [location.state]);
 
   // Save menuData to state when it's received by props
   // If this is a newly generated menu, when saving it's data we get new id
   // Use this id to generate a deep link that we can use later in order to share the menu
   // Don't do this for shared menus as it already have id
   useEffect(() => {
-    if (isSharedMenu) return;
-    if (props.menuData.id) {
-      setMenuData(props.menuData);
-      history.push(`/menu/generate/private/${props.menuData.id}/${getUid()}`, {
+    console.log("Generate deep link");
+    if (isSharedMenu || !getUid() || !menuDataProps) return;
+    if (menuDataProps.id) {
+      setMenuData(menuDataProps);
+      history.push(`/menu/generate/private/${menuDataProps.id}/${getUid()}`, {
         menuData
       });
     }
-  }, [props.menuData, auth]);
+  }, [menuDataProps, isSharedMenu, menuData]);
 
   /** Handle tour show */
   useEffect(() => {
-    if (!auth.authState.user) return;
+    console.log("handle tour show");
+    if (!getUid()) return;
     // If seenTour value was fetch, use it
-    if (props.seenTour === false || props.seenTour === true) {
+    if (seenTour === false || seenTour === true) {
       // Show tour if needed and if menu is in Edit mode
-      if (!props.seenTour && isEditMode) setShowTour(true);
+      if (!seenTour && isEditMode) setShowTour(true);
     }
 
     // Otherwise fetch seenTour value
     else {
-      props.didUserSeeTour(getUid());
+      didUserSeeTour(getUid());
     }
-  }, [props.seenTour, auth, isEditMode]);
+  }, [seenTour, isEditMode]);
 
   // Merge private and public dishes everytime there's a change in one of the lists
   useEffect(() => {
+    console.log("useEffect mergePrivateAndPublic");
     mergePrivateAndPublic();
-  }, [props.favoriteDishes, props.publicDishes]);
+  }, [favoriteDishes, publicDishes]);
+
+  // Save generate menu state in store
+  useEffect(() => {
+    console.log("Save menu state in store. menuData: ", menuData);
+    if (!menuData || Object.keys(menuData).length === 0) return;
+    var menuToSave = menuData;
+    menuToSave.dishes = randomDishes;
+    setMenuInStore(menuToSave);
+  }, [menuData, randomDishes]);
 
   /**
    * Close the panel when drag starts
@@ -383,7 +433,7 @@ const GenerateMenu = props => {
       // Get the wanted dish
       var dish;
       if (isSearchMode) {
-        dish = props.searchResult[source.index];
+        dish = searchResult[source.index];
       } else {
         dish = allDishes[source.index];
       }
@@ -502,7 +552,7 @@ const GenerateMenu = props => {
       name: menuNameState
     };
 
-    props.setMenu(menu, getUid());
+    setMenu(menu, getUid());
 
     setSaveModalShow(false); // Hide the modal
   };
@@ -518,7 +568,7 @@ const GenerateMenu = props => {
 
   const onSearch = (query, filters = selectedFilters) => {
     setIsSearchMode(true);
-    props.searchAllDishes(getUid(), query, filters);
+    searchAllDishes(getUid(), query, filters);
   };
 
   const onSearchClear = (filters = selectedFilters) => {
@@ -530,7 +580,7 @@ const GenerateMenu = props => {
     // No filters, clear search
     else {
       setIsSearchMode(false);
-      props.clearSearchAllDishes();
+      clearSearchAllDishes();
     }
   };
 
@@ -559,7 +609,7 @@ const GenerateMenu = props => {
     else {
       setIsFilterMode(false);
       setIsSearchMode(false);
-      props.clearSearchAllDishes();
+      clearSearchAllDishes();
     }
   };
 
@@ -578,16 +628,8 @@ const GenerateMenu = props => {
     }
   };
 
-  const isUserLoggedIn = () => {
-    if (getUid()) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   const validateLoggedInUser = () => {
-    if (isUserLoggedIn() === false) {
+    if (!getUid()) {
       setShowLoginAlert(true);
       return false;
     }
@@ -610,7 +652,7 @@ const GenerateMenu = props => {
   const onTourClose = () => {
     setShowTour(false);
     if (!auth.authState.user) return;
-    props.setUserSeeTour(getUid());
+    setUserSeeTour(getUid());
   };
 
   const setComment = (mealIndex, dayIndex, comment) => {
@@ -637,6 +679,7 @@ const GenerateMenu = props => {
    * If there's no menu data and no logged in user in order to fetch menu, show login message
    */
   if (
+    menuData &&
     !menuData.days &&
     !auth.authState.user &&
     auth.authState.authStatusReported
@@ -714,7 +757,7 @@ const GenerateMenu = props => {
         uid={getUid()}
         handleMakePublic={() => {
           // Set as public in backend
-          props.makeMenuPublic(menuData.id, getUid());
+          makeMenuPublic(menuData.id, getUid());
 
           // Set as public locally
           setMenuData({
@@ -772,6 +815,7 @@ const GenerateMenu = props => {
               <Button
                 className="meal-plan-btn"
                 onClick={() => {
+                  if (!validateLoggedInUser()) return;
                   setBlockLeave(false); // Alow to leave the page after edit is done
                   setSaveModalShow(true);
                 }}
@@ -781,7 +825,7 @@ const GenerateMenu = props => {
               <PrintAndShare />
               <ImportDish
                 addDish={dish => {
-                  props.addDish(dish, getUid());
+                  addDish(dish, getUid());
                 }}
                 hideButton={true}
                 type={ImportDishType.BUTTON}
@@ -897,11 +941,11 @@ const GenerateMenu = props => {
                 onSearch={onSearch}
                 onSearchClear={onSearchClear}
                 isSearchMode={isSearchMode}
-                searchReceived={props.searchReceived}
-                searchResult={props.searchResult}
+                searchReceived={searchReceived}
+                searchResult={searchResult}
                 isEditMode={isEditMode}
                 onPanelClose={() => setShowPanel(false)}
-                filters={props.suggestedFilters}
+                filters={suggestedFilters}
                 removeFilter={filter => removeFilter(filter)}
                 applyFilter={filter => applyFilter(filter)}
                 handleRandomClick={handleRandomClick}

@@ -8,9 +8,7 @@ const LoginRedirect = () => {
 
   return (
     <div className="center-text">
-      <span style={{ display: "block" }}>
-        Please log in to see your favorites!
-      </span>
+      <span style={{ display: "block" }}>Please log in first!</span>
       <Button
         className="btn-modal"
         onClick={() => history.push(`/login`, { from: location.pathname })}
