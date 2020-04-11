@@ -29,11 +29,11 @@ import * as firebase from "firebase/app";
 /**
 Set menu state in store
  */
-export const setMenuInStore = menuData => async dispatch => {
+export const setMenuInStore = (menuData, isEditMode) => async dispatch => {
   console.log("setMenuInStore. menuData: ", menuData);
   dispatch({
     type: SET_MENU_LOCALLY,
-    payload: { menu: menuData, local: true }
+    payload: { menu: menuData, local: true, isEditMode }
   });
 };
 
@@ -48,7 +48,7 @@ export const setMenu = (payload, uid) => async dispatch => {
   // Add the menu locally
   dispatch({
     type: SET_MENU,
-    payload: { menu: payload, local: false }
+    payload: { menu: payload }
   });
 
   var updates = {};

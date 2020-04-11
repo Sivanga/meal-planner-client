@@ -8,16 +8,23 @@ import { setMenuInStore, resetMenuState } from "../../store/actions/Menus";
 const mapStateToProps = state => {
   return {
     menuData: state.menus.menu.menu,
-    isDraftMenu: state.menus.menu.local
+    isEditMode: state.menus.menu.isEditMode
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  setMenuInStore: menuData => dispatch(setMenuInStore(menuData)),
+  setMenuInStore: (menuData, isEditMode) =>
+    dispatch(setMenuInStore(menuData, isEditMode)),
   resetMenuState: () => dispatch(resetMenuState())
 });
 
-const NewMenu = ({ menuData, setMenuInStore, resetMenuState, isDraftMenu }) => {
+const NewMenu = ({
+  menuData,
+  setMenuInStore,
+  resetMenuState,
+  isDraftMenu,
+  isEditMode
+}) => {
   const location = useLocation();
 
   /** Used to hold extraDishInfo data and pass to generate menu*/
@@ -40,15 +47,15 @@ const NewMenu = ({ menuData, setMenuInStore, resetMenuState, isDraftMenu }) => {
       days: days,
       meals: meals
     };
-    setMenuInStore(menuData);
+    setMenuInStore(menuData, true);
   };
 
   return (
     <>
-      {console.log("menuData: ", menuData, " isDraftMenu: ", isDraftMenu)}
-      {/** If menu data in store isn't local, it means we already have it
-      in or lists and can be opened there. Start a new once */}
-      {menuData && isDraftMenu ? (
+      {console.log("menuData: ", menuData, " isEditMode: ", isEditMode)}
+      {/** If menu data exist and isEditMode, go to the men data,
+      Otherwise start a new one */}
+      {menuData && isEditMode ? (
         <Redirect
           push
           to={{

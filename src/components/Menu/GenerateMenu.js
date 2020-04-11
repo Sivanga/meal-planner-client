@@ -18,6 +18,10 @@ import {
   setUserSeeTour,
   didUserSeeTour
 } from "../../store/actions/Actions";
+import {
+  setPreviousLocationFavorites,
+  ACTIVE_VIEW_MENUS
+} from "../../store/actions/PreviousLocation";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
 import ImportDish, { ImportDishType } from "../dishes/ImportDish";
 import EditDishModal from "../dishes/EditDishModal";
@@ -27,7 +31,6 @@ import LoginAlert from "../auth/LoginAlert";
 import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
-import { Prompt, useParams } from "react-router-dom";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import ReactToPrint from "react-to-print";
 import Tour from "reactour";
@@ -37,13 +40,14 @@ import SaveModal from "./SaveModal";
 import MenuTabel from "./MenuTabel";
 import useRandomDishes from "./useRandomDishes";
 import { Button, MDBBtn } from "mdbreact";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, Prompt, useParams } from "react-router-dom";
 
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 
 const mapStateToProps = state => {
   return {
     menuDataProps: state.menus.menu.menu,
+    isEditMode: state.menus.menu.isEditMode,
     favoriteDishes: state.dishes.dishes,
     favoriteDataReceived: state.dishes.privateDishesDataReceived,
     publicDishes: state.dishes.publicDishesPerMeal,
@@ -64,13 +68,16 @@ const mapDispatchToProps = dispatch => ({
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
   makeMenuPublic: (payload, uid) => dispatch(makeMenuPublic(payload, uid)),
   fetchMenu: (id, uid, type) => dispatch(fetchMenu(id, uid, type)),
-  setMenuInStore: menuData => dispatch(setMenuInStore(menuData)),
+  setMenuInStore: (menuData, isEditMode) =>
+    dispatch(setMenuInStore(menuData, isEditMode)),
   searchAllDishes: (uid, query, selectedFilters) =>
     dispatch(searchAllDishes(uid, query, selectedFilters)),
   clearSearchAllDishes: () => dispatch(clearSearchAllDishes()),
   getPopularTags: meals => dispatch(getPopularTags(meals)),
   didUserSeeTour: uid => dispatch(didUserSeeTour(uid)),
-  setUserSeeTour: uid => dispatch(setUserSeeTour(uid))
+  setUserSeeTour: uid => dispatch(setUserSeeTour(uid)),
+  setMenuFavoriteActiveView: activeView =>
+    dispatch(setPreviousLocationFavorites(activeView))
 });
 
 const EXTRA_DISH_DROPPABLE_ID = "EXTRA_DISH_DROPPABLE_ID";
@@ -78,6 +85,7 @@ const EXTRA_DISH_DRAGGABLE_ID = "EXTRA_DISH_DRAGGABLE_ID";
 
 const GenerateMenu = ({
   menuDataProps,
+  isEditMode,
   favoriteDishes,
   favoriteDataReceived,
   publicDishes,
@@ -97,7 +105,8 @@ const GenerateMenu = ({
   getPopularTags,
   didUserSeeTour,
   setUserSeeTour,
-  setMenuInStore
+  setMenuInStore,
+  setMenuFavoriteActiveView
 }) => {
   let { menuId, type, ownerId } = useParams();
 
@@ -130,13 +139,6 @@ const GenerateMenu = ({
 
   /** Used to hold dish info when adding dish into a menu  */
   const [extraDishInfo, setExtraDishInfo] = useState(extraDishInfoInitial);
-
-  /** IsEditMode - if initial dishes data exist and there's generated id, it means the menu isn't new */
-  const [isEditMode, setIsEditMode] = useState(
-    menuDataProps && menuDataProps.dishes && menuDataProps.id && !extraDishInfo
-      ? false
-      : true
-  );
 
   const [blockLeave, setBlockLeave] = useState(isEditMode ? true : false);
 
@@ -227,7 +229,7 @@ const GenerateMenu = ({
           "Set menu Data in store from location: ",
           location.state.menuData
         );
-        setMenuInStore(location.state.menuData);
+        setMenuInStore(location.state.menuData, false);
       }
     }
   }, [location]);
@@ -304,7 +306,6 @@ const GenerateMenu = ({
     if (menuId & menuDataProps) {
       console.log("Shared link menu fetched sccesfully. Set menu in store");
       setRandomDishes(menuDataProps.dishes);
-      setIsEditMode(false); // This menu was opened via shared link therefor Edit isn't allowed
     }
   }, [menuDataProps]);
 
@@ -325,14 +326,13 @@ const GenerateMenu = ({
     }
   }, [location.state]);
 
-  // Save menuData to state when it's received by props
   // If this is a newly generated menu, when saving it's data we get new id
   // Use this id to generate a deep link that we can use later in order to share the menu
   // Don't do this for shared menus as it already have id
   useEffect(() => {
-    if (isSharedMenu || !getUid() || !menuDataProps) return;
+    if (menuId || isSharedMenu || !getUid() || !menuDataProps) return;
     if (menuDataProps.id) {
-      console.log("Generate deep link");
+      console.log("Generating deep link");
       history.push(`/menu/generate/private/${menuDataProps.id}/${getUid()}`, {
         menuDataProps
       });
@@ -375,7 +375,7 @@ const GenerateMenu = ({
     console.log("Random dishes changed. Save menu state in store");
     var menuToSave = menuDataProps;
     menuToSave.dishes = randomDishes;
-    setMenuInStore(menuToSave);
+    setMenuInStore(menuToSave, isEditMode);
   }, [randomDishes]);
 
   /**
@@ -540,6 +540,10 @@ const GenerateMenu = ({
     setMenu(menu, getUid());
 
     setSaveModalShow(false); // Hide the modal
+
+    // Redirect to my favorites menus
+    setMenuFavoriteActiveView(ACTIVE_VIEW_MENUS);
+    history.push("/myFavorites");
   };
 
   /** Shuffle array for randomized menu preview */
@@ -624,8 +628,8 @@ const GenerateMenu = ({
 
   const onEditClick = () => {
     if (validateLoggedInUser() === false) return;
-    setIsEditMode(true);
     setBlockLeave(true);
+    setMenuInStore(menuDataProps, true);
   };
 
   const onShareClick = () => {
@@ -716,7 +720,10 @@ const GenerateMenu = ({
       <Prompt
         when={blockLeave}
         message={location =>
-          `Are you sure you want to leave before saving changes?`
+          location.pathname.startsWith("/menu/generate") ||
+          location.pathname.startsWith("/login")
+            ? true
+            : `Are you sure you want to leave before saving changes?`
         }
       />
       <LoginAlert

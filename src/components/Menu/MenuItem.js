@@ -51,9 +51,9 @@ const MenuItem = ({
     // Open private or public menu
     var path;
     if (menuListEnum === MenuListEnum.PUBLIC_LIST) {
-      path = `/menu/generate/public/${menu.id}`;
+      path = `/myFavorites/menu/public/${menu.id}`;
     } else {
-      path = `/menu/generate/private/${menu.id}/${currentUid}`;
+      path = `/myFavorites/menu/private/${menu.id}/${currentUid}`;
     }
 
     history.push(path, {
