@@ -33,7 +33,7 @@ export const setMenuInStore = menuData => async dispatch => {
   console.log("setMenuInStore. menuData: ", menuData);
   dispatch({
     type: SET_MENU_LOCALLY,
-    payload: menuData
+    payload: { menu: menuData, local: true }
   });
 };
 
@@ -48,7 +48,7 @@ export const setMenu = (payload, uid) => async dispatch => {
   // Add the menu locally
   dispatch({
     type: SET_MENU,
-    payload: payload
+    payload: { menu: payload, local: false }
   });
 
   var updates = {};

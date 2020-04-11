@@ -22,26 +22,42 @@ import { combineReducers } from "redux";
 function menus(state = [], action) {
   switch (action.type) {
     case SET_MENU:
-      return [action.payload, ...state];
+      return [action.payload.menu, ...state];
     case REMOVE_MENU:
       return [...state].filter(menu => menu.id !== action.payload);
     case FETCH_PRIVATE_MENUS:
+      // Remove non local menus as they will be on the fetched list?
+      var menusCopy = [...state].filter(menu => menu.local === false);
       // Append menus to previos array
-      var menusCopy = [...state];
       return menusCopy.concat(action.payload);
     default:
       return state;
   }
 }
 
-function menu(state = null, action) {
+function menu(state = { menu: null, local: null }, action) {
   switch (action.type) {
-    case SET_MENU:
     case FETCH_MENU:
+      // menuData.dishes can arrive with undefined valus from backend,
+      // change it to empty array.
+      var menuCopy = { ...action.payload.menu };
+      if (menuCopy.meals && menuCopy.dishes) {
+        menuCopy.meals.map((meal, mealIndex) => {
+          if (!menuCopy.dishes[mealIndex]) {
+            menuCopy.dishes[mealIndex] = [];
+            menuCopy.days.map((day, dayIndex) => {
+              menuCopy.dishes[mealIndex][dayIndex] = null;
+            });
+          }
+        });
+      }
+      return { menu: menuCopy, local: false };
+    case SET_MENU:
+      return action.payload;
     case SET_MENU_LOCALLY:
       return action.payload;
     case RESET_MENU:
-      return null;
+      return { menu: null, local: null };
     default:
       return state;
   }

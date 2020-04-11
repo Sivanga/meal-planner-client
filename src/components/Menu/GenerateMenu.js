@@ -14,7 +14,6 @@ import {
   clearSearchAllDishes,
   getPopularTags,
   fetchMenu,
-  resetMenuState,
   setMenuInStore,
   setUserSeeTour,
   didUserSeeTour
@@ -44,7 +43,7 @@ import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 
 const mapStateToProps = state => {
   return {
-    menuDataProps: state.menus.menu,
+    menuDataProps: state.menus.menu.menu,
     favoriteDishes: state.dishes.dishes,
     favoriteDataReceived: state.dishes.privateDishesDataReceived,
     publicDishes: state.dishes.publicDishesPerMeal,
@@ -66,7 +65,6 @@ const mapDispatchToProps = dispatch => ({
   makeMenuPublic: (payload, uid) => dispatch(makeMenuPublic(payload, uid)),
   fetchMenu: (id, uid, type) => dispatch(fetchMenu(id, uid, type)),
   setMenuInStore: menuData => dispatch(setMenuInStore(menuData)),
-  resetMenuState: () => dispatch(resetMenuState()),
   searchAllDishes: (uid, query, selectedFilters) =>
     dispatch(searchAllDishes(uid, query, selectedFilters)),
   clearSearchAllDishes: () => dispatch(clearSearchAllDishes()),
@@ -94,7 +92,6 @@ const GenerateMenu = ({
   setMenu,
   makeMenuPublic,
   fetchMenu,
-  resetMenuState,
   searchAllDishes,
   clearSearchAllDishes,
   getPopularTags,
@@ -122,45 +119,6 @@ const GenerateMenu = ({
   /** Used to trigger share automatically */
   const triggerShareRef = useRef();
 
-  /**
-  Get from location the Random dishes array if exist - this data comes from clicking an existing menu
-  Get from location days and meal - this data comes from previous page - menu template
-  Get menu data from location
-   */
-  const readMenuData = () => {
-    console.log("readMenuData. menuDataProps: ", menuDataProps);
-
-    // First read available men from store
-    var menu = menuDataProps;
-
-    // Read specific menu data from location
-    if (location.state && location.state.menuData) {
-      console.log(
-        "readMenuData. location.state.menuData: ",
-        location.state.menuData
-      );
-      menu = location.state.menuData;
-    }
-
-    if (!menu) return;
-
-    // menuData.dishes can arrive with undefined valus from backend, change it to empty array
-    if (menu.meals && menu.dishes) {
-      menu.meals.map((meal, mealIndex) => {
-        if (!menu.dishes[mealIndex]) {
-          menu.dishes[mealIndex] = [];
-          menu.days.map((day, dayIndex) => {
-            menu.dishes[mealIndex][dayIndex] = null;
-          });
-        }
-      });
-    }
-    return menu;
-  };
-
-  /** Set menu data from location or actual props */
-  const [menuData, setMenuData] = useState(readMenuData());
-
   /** Used to determine if the menu was opened via shared link */
   const [isSharedMenu, setSharedMenu] = useState(false);
 
@@ -173,10 +131,11 @@ const GenerateMenu = ({
   /** Used to hold dish info when adding dish into a menu  */
   const [extraDishInfo, setExtraDishInfo] = useState(extraDishInfoInitial);
 
-  /** IsEditMode - if initialRandomDishes exist it means the menu was opened for viewing from existing menu
-  Otherwise this is a newly created menu */
+  /** IsEditMode - if initial dishes data exist and there's generated id, it means the menu isn't new */
   const [isEditMode, setIsEditMode] = useState(
-    menuData && menuData.dishes && !extraDishInfo ? false : true
+    menuDataProps && menuDataProps.dishes && menuDataProps.id && !extraDishInfo
+      ? false
+      : true
   );
 
   const [blockLeave, setBlockLeave] = useState(isEditMode ? true : false);
@@ -227,7 +186,7 @@ const GenerateMenu = ({
     computeRandomDishes,
     handleRandomClick
   } = useRandomDishes(
-    menuData,
+    menuDataProps,
     searchResult,
     favoriteDishes,
     publicDishes,
@@ -237,7 +196,9 @@ const GenerateMenu = ({
 
   /** Use to fetch dishes and search result with selected filters */
   const [selectedFilters, setSelectedFilters] = useState(
-    menuData && menuData.selectedFilters ? menuData.selectedFilters : []
+    menuDataProps && menuDataProps.selectedFilters
+      ? menuDataProps.selectedFilters
+      : []
   );
 
   var mergePrivateAndPublic = () => {
@@ -254,23 +215,38 @@ const GenerateMenu = ({
   };
 
   /**
+  Read menu data from location  - this data comes from clicking an existing menu or when 
+  opening a menu from Menu template
+  */
+  useEffect(() => {
+    console.log("Read menu from location");
+    // Read specific menu data from location
+    if (location.state && location.state.menuData) {
+      if (!menuDataProps || location.state.menuData !== menuDataProps) {
+        console.log(
+          "Set menu Data in store from location: ",
+          location.state.menuData
+        );
+        setMenuInStore(location.state.menuData);
+      }
+    }
+  }, [location]);
+
+  /**
    * Fetch private and public dishes. 
    Compute random dishes after all data is received
    */
   useEffect(() => {
-    console.log("fetch private and public menuData: ", menuData);
+    if (!menuDataProps || !menuDataProps.meals || !menuDataProps.days) {
+      console.log("fetch private and public. menuDataProps is empty");
+      return;
+    }
 
-    if (!menuData || !menuData.meals || !menuData.days) return;
-    console.log(
-      "fetch private and public favoriteDataReceived: ",
-      favoriteDataReceived,
-      " publicDataReceived: ",
-      publicDataReceived
-    );
+    console.log("fetch private and public. menuDataProps: ", menuDataProps);
 
     // Fetch private dishes if user is connected
     if (!favoriteDataReceived.received && getUid()) {
-      console.log("call fetch private dishes and retrn");
+      console.log("call fetch private dishes and retrun");
       fetchDishes(getUid(), selectedFilters);
       return;
     }
@@ -278,60 +254,64 @@ const GenerateMenu = ({
     // Fetch public dishes
     if (!publicDataReceived) {
       console.log("call fetchPublicDishesForMeals");
-      fetchPublicDishesForMeals(getUid(), selectedFilters, menuData.meals);
+      fetchPublicDishesForMeals(getUid(), selectedFilters, menuDataProps.meals);
       return;
     }
 
     // Compute random dishes when both favorite (if user logged in) and public dishes received
     if (publicDataReceived) {
-      if (!menuData.dishes && !randomDishes) {
+      console.log("publicDataReceived");
+      if (!menuDataProps.dishes && !randomDishes) {
+        console.log("No dishes for menu . Call compute random dishes");
         computeRandomDishes();
+      } else if (menuDataProps.dishes) {
+        console.log("Dishes exist in menu. Call set random dishes");
+        setRandomDishes(menuDataProps.dishes);
       }
+
       mergePrivateAndPublic(); // Merge dishes are used in the panel. Merge ony once
+    } else {
+      console.log("publicData didn't Received. Return");
+      return;
     }
 
     // Get popular tags
     if (suggestedFilters.length === 0) {
-      getPopularTags(menuData.meals);
+      getPopularTags(menuDataProps.meals);
     }
-  }, [menuData, favoriteDataReceived, publicDataReceived]);
+  }, [menuDataProps, favoriteDataReceived, publicDataReceived]);
 
   /**
-  Fetch menu from backEnd if there's no menuData but there's menuId
+  Fetch menu from backEnd if there's no menuDataProps but there's menuId
    */
   useEffect(() => {
     // There's no menuData - This can happen when a menu was opended from a shared link
     // Fetch menu from backend with menuId
     console.log(
-      "set shared menu. menuData: ",
-      menuData,
-      " menuDataProps: ",
+      "Checking is Shared menu. menuData: ",
       menuDataProps,
       " menuId: ",
       menuId
     );
-    if (
-      (!menuData || !menuData.days) &&
-      (!menuDataProps || !menuDataProps.days) &&
-      menuId
-    ) {
+    if (!menuDataProps && menuId) {
+      console.log("Shared men needs to be fetched");
       setSharedMenu(true);
       fetchMenu(menuId, ownerId, type);
       return;
     }
 
     // Shared link Menu was fetched succesfuly, set menu details to state
-    if (menuDataProps && menuDataProps.days && !menuData.days) {
-      setMenuData(readMenuData());
+    if (menuId & menuDataProps) {
+      console.log("Shared link menu fetched sccesfully. Set menu in store");
       setRandomDishes(menuDataProps.dishes);
       setIsEditMode(false); // This menu was opened via shared link therefor Edit isn't allowed
     }
-  }, [menuData, menuDataProps]);
+  }, [menuDataProps]);
 
   /** Only once: 
   if this menu was opened with PRINT option, trigger PRINT
   if this menu was opened with SHARE option, trigger SHARE
-  if this menu is newly generated, delete the previous menu data state in store */
+  */
   useEffect(() => {
     console.log("Open options. location.state: ", location.state);
     if (!location.state) return;
@@ -343,9 +323,6 @@ const GenerateMenu = ({
         if (triggerShareRef.current) triggerShareRef.current.click();
       }
     }
-    if (location.state.newGeneratedMenu) {
-      resetMenuState();
-    }
   }, [location.state]);
 
   // Save menuData to state when it's received by props
@@ -353,15 +330,14 @@ const GenerateMenu = ({
   // Use this id to generate a deep link that we can use later in order to share the menu
   // Don't do this for shared menus as it already have id
   useEffect(() => {
-    console.log("Generate deep link");
     if (isSharedMenu || !getUid() || !menuDataProps) return;
     if (menuDataProps.id) {
-      setMenuData(menuDataProps);
+      console.log("Generate deep link");
       history.push(`/menu/generate/private/${menuDataProps.id}/${getUid()}`, {
-        menuData
+        menuDataProps
       });
     }
-  }, [menuDataProps, isSharedMenu, menuData]);
+  }, [menuDataProps]);
 
   /** Handle tour show */
   useEffect(() => {
@@ -385,14 +361,22 @@ const GenerateMenu = ({
     mergePrivateAndPublic();
   }, [favoriteDishes, publicDishes]);
 
-  // Save generate menu state in store
+  // Save generate menu state in store when there's a change in random dishes
   useEffect(() => {
-    console.log("Save menu state in store. menuData: ", menuData);
-    if (!menuData || Object.keys(menuData).length === 0) return;
-    var menuToSave = menuData;
+    if (
+      !menuDataProps ||
+      Object.keys(menuDataProps).length === 0 ||
+      !randomDishes
+    ) {
+      console.log("No change in random dish. Don't save menu state in store");
+      return;
+    }
+    if (menuDataProps.dishes === randomDishes) return;
+    console.log("Random dishes changed. Save menu state in store");
+    var menuToSave = menuDataProps;
     menuToSave.dishes = randomDishes;
     setMenuInStore(menuToSave);
-  }, [menuData, randomDishes]);
+  }, [randomDishes]);
 
   /**
    * Close the panel when drag starts
@@ -412,7 +396,7 @@ const GenerateMenu = ({
     if (!destination) return;
 
     // Can't drop to a disabled day
-    if (!menuData.days[destination.index].enabled) return;
+    if (!menuDataProps.days[destination.index].enabled) return;
 
     // Drop from extra dish
     if (source.droppableId === EXTRA_DISH_DROPPABLE_ID) {
@@ -522,10 +506,11 @@ const GenerateMenu = ({
   };
 
   const onSaveClick = (menuShareState, menuNameState) => {
+    console.log("onSaveClick");
     // Generate menu preview
     var images = [];
-    for (var i = 0; i < menuData.days.length; i++) {
-      for (var j = 0; j < menuData.days.length; j++) {
+    for (var i = 0; i < menuDataProps.days.length; i++) {
+      for (var j = 0; j < menuDataProps.days.length; j++) {
         // Add this image only if it's not already exist
         if (
           randomDishes[i] &&
@@ -544,8 +529,8 @@ const GenerateMenu = ({
     // Send generated menu to backend
     const menu = {
       date: Date.now(),
-      days: menuData.days,
-      meals: menuData.meals,
+      days: menuDataProps.days,
+      meals: menuDataProps.meals,
       dishes: randomDishes,
       previewImages: previewImages,
       sharePublic: menuShareState,
@@ -668,7 +653,7 @@ const GenerateMenu = ({
   /**
    * If there's no days and meals data in menu
    */
-  if (!menuData || !menuData.meals || !menuData.days) {
+  if (!menuDataProps || !menuDataProps.meals || !menuDataProps.days) {
     // If the menu was opened via shared link, it's data is being fetched, show loading
     if (isSharedMenu) {
       return <div className="center-text">Loading...</div>;
@@ -679,8 +664,8 @@ const GenerateMenu = ({
    * If there's no menu data and no logged in user in order to fetch menu, show login message
    */
   if (
-    menuData &&
-    !menuData.days &&
+    menuDataProps &&
+    !menuDataProps.days &&
     !auth.authState.user &&
     auth.authState.authStatusReported
   ) {
@@ -712,7 +697,7 @@ const GenerateMenu = ({
         />
 
         {/* Share menu only after it was saved to backend and it has it's unique id*/}
-        {menuData.id && (
+        {menuDataProps.id && (
           <Button
             className="meal-plan-btn"
             onClick={() => {
@@ -746,30 +731,30 @@ const GenerateMenu = ({
         }
       />
       <ShareModal
-        isPrivateMenu={!menuData.sharePublic}
+        isPrivateMenu={!menuDataProps.sharePublic}
         show={shareModalShow}
         handleHide={() => {
           setShareModalShow(false);
         }}
-        days={menuData.days}
-        meals={menuData.meals}
+        days={menuDataProps.days}
+        meals={menuDataProps.meals}
         randomDishes={randomDishes}
         uid={getUid()}
         handleMakePublic={() => {
           // Set as public in backend
-          makeMenuPublic(menuData.id, getUid());
+          makeMenuPublic(menuDataProps.id, getUid());
 
           // Set as public locally
-          setMenuData({
-            ...menuData,
+          setMenuInStore({
+            ...menuDataProps,
             sharePublic: true
           });
         }}
-        menuName={menuData.name}
+        menuName={menuDataProps.name}
       />
 
-      {menuData && menuData.name && (
-        <h5 className="menuName">{menuData.name}</h5>
+      {menuDataProps && menuDataProps.name && (
+        <h5 className="menuName">{menuDataProps.name}</h5>
       )}
 
       <Tour
@@ -797,9 +782,9 @@ const GenerateMenu = ({
         })}
       >
         <div className="print-only page-title">
-          {menuData && menuData.name && (
+          {menuDataProps && menuDataProps.name && (
             <div>
-              <span>{menuData.name}</span>
+              <span>{menuDataProps.name}</span>
             </div>
           )}
           <span>Pure Meal Plan</span>
@@ -913,9 +898,10 @@ const GenerateMenu = ({
             </div>
           )}
           <div className="generateMenuContainer">
+            {console.log("randomDishes: ", randomDishes)}
             <MenuTabel
-              days={menuData.days}
-              meals={menuData.meals}
+              days={menuDataProps.days}
+              meals={menuDataProps.meals}
               randomDishes={randomDishes}
               onMinusClick={onMinusClick}
               handleDishLock={handleDishLock}
@@ -979,7 +965,7 @@ const tourSteps = [
 ];
 
 GenerateMenu.propTypes = {
-  menuData: PropTypes.shape({
+  menuDataProps: PropTypes.shape({
     days: PropTypes.array,
     meals: PropTypes.array
   })
