@@ -222,7 +222,7 @@ const GenerateMenu = ({
   */
   useEffect(() => {
     console.log("Read menu from location");
-    // Read specific menu data from location
+    // Read  menu data from location
     if (location.state && location.state.menuData) {
       if (!menuDataProps || location.state.menuData !== menuDataProps) {
         console.log(
@@ -230,7 +230,21 @@ const GenerateMenu = ({
           location.state.menuData
         );
         setMenuInStore(location.state.menuData, false);
+        return;
       }
+    }
+
+    if (!menuDataProps && menuId) {
+      console.log("Shared menu needs to be fetched");
+      setSharedMenu(true);
+      fetchMenu(menuId, ownerId, type);
+      return;
+    }
+
+    // Shared link Menu was fetched succesfuly, set menu details to state
+    if (menuId & menuDataProps) {
+      console.log("Shared link menu fetched sccesfully. Set menu in store");
+      setRandomDishes(menuDataProps.dishes);
     }
   }, [location]);
 
@@ -282,32 +296,6 @@ const GenerateMenu = ({
       getPopularTags(menuDataProps.meals);
     }
   }, [menuDataProps, favoriteDataReceived, publicDataReceived]);
-
-  /**
-  Fetch menu from backEnd if there's no menuDataProps but there's menuId
-   */
-  useEffect(() => {
-    // There's no menuData - This can happen when a menu was opended from a shared link
-    // Fetch menu from backend with menuId
-    console.log(
-      "Checking is Shared menu. menuData: ",
-      menuDataProps,
-      " menuId: ",
-      menuId
-    );
-    if (!menuDataProps && menuId) {
-      console.log("Shared men needs to be fetched");
-      setSharedMenu(true);
-      fetchMenu(menuId, ownerId, type);
-      return;
-    }
-
-    // Shared link Menu was fetched succesfuly, set menu details to state
-    if (menuId & menuDataProps) {
-      console.log("Shared link menu fetched sccesfully. Set menu in store");
-      setRandomDishes(menuDataProps.dishes);
-    }
-  }, [menuDataProps]);
 
   /** Only once: 
   if this menu was opened with PRINT option, trigger PRINT
