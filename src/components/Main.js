@@ -22,17 +22,12 @@ function Main(props) {
         path="/menu/generate"
         render={props => <GenerateMenu {...props} />}
       />
-      <Route
-        path="/myFavorites/menu/:type/:menuId/:ownerId?"
-        render={props => <GenerateMenu {...props} />}
-      />
       <Route path="/menu/newMenu" render={props => <NewMenu {...props} />} />
       <Route path="/public" component={Public} />
       <Route path="/myFavorites" component={MyFavorites} />
       <Route path="/login" component={Login} />
       <Route path="/contact" component={Contact} />
       <Route path="/about" component={About} />
-
       <Route component={Notfound} />
     </Switch>
   );
