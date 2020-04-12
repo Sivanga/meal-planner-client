@@ -140,8 +140,6 @@ const GenerateMenu = ({
   /** Used to hold dish info when adding dish into a menu  */
   const [extraDishInfo, setExtraDishInfo] = useState(extraDishInfoInitial);
 
-  const [blockLeave, setBlockLeave] = useState(isEditMode ? true : false);
-
   /**
    * Show dishes panel
    */
@@ -217,8 +215,8 @@ const GenerateMenu = ({
   };
 
   /**
-  Read menu data from location  - this data comes from clicking an existing menu or when 
-  opening a menu from Menu template
+  Read menu data from location  - available from an existing menu or when 
+  opening a new menu from Menu template
   */
   useEffect(() => {
     console.log("Read menu from location");
@@ -234,6 +232,7 @@ const GenerateMenu = ({
       }
     }
 
+    // No menuData in location, only menuId. This is a shared menu, fetch it's data
     if (!menuDataProps && menuId) {
       console.log("Shared menu needs to be fetched");
       setSharedMenu(true);
@@ -243,7 +242,7 @@ const GenerateMenu = ({
 
     // Shared link Menu was fetched succesfuly, set menu details to state
     if (menuId & menuDataProps) {
-      console.log("Shared link menu fetched sccesfully. Set menu in store");
+      console.log("Shared menu fetched sccesfully. Set menu in store");
       setRandomDishes(menuDataProps.dishes);
     }
   }, [location]);
@@ -254,31 +253,28 @@ const GenerateMenu = ({
    */
   useEffect(() => {
     if (!menuDataProps || !menuDataProps.meals || !menuDataProps.days) {
-      console.log("fetch private and public. menuDataProps is empty");
+      console.log("fetch dishes - return. menuDataProps is empty");
       return;
     }
 
-    console.log("fetch private and public. menuDataProps: ", menuDataProps);
-
     // Fetch private dishes if user is connected
     if (!favoriteDataReceived.received && getUid()) {
-      console.log("call fetch private dishes and retrun");
+      console.log("Fetch dishes - call private and retrun");
       fetchDishes(getUid(), selectedFilters);
       return;
     }
 
     // Fetch public dishes
     if (!publicDataReceived) {
-      console.log("call fetchPublicDishesForMeals");
+      console.log("Fetch dishes - call public and return");
       fetchPublicDishesForMeals(getUid(), selectedFilters, menuDataProps.meals);
       return;
     }
 
     // Compute random dishes when both favorite (if user logged in) and public dishes received
     if (publicDataReceived) {
-      console.log("publicDataReceived");
       if (!menuDataProps.dishes && !randomDishes) {
-        console.log("No dishes for menu . Call compute random dishes");
+        console.log("Call compute random dishes");
         computeRandomDishes();
       } else if (menuDataProps.dishes) {
         console.log("Dishes exist in menu. Call set random dishes");
@@ -302,9 +298,13 @@ const GenerateMenu = ({
   if this menu was opened with SHARE option, trigger SHARE
   */
   useEffect(() => {
-    console.log("Open options. location.state: ", location.state);
     if (!location.state) return;
     if (location.state.menuOption) {
+      console.log(
+        "Open options. location.state.menuOption: ",
+        location.state.menuOption
+      );
+
       if (location.state.menuOption === MenuOptions.PRINT) {
         if (triggerPrintRef.current) triggerPrintRef.current.click();
       }
@@ -329,16 +329,17 @@ const GenerateMenu = ({
 
   /** Handle tour show */
   useEffect(() => {
-    console.log("handle tour show");
     if (!getUid()) return;
     // If seenTour value was fetch, use it
     if (seenTour === false || seenTour === true) {
+      console.log("setShowTour value");
       // Show tour if needed and if menu is in Edit mode
       if (!seenTour && isEditMode) setShowTour(true);
     }
 
     // Otherwise fetch seenTour value
     else {
+      console.log("fetch ShowTour value");
       didUserSeeTour(getUid());
     }
   }, [seenTour, isEditMode]);
@@ -616,7 +617,6 @@ const GenerateMenu = ({
 
   const onEditClick = () => {
     if (validateLoggedInUser() === false) return;
-    setBlockLeave(true);
     setMenuInStore(menuDataProps, true);
   };
 
@@ -706,7 +706,7 @@ const GenerateMenu = ({
   return (
     <>
       <Prompt
-        when={blockLeave}
+        when={isEditMode}
         message={location =>
           location.pathname.startsWith("/menu/generate") ||
           location.pathname.startsWith("/login")
@@ -796,7 +796,6 @@ const GenerateMenu = ({
                 className="meal-plan-btn"
                 onClick={() => {
                   if (!validateLoggedInUser()) return;
-                  setBlockLeave(false); // Alow to leave the page after edit is done
                   setSaveModalShow(true);
                 }}
               >
