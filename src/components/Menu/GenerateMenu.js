@@ -706,7 +706,7 @@ const GenerateMenu = ({
   return (
     <>
       <Prompt
-        when={isEditMode}
+        when={isEditMode && !saveModalShow}
         message={location =>
           location.pathname.startsWith("/menu/generate") ||
           location.pathname.startsWith("/login")
