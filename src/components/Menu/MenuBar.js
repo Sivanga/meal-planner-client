@@ -13,7 +13,8 @@ const MenuBar = ({
   menuId,
   onAddDish,
   onShareClick,
-  handleRandomClick
+  handleRandomClick,
+  resetClick
 }) => {
   return (
     <>
@@ -42,7 +43,7 @@ const MenuBar = ({
             onClick={onEditClick}
             style={{ marginLeft: 0 }}
           >
-            <i class="far fa-edit"></i>
+            <i className="far fa-edit"></i>
             {" EDIT"}
           </Button>
         )}
@@ -54,16 +55,23 @@ const MenuBar = ({
           onShareClick={onShareClick}
           isEditMode={isEditMode}
         />
-        {isEditMode && (
+      </ButtonGroup>
+      {isEditMode && (
+        <ButtonGroup className="menu-bar-btn-group">
+          <Button className="meal-plan-btn first-child" onClick={resetClick}>
+            <i className="far fa-trash-alt"></i>
+            {" RESET"}
+          </Button>
+
           <Button
             className="generate-btn random-btn"
             onClick={handleRandomClick}
           >
-            <i class="fas fa-magic"></i>
+            <i className="fas fa-magic"></i>
             {" Fill Up Automatically!"}
           </Button>
-        )}
-      </ButtonGroup>
+        </ButtonGroup>
+      )}
       {!isEditMode && (
         <h6 className="generate-menu-edit-subtitle">
           Want to change dishes and move things around? Click Edit button

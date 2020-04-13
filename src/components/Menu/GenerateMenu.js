@@ -10,6 +10,7 @@ import {
   fetchPublicDishesForMeals,
   searchAllDishes,
   setMenu,
+  resetMenuState,
   makeMenuPublic,
   clearSearchAllDishes,
   getPopularTags,
@@ -35,6 +36,7 @@ import Tour from "reactour";
 import { MenuOptions } from "./MenuItem";
 import ShareModal from "./ShareModal";
 import SaveModal from "./SaveModal";
+import ResetMenuModal from "./ResetModal";
 import MenuTabel from "./MenuTabel";
 import MenuBar from "./MenuBar";
 import useRandomDishes from "./useRandomDishes";
@@ -65,6 +67,7 @@ const mapDispatchToProps = dispatch => ({
   fetchPublicDishesForMeals: (uid, selectedFilters, meals) =>
     dispatch(fetchPublicDishesForMeals(uid, selectedFilters, meals)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
+  resetMenuState: () => dispatch(resetMenuState()),
   makeMenuPublic: (payload, uid) => dispatch(makeMenuPublic(payload, uid)),
   fetchMenu: (id, uid, type) => dispatch(fetchMenu(id, uid, type)),
   setMenuInStore: (menuData, isEditMode) =>
@@ -97,6 +100,7 @@ const GenerateMenu = ({
   addDish,
   fetchPublicDishesForMeals,
   setMenu,
+  resetMenuState,
   makeMenuPublic,
   fetchMenu,
   searchAllDishes,
@@ -154,6 +158,9 @@ const GenerateMenu = ({
 
   /** Share modal is shown */
   const [shareModalShow, setShareModalShow] = useState(false);
+
+  /** Reset modal is shown */
+  const [resetModalShow, setResetModalShow] = useState(false);
 
   /** Tour is shown */
   const [showTour, setShowTour] = useState(false);
@@ -673,7 +680,7 @@ const GenerateMenu = ({
   return (
     <>
       <Prompt
-        when={isEditMode && !saveModalShow}
+        when={isEditMode && !saveModalShow && !resetModalShow}
         message={location =>
           location.pathname.startsWith("/menu/generate") ||
           location.pathname.startsWith("/login")
@@ -713,6 +720,15 @@ const GenerateMenu = ({
           });
         }}
         menuName={menuDataProps.name}
+      />
+
+      <ResetMenuModal
+        show={resetModalShow}
+        handleHide={() => setResetModalShow(false)}
+        handleResetClick={() => {
+          resetMenuState();
+          history.push("/menu/newMenu");
+        }}
       />
 
       <Tour
@@ -771,6 +787,7 @@ const GenerateMenu = ({
               onShareClick();
             }}
             handleRandomClick={() => handleRandomClick()}
+            resetClick={() => setResetModalShow(true)}
           />
 
           {isEditMode && (
