@@ -23,7 +23,6 @@ import {
   ACTIVE_VIEW_MENUS
 } from "../../store/actions/PreviousLocation";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
-import ImportDish, { ImportDishType } from "../dishes/ImportDish";
 import EditDishModal from "../dishes/EditDishModal";
 import { useAuth } from "../auth/UseAuth";
 import LoginRedirect from "../auth/LoginRedirect";
@@ -32,14 +31,14 @@ import { connect } from "react-redux";
 import { DragDropContext } from "react-beautiful-dnd";
 import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { Droppable, Draggable } from "react-beautiful-dnd";
-import ReactToPrint from "react-to-print";
 import Tour from "reactour";
 import { MenuOptions } from "./MenuItem";
 import ShareModal from "./ShareModal";
 import SaveModal from "./SaveModal";
 import MenuTabel from "./MenuTabel";
+import MenuBar from "./MenuBar";
 import useRandomDishes from "./useRandomDishes";
-import { Button, MDBBtn } from "mdbreact";
+import { Button } from "mdbreact";
 import { useHistory, useLocation, Prompt, useParams } from "react-router-dom";
 
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
@@ -253,7 +252,7 @@ const GenerateMenu = ({
    */
   useEffect(() => {
     if (!menuDataProps || !menuDataProps.meals || !menuDataProps.days) {
-      console.log("fetch dishes - return. menuDataProps is empty");
+      console.log("Fetch dishes - return. menuDataProps is empty");
       return;
     }
 
@@ -495,7 +494,6 @@ const GenerateMenu = ({
   };
 
   const onSaveClick = (menuShareState, menuNameState) => {
-    console.log("onSaveClick");
     // Generate menu preview
     var images = [];
     for (var i = 0; i < menuDataProps.days.length; i++) {
@@ -672,37 +670,6 @@ const GenerateMenu = ({
     return <div className="center-text">Loading...</div>;
   }
 
-  const PrintAndShare = () => {
-    return (
-      <>
-        <ReactToPrint
-          trigger={() => (
-            <Button className="meal-plan-btn">
-              <i
-                className="fa fa-print"
-                aria-hidden="true"
-                ref={triggerPrintRef}
-              ></i>
-            </Button>
-          )}
-          content={() => componentRef.current}
-        />
-
-        {/* Share menu only after it was saved to backend and it has it's unique id*/}
-        {menuDataProps.id && (
-          <Button
-            className="meal-plan-btn"
-            onClick={() => {
-              onShareClick();
-            }}
-          >
-            <i className="fas fa-share-alt" ref={triggerShareRef}></i>
-          </Button>
-        )}
-      </>
-    );
-  };
-
   return (
     <>
       <Prompt
@@ -748,10 +715,6 @@ const GenerateMenu = ({
         menuName={menuDataProps.name}
       />
 
-      {menuDataProps && menuDataProps.name && (
-        <h5 className="menuName">{menuDataProps.name}</h5>
-      )}
-
       <Tour
         steps={tourSteps}
         isOpen={showTour}
@@ -790,55 +753,31 @@ const GenerateMenu = ({
           onDragEnd={result => onDragEnd(result)}
           onDragStart={e => onDragStart(e)}
         >
-          {isEditMode && (
-            <div className="generate-menu-btns-wrapper">
-              <Button
-                className="meal-plan-btn"
-                onClick={() => {
-                  if (!validateLoggedInUser()) return;
-                  setSaveModalShow(true);
-                }}
-              >
-                <i className="far fa-save"></i>
-              </Button>
-              <PrintAndShare />
-              <ImportDish
-                addDish={dish => {
-                  addDish(dish, getUid());
-                }}
-                hideButton={true}
-                type={ImportDishType.BUTTON}
-                allowRedirect={false}
-              />
-            </div>
-          )}
-
-          {!isEditMode && (
-            <div className="generate-menu-edit">
-              <Button
-                className="meal-plan-btn generate-btn "
-                onClick={() => {
-                  onEditClick();
-                }}
-                style={{ marginLeft: 0 }}
-              >
-                EDIT
-              </Button>
-              <PrintAndShare />
-              <h6>
-                Want to change dishes and move things around? Click Edit button
-              </h6>
-            </div>
-          )}
+          <MenuBar
+            isEditMode={isEditMode}
+            onEditClick={() => onEditClick()}
+            onSaveButtonClick={() => {
+              if (!validateLoggedInUser()) return;
+              setSaveModalShow(true);
+            }}
+            triggerPrintRef={triggerPrintRef}
+            triggerShareRef={triggerShareRef}
+            componentRef={componentRef}
+            menuId={menuDataProps.id}
+            onAddDish={dish => {
+              addDish(dish, getUid());
+            }}
+            onShareClick={() => {
+              onShareClick();
+            }}
+            handleRandomClick={() => handleRandomClick()}
+          />
 
           {isEditMode && (
             <div className="panel-wrapper">
-              <MDBBtn
-                className="generate-btn random-btn"
-                onClick={() => handleRandomClick()}
-              >
-                RANDOM
-              </MDBBtn>
+              {menuDataProps && menuDataProps.name && (
+                <h6 className="menuName">{menuDataProps.name}</h6>
+              )}
               <div className="dummy" />
               <div
                 className={classNames("panel-handle", "filters-and-search", {
@@ -892,7 +831,6 @@ const GenerateMenu = ({
             </div>
           )}
           <div className="generateMenuContainer">
-            {console.log("randomDishes: ", randomDishes)}
             <MenuTabel
               days={menuDataProps.days}
               meals={menuDataProps.meals}

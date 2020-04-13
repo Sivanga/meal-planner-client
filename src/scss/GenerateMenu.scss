@@ -214,19 +214,29 @@ li {
   margin-top: 1rem;
 }
 
-.generate-btn {
+.menu-bar-btn-group {
+  margin-left: 0;
+}
+
+.first-child {
+  margin-left: 0;
+}
+
+.generate-btn,
+.menu-bar-btn-group,
+.generate-menu-edit-subtitle,
+.menuName {
   @media screen and (min-width: 1024px) {
     margin-left: 100px;
   }
 }
 
-.generate-menu-btns-wrapper {
-  display: flex;
-  flex-direction: row;
-}
-
 .extra-dish-droppable {
   max-width: 100px;
+}
+
+.menuName {
+  align-self: center;
 }
 
 @media print {
@@ -238,8 +248,8 @@ li {
   }
 
   .generate-menu-edit,
+  .menu-bar-btn-group,
   .panel-handle,
-  .generate-menu-btns-wrapper,
   .fa-stack,
   .fa-minus-circle,
   .fa-grip-vertical,
