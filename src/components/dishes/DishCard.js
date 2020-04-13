@@ -341,19 +341,26 @@ const DishCard = ({
         {dishListEnum === DishListEnum.NO_LIST &&
           ((isEditMode || dish.comment) && (
             <Card.Footer onClick={preventDishClick}>
-              {/* {dish.comment ? ( */}
               {isEditMode ? (
                 <div
                   ref={dishCommentRef}
                   contentEditable="true"
                   onKeyDown={event => onKeyDown(event, index)}
                   data-text="Add comment"
-                  className="dish-comment"
+                  className={classNames("dish-comment-edit", {
+                    "dish-comment-exist": dish.comment
+                  })}
                 >
                   {dish.comment}
                 </div>
               ) : (
-                <div>{dish.comment}</div>
+                <div
+                  className={classNames({
+                    "dish-comment-exist": dish.comment
+                  })}
+                >
+                  {dish.comment}
+                </div>
               )}
             </Card.Footer>
           ))}

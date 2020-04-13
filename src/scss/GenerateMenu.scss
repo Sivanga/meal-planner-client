@@ -253,11 +253,17 @@ li {
   .fa-stack,
   .fa-minus-circle,
   .fa-grip-vertical,
-  .menuName {
+  .menuName,
+  .dish-comment-edit,
+  .generate-menu-edit-subtitle {
     display: none !important;
   }
 
   .page-title {
+    display: block !important;
+  }
+
+  .dish-comment-exist {
     display: block !important;
   }
 
