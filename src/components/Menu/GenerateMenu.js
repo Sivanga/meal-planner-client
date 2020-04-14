@@ -154,7 +154,10 @@ const GenerateMenu = ({
   const [showPlusButton, setShowPlusButton] = useState(true);
 
   /** Save modal is shown */
-  const [saveModalShow, setSaveModalShow] = useState(false);
+  const [saveModalShow, setSaveModalShow] = useState({
+    show: false,
+    shareAfterSave: false
+  });
 
   /** Share modal is shown */
   const [shareModalShow, setShareModalShow] = useState(false);
@@ -306,11 +309,6 @@ const GenerateMenu = ({
   useEffect(() => {
     if (!location.state) return;
     if (location.state.menuOption) {
-      console.log(
-        "Open options. location.state.menuOption: ",
-        location.state.menuOption
-      );
-
       if (location.state.menuOption === MenuOptions.PRINT) {
         if (triggerPrintRef.current) triggerPrintRef.current.click();
       }
@@ -533,11 +531,14 @@ const GenerateMenu = ({
 
     setMenu(menu, getUid());
 
-    setSaveModalShow(false); // Hide the modal
-
-    // Redirect to my favorites menus
-    setMenuFavoriteActiveView(ACTIVE_VIEW_MENUS);
-    history.push("/myFavorites");
+    if (saveModalShow.shareAfterSave) {
+      setShareModalShow(true);
+    } else {
+      // Redirect to my favorites menus
+      setMenuFavoriteActiveView(ACTIVE_VIEW_MENUS);
+      history.push("/myFavorites");
+    }
+    setSaveModalShow(false, false);
   };
 
   /** Shuffle array for randomized menu preview */
@@ -628,7 +629,12 @@ const GenerateMenu = ({
   const onShareClick = () => {
     if (validateLoggedInUser() === false) return;
 
-    setShareModalShow(true);
+    // Share menu only after it was saved to backend and it has it's unique id
+    if (menuDataProps.id) {
+      setShareModalShow(true);
+    } else {
+      setSaveModalShow({ show: true, shareAfterSave: true });
+    }
   };
 
   const onTourClose = () => {
@@ -680,7 +686,7 @@ const GenerateMenu = ({
   return (
     <>
       <Prompt
-        when={isEditMode && !saveModalShow && !resetModalShow}
+        when={isEditMode && !saveModalShow.show && !resetModalShow}
         message={location =>
           location.pathname.startsWith("/menu/generate") ||
           location.pathname.startsWith("/login")
@@ -693,8 +699,10 @@ const GenerateMenu = ({
         onClose={() => setShowLoginAlert(false)}
       />
       <SaveModal
-        saveModalShow={saveModalShow}
-        toggle={() => setSaveModalShow(!saveModalShow)}
+        saveModalShow={saveModalShow.show}
+        toggle={() => {
+          setSaveModalShow({ show: !saveModalShow.show });
+        }}
         onSaveClick={(menuShareState, menuNameState) =>
           onSaveClick(menuShareState, menuNameState)
         }
@@ -774,12 +782,11 @@ const GenerateMenu = ({
             onEditClick={() => onEditClick()}
             onSaveButtonClick={() => {
               if (!validateLoggedInUser()) return;
-              setSaveModalShow(true);
+              setSaveModalShow({ show: true });
             }}
             triggerPrintRef={triggerPrintRef}
             triggerShareRef={triggerShareRef}
             componentRef={componentRef}
-            menuId={menuDataProps.id}
             onAddDish={dish => {
               addDish(dish, getUid());
             }}

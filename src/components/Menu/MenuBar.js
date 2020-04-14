@@ -10,7 +10,6 @@ const MenuBar = ({
   triggerPrintRef,
   triggerShareRef,
   componentRef,
-  menuId,
   onAddDish,
   onShareClick,
   handleRandomClick,
@@ -51,7 +50,6 @@ const MenuBar = ({
           triggerPrintRef={triggerPrintRef}
           triggerShareRef={triggerShareRef}
           componentRef={componentRef}
-          menuId={menuId}
           onShareClick={onShareClick}
           isEditMode={isEditMode}
         />

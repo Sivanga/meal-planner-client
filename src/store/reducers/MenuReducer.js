@@ -42,7 +42,7 @@ function menu(state = { menu: null, isEditMode: null }, action) {
     case FETCH_MENU:
       // menuData.dishes can arrive with undefined valus from backend,
       // change it to empty array.
-      var menuCopy = { ...action.payload.menu };
+      var menuCopy = { ...action.payload };
       if (menuCopy.meals && menuCopy.dishes) {
         menuCopy.meals.map((meal, mealIndex) => {
           if (!menuCopy.dishes[mealIndex]) {

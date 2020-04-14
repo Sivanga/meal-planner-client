@@ -5,7 +5,6 @@ import { Button } from "mdbreact";
 const PrintAndShare = ({
   triggerPrintRef,
   componentRef,
-  menuId,
   onShareClick,
   triggerShareRef,
   isEditMode
@@ -26,13 +25,10 @@ const PrintAndShare = ({
         content={() => componentRef.current}
       />
 
-      {/* Share menu only after it was saved to backend and it has it's unique id*/}
-      {menuId && (
-        <Button className="meal-plan-btn" onClick={onShareClick}>
-          <i className="fas fa-share-alt" ref={triggerShareRef}></i>
-          {" SHARE"}
-        </Button>
-      )}
+      <Button className="meal-plan-btn" onClick={onShareClick}>
+        <i className="fas fa-share-alt" ref={triggerShareRef}></i>
+        {" SHARE"}
+      </Button>
     </>
   );
 };
