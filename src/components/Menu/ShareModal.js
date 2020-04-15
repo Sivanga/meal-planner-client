@@ -85,7 +85,7 @@ const ShareModal = ({
   if (isPrivateMenu) {
     return (
       <Modal show={show} onHide={handleHide}>
-        <Modal.Header>Share Menu</Modal.Header>
+        <Modal.Header closeButton>Share Menu</Modal.Header>
         <Modal.Body>
           Anyone with a link to this menu will be able to open it.
         </Modal.Body>
@@ -103,7 +103,7 @@ const ShareModal = ({
 
   return (
     <Modal show={show} onHide={handleHide} size="lg">
-      <Modal.Header>Share With:</Modal.Header>
+      <Modal.Header closeButton>Share With:</Modal.Header>
       <Modal.Body className="social-buttons">
         {!screenshot && (
           <div>
