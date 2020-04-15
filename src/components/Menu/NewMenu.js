@@ -27,11 +27,8 @@ const NewMenu = ({
 }) => {
   const location = useLocation();
 
-  /** Used to hold extraDishInfo data and pass to generate menu*/
-  const [extraDishInfo] = useState(
-    location.state && location.state.extraDishInfo
-      ? location.state.extraDishInfo
-      : null
+  const [resetMenu, setResetMenu] = useState(
+    location.state && location.state.resetMenu
   );
 
   /**
@@ -48,21 +45,24 @@ const NewMenu = ({
       meals: meals
     };
     setMenuInStore(menuData, true);
+    setResetMenu(false);
   };
 
   return (
     <>
-      {console.log("menuData: ", menuData, " isEditMode: ", isEditMode)}
       {/** If menu data exist and isEditMode, go to the men data,
       Otherwise start a new one */}
-      {menuData && isEditMode ? (
+      {menuData && isEditMode && !resetMenu ? (
         <Redirect
           push
           to={{
             pathname: "/menu/generate",
             state: {
               menuData: menuData,
-              extraDishInfo: extraDishInfo
+              extraDishInfo:
+                location.state && location.state.extraDishInfo
+                  ? location.state.extraDishInfo
+                  : null
             }
           }}
         />

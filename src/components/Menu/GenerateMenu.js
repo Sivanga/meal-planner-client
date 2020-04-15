@@ -134,14 +134,12 @@ const GenerateMenu = ({
   /** Used to determine if the menu was opened via shared link */
   const [isSharedMenu, setSharedMenu] = useState(false);
 
-  /** Get from history extraDishInfo to add specific dish to menu */
-  var extraDishInfoInitial = null;
-  if (location.state && location.state.extraDishInfo) {
-    extraDishInfoInitial = location.state.extraDishInfo;
-  }
-
   /** Used to hold dish info when adding dish into a menu  */
-  const [extraDishInfo, setExtraDishInfo] = useState(extraDishInfoInitial);
+  const [extraDishInfo, setExtraDishInfo] = useState(
+    location.state && location.state.extraDishInfo
+      ? location.state.extraDishInfo
+      : null
+  );
 
   /**
    * Show dishes panel
@@ -236,7 +234,10 @@ const GenerateMenu = ({
           "Set menu Data in store from location: ",
           location.state.menuData
         );
-        setMenuInStore(location.state.menuData, false);
+        setMenuInStore(
+          location.state.menuData,
+          location.state.extraDishInfo ? true : false
+        );
         return;
       }
     }

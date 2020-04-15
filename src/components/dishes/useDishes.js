@@ -66,14 +66,16 @@ function useDishes(
   const addToMenu = (dish, menuId, menus) => {
     // Redirect to wanted menu and send the dish as extraDish info
     const chosenMenu = menus.find(menu => menu.id === menuId);
+
+    // If wanted menu wasn't found, create a new one
     if (!chosenMenu) {
       history.push("/menu/newMenu", {
-        extraDishInfo: dish
+        extraDishInfo: dish,
+        resetMenu: true
       });
       return;
     }
 
-    // If wanted menu wasn't found, create a new one
     history.push("/menu/generate", {
       menuData: chosenMenu,
       extraDishInfo: dish

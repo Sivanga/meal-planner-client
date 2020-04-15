@@ -203,7 +203,7 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
       </Modal>
       {type && type === ImportDishType.BUTTON && (
         <Button className="meal-plan-btn" onClick={() => onAddClicked()}>
-          <i class="far fa-plus-square"></i>
+          <i className="far fa-plus-square"></i>
           {" New Dish"}
         </Button>
       )}
