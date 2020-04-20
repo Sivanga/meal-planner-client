@@ -215,7 +215,9 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
               onClick={() => onAddClicked()}
             />
           </Card.Body>
-          <Card.Footer>Create Dish</Card.Footer>
+          <Card.Footer className="create-dish-card-footer">
+            Create Dish
+          </Card.Footer>
         </Card>
       )}
     </>

@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  OverlayTrigger,
-  Tooltip
-} from "react-bootstrap";
-import { MDBBadge } from "mdbreact";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import DragAndDrop from "../abstract/DragAndDrop";
 import DishPlaceholder from "../../images/DishPlaceholder.png";
 import DishTags from "./DishTags";
+import DishMeals from "./DishMeals";
 import PropTypes from "prop-types";
 import { fetchMeals } from "../../store/actions/Actions";
 import {
@@ -20,8 +13,13 @@ import {
 import { connect } from "react-redux";
 import { useAuth } from "../auth/UseAuth";
 import "../../scss/NewDish.scss";
-import classNames from "classnames";
 import { useHistory } from "react-router-dom";
+import {
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  FormHelperText
+} from "@material-ui/core";
 
 const DISH_MEAL_ERROR = "Please select at least one meal";
 const DISH_MEAL_VALID = "valid";
@@ -49,7 +47,7 @@ const NewDish = props => {
   let history = useHistory();
 
   /** Dish state */
-  const [dish, setDish] = useState(props.dish);
+  const [dish, setDish] = useState(props.dish ? props.dish : { name: "" });
 
   const [validated, setValidated] = useState(false);
 
@@ -170,8 +168,13 @@ const NewDish = props => {
     fileUploaderInput.current.click();
   };
 
-  const addNewMeal = event => {
-    setMeals([...meals, { name: event.target.value }]);
+  const addNewMeal = name => {
+    name = name.split(" ").join("");
+    if (name.length === 0) return;
+    if (meals.find(currMeal => currMeal.name === name)) {
+      return;
+    }
+    setMeals([...meals, { name: name }]);
   };
 
   /** Use placeholder or local image url if exist */
@@ -182,35 +185,34 @@ const NewDish = props => {
 
   return (
     <Form onSubmit={onSubmit} id="newDishForm" noValidate validated={validated}>
-      <Form.Group controlId="dishImage">
-        <div className="newDishImageTitle">
-          <Form.Label>Drag image or</Form.Label>
-          {/** File Uploader without input **/}
-          <Form.Label className="file-browser" onClick={onFileBrowserClick}>
-            &nbsp;click here:
-            <input
-              style={{ display: "none" }}
-              ref={fileUploaderInput}
-              type="file"
-              accept="image/*"
-              onChange={e => {
-                handleDrop([...e.target.files]);
-              }}
-            />
-          </Form.Label>
-        </div>
-        <DragAndDrop handleDrop={handleDrop}>
-          <div className="dishImage">
-            <img src={imageSrc} alt="" />
+      <Form.Group as={Row} controlId="dishImage">
+        <Col sm="6" className="newDishImage">
+          <div className="newDishImageTitle">
+            <Form.Label>Drag image or</Form.Label>
+            {/** File Uploader without input **/}
+            <Form.Label className="file-browser" onClick={onFileBrowserClick}>
+              &nbsp;<strong>click here:</strong>
+              <input
+                style={{ display: "none" }}
+                ref={fileUploaderInput}
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  handleDrop([...e.target.files]);
+                }}
+              />
+            </Form.Label>
           </div>
-        </DragAndDrop>
-      </Form.Group>
-      <Form.Group as={Row} controlId="dishName">
-        <Form.Label column sm="2">
-          Name
-        </Form.Label>
-        <Col sm="8">
-          <Form.Control
+          <DragAndDrop handleDrop={handleDrop}>
+            <div className="dishImage">
+              <img src={imageSrc} alt="" />
+            </div>
+          </DragAndDrop>
+        </Col>
+        <Col xs="8" sm="6">
+          <TextField
+            fullWidth
+            label="Dish Name"
             readOnly={!props.edit}
             type="text"
             value={dish && dish.name ? dish.name : ""}
@@ -222,69 +224,23 @@ const NewDish = props => {
               })
             }
             required
+            error={dish && dish.name === ""}
+            helperText={dish && dish.name === "" ? "Required" : ""}
           />
+          <DishMeals
+            meals={meals}
+            selectedMeals={selectedMeals}
+            toggleMealSelection={meal => toggleMealSelection(meal)}
+            addNewMeal={name => addNewMeal(name)}
+          />
+          {errors.meals && errors.meals !== DISH_MEAL_VALID && (
+            <span className="error">{errors.meals}</span>
+          )}
         </Col>
       </Form.Group>
       <Form>
-        <Form.Group as={Row} controlId="meals">
-          <Form.Label column sm="2">
-            Meals
-          </Form.Label>
-
-          <Col sm="8">
-            <div
-              className={classNames("meals-control", {
-                invalid: errors.meals && errors.meals.length > 0,
-                valid: errors.meals && errors.meals === "valid"
-              })}
-            >
-              {meals.map((meal, index) => {
-                return (
-                  <MDBBadge
-                    key={index}
-                    pill
-                    color="primary"
-                    className={classNames("meal-pill", {
-                      active: selectedMeals.find(
-                        currMeal => currMeal.name === meal.name
-                      )
-                    })}
-                    onClick={() => {
-                      if (props.edit) {
-                        toggleMealSelection(meal);
-                      }
-                    }}
-                  >
-                    {meal.name}
-                  </MDBBadge>
-                );
-              })}
-
-              {/** Add new meal */}
-              <Form.Control
-                readOnly={!props.edit}
-                type="text"
-                placeholder="New"
-                onKeyPress={event => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    addNewMeal(event);
-                  }
-                }}
-              />
-            </div>
-            {errors.meals && errors.meals !== DISH_MEAL_VALID && (
-              <span className="error">{errors.meals}</span>
-            )}
-          </Col>
-        </Form.Group>
-      </Form>
-      <Form>
         <Form.Group as={Row} controlId="dishTags">
-          <Form.Label column sm="2">
-            Tags
-          </Form.Label>
-          <Col sm="8">
+          <Col xs="8" sm="6">
             <DishTags
               canEdit={props.edit}
               tags={dish && dish.tags ? dish.tags : []}
@@ -298,38 +254,39 @@ const NewDish = props => {
               }}
             />
           </Col>
+
+          <Col xs="8" sm="6" className>
+            <TextField
+              fullWidth
+              noWrap
+              label="Link:"
+              readOnly={!props.edit}
+              value={dish && dish.link ? dish.link : ""}
+              onChange={event =>
+                setDish({
+                  ...dish,
+                  link: event.target.value
+                })
+              }
+              onClick={() => {
+                if (dish && dish.link) {
+                  window.open(dish.link);
+                }
+              }}
+            />
+          </Col>
         </Form.Group>
       </Form>
-      <Form.Group as={Row} controlId="dishLink">
-        <Form.Label column sm="2">
-          Link
-        </Form.Label>
-        <Col sm="8">
-          <Form.Control
-            readOnly={!props.edit}
-            value={dish && dish.link ? dish.link : ""}
-            onChange={event =>
-              setDish({
-                ...dish,
-                link: event.target.value
-              })
-            }
-            onClick={() => {
-              if (dish && dish.link) {
-                window.open(dish.link);
-              }
-            }}
-          ></Form.Control>
-        </Col>
-      </Form.Group>
       <Form.Group as={Row} controlId="dishTextArea">
-        <Form.Label column sm="2">
-          Ingredients
-        </Form.Label>
         <Col sm="8">
-          <Form.Control
+          <TextField
+            margin="normal"
+            fullWidth
+            noWrap
+            multiline
+            rows={4}
+            label="Ingredients:"
             readOnly={!props.edit}
-            as="textarea"
             value={dish && dish.ingredient ? dish.ingredient : ""}
             onChange={event =>
               setDish({
@@ -342,40 +299,35 @@ const NewDish = props => {
       </Form.Group>
 
       <Form.Group as={Row} controlId="sharePublic">
-        <Form.Label column sm="2">
-          Visibility
-        </Form.Label>
         <Col sm="8">
-          <Form.Check
-            disabled={!props.edit}
-            className="dish-public-share"
-            type="checkbox"
-            checked={
-              dish && dish.hasOwnProperty("sharePublic")
-                ? dish.sharePublic
-                : true
-            }
-            onChange={e =>
-              setDish({
-                ...dish,
-                sharePublic:
+          <FormControlLabel
+            margin="none"
+            control={
+              <Checkbox
+                disabled={!props.edit}
+                className="dish-public-share"
+                checked={
                   dish && dish.hasOwnProperty("sharePublic")
-                    ? !dish.sharePublic
-                    : false
-              })
+                    ? dish.sharePublic
+                    : true
+                }
+                onChange={e =>
+                  setDish({
+                    ...dish,
+                    sharePublic:
+                      dish && dish.hasOwnProperty("sharePublic")
+                        ? !dish.sharePublic
+                        : false
+                  })
+                }
+                name="Visibility"
+              />
             }
-          ></Form.Check>
-          <OverlayTrigger
-            placement={"top"}
-            overlay={
-              <Tooltip>
-                Share your dish anonymously with our community and get others
-                inspired!
-              </Tooltip>
-            }
-          >
-            <i className="fas fa-question-circle fa-sm"></i>
-          </OverlayTrigger>
+            label="Visibility"
+          />
+          <FormHelperText>
+            Share anonymously with our community and get others inspired!
+          </FormHelperText>
         </Col>
       </Form.Group>
       <Button variant="outline" type="submit" className="btn-new-dish">

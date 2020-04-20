@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-// import ReactTags from "react-tag-autocomplete";
 import PropTypes from "prop-types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import Chip from "@material-ui/core/Chip";
-import TextField from "@material-ui/core/TextField";
+import { TextField, InputLabel, Chip } from "@material-ui/core";
 
 import "../../scss/DishTags.scss";
 
@@ -39,6 +37,7 @@ const DishTags = ({ tags, onChange, canEdit }) => {
 
   return (
     <div id="tags-auto-complete">
+      <InputLabel>Tags:</InputLabel>
       <Autocomplete
         disabled={!canEdit}
         multiple

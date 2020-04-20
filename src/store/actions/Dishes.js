@@ -365,12 +365,6 @@ export const fetchPublicDishes = (
   prevNextPage,
   prevLastFavCount
 ) => async dispatch => {
-  console.log(
-    "fetchPublicDishes prevNextPage: ",
-    prevNextPage,
-    "prevLastFavCount: ",
-    prevLastFavCount
-  );
   // If prevNextPage is empty, the first page is being requested
   // Clear previous results
   if (!prevNextPage) {

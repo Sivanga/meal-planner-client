@@ -132,6 +132,10 @@
   padding-bottom: 1.5rem;
 }
 
+.create-dish-card-footer {
+  text-align: center;
+}
+
 [contentEditable="true"]:empty:not(:focus):before {
   content: attr(data-text);
 }

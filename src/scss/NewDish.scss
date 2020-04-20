@@ -30,6 +30,22 @@ img {
   right: 0;
 }
 
+.MuiInput-input {
+  text-overflow: ellipsis;
+}
+
+.Mui-checked {
+  color: $primary !important;
+}
+
+.MuiFormHelperText-root {
+  margin: 0 !important;
+}
+
+.newDishImage {
+  padding-bottom: 1rem;
+}
+
 .newDishImageTitle {
   text-align: center;
 }
@@ -54,7 +70,6 @@ img {
 
 .file-browser {
   cursor: pointer;
-  color: rgb(44, 138, 255);
 }
 .file-browser:hover {
   text-decoration: underline;

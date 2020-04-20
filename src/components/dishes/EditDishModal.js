@@ -4,7 +4,7 @@ import NewDish from "./NewDish";
 
 const EditDishModal = ({ show, dish, edit, onEditDishHide, onDishEdit }) => {
   return (
-    <Modal show={show} onHide={onEditDishHide}>
+    <Modal show={show} onHide={onEditDishHide} size="lg">
       <Modal.Header className="text-center" closeButton>
         <Modal.Title className="w-100 m-auto">
           {edit ? "Edit Dish" : "View Dish"}

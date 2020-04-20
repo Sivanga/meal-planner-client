@@ -226,7 +226,6 @@ const GenerateMenu = ({
   opening a new menu from Menu template
   */
   useEffect(() => {
-    console.log("Read menu from location");
     // Read  menu data from location
     if (location.state && location.state.menuData) {
       if (!menuDataProps || location.state.menuData !== menuDataProps) {
@@ -267,6 +266,13 @@ const GenerateMenu = ({
       return;
     }
 
+    if (menuDataProps.dishes && !randomDishes) {
+      console.log(
+        "Dishes exist in menu and randomDishes is empty. Call set random dishes"
+      );
+      setRandomDishes(menuDataProps.dishes);
+    }
+
     // Fetch private dishes if user is connected
     if (!favoriteDataReceived.received && getUid()) {
       console.log("Fetch dishes - call private and retrun");
@@ -286,9 +292,6 @@ const GenerateMenu = ({
       if (!menuDataProps.dishes && !randomDishes) {
         console.log("Call compute random dishes");
         computeRandomDishes();
-      } else if (menuDataProps.dishes) {
-        console.log("Dishes exist in menu. Call set random dishes");
-        setRandomDishes(menuDataProps.dishes);
       }
 
       mergePrivateAndPublic(); // Merge dishes are used in the panel. Merge ony once
@@ -351,8 +354,10 @@ const GenerateMenu = ({
 
   // Merge private and public dishes everytime there's a change in one of the lists
   useEffect(() => {
-    console.log("useEffect mergePrivateAndPublic");
-    mergePrivateAndPublic();
+    if (favoriteDishes || publicDishes) {
+      console.log("useEffect mergePrivateAndPublic");
+      mergePrivateAndPublic();
+    }
   }, [favoriteDishes, publicDishes]);
 
   // Save generate menu state in store when there's a change in random dishes
@@ -362,11 +367,11 @@ const GenerateMenu = ({
       Object.keys(menuDataProps).length === 0 ||
       !randomDishes
     ) {
-      console.log("No change in random dish. Don't save menu state in store");
+      console.log("No change in randomDishes. Don't save menu state in store");
       return;
     }
     if (menuDataProps.dishes === randomDishes) return;
-    console.log("Random dishes changed. Save menu state in store");
+    console.log("randomDishes changed. Save menu state in store");
     var menuToSave = menuDataProps;
     menuToSave.dishes = randomDishes;
     setMenuInStore(menuToSave, isEditMode);
