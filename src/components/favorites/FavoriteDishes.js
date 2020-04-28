@@ -134,7 +134,6 @@ const FavoriteDishes = ({
             setShowEditDishModal({ show: false, dish: null })
           }
           onDishEdit={dish => onDishEdit(dish)}
-          edit={showEditDishModal.edit}
         />
       )}
       {/* Show search only if there's dishes */}
@@ -161,10 +160,7 @@ const FavoriteDishes = ({
         onSearch={query => onSearch(query)}
         onSearchClear={() => onSearchClear()}
         onDishEditClick={dish =>
-          setShowEditDishModal({ show: true, dish: dish, edit: true })
-        }
-        onDishViewClick={dish =>
-          setShowEditDishModal({ show: true, dish: dish, edit: false })
+          setShowEditDishModal({ show: true, dish: dish })
         }
         onDishAddToMenuClick={(dish, menuId) =>
           handleAddToMenuClick(dish, menuId)

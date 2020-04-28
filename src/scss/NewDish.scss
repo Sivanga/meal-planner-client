@@ -3,6 +3,10 @@
 #newDishForm {
   position: relative;
 
+  .row {
+    align-items: flex-end;
+  }
+
   label {
     padding-top: 0;
   }
@@ -44,6 +48,11 @@ img {
 
 .newDishImage {
   padding-bottom: 1rem;
+}
+
+.new-dish-ingredients,
+.new-dish-share {
+  margin-top: 0.8rem;
 }
 
 .newDishImageTitle {

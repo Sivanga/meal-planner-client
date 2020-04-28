@@ -115,8 +115,8 @@ const setToDb = (dish, uid) => {
     .child(dish.id)
     .set(dish);
 
-  // If dish is public, set to public dishes table
-  if (dish.sharePublic) {
+  // If dish is public and the owner is the current user, set to public dishes table
+  if (dish.ownerUid === uid && dish.sharePublic) {
     publicDishesDbRef()
       .child(dish.id)
       .set(dish);

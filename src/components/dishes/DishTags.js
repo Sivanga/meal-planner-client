@@ -5,7 +5,7 @@ import { TextField, InputLabel, Chip } from "@material-ui/core";
 
 import "../../scss/DishTags.scss";
 
-const DishTags = ({ tags, onChange, canEdit }) => {
+const DishTags = ({ tags, onChange }) => {
   const [tagsState, setTagsState] = useState(tags ? tags : []);
   const [suggestions] = useState([
     { name: "Kids" },
@@ -36,18 +36,17 @@ const DishTags = ({ tags, onChange, canEdit }) => {
   };
 
   return (
-    <div id="tags-auto-complete">
+    <>
       <InputLabel>Tags:</InputLabel>
       <Autocomplete
-        disabled={!canEdit}
         multiple
+        disableClearable
         options={suggestions.map(item => item.name)}
         defaultValue={tagsState.map(item => item.name)}
         freeSolo
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
             <Chip
-              disabled={!canEdit}
               variant="outlined"
               label={option}
               {...getTagProps({ index })}
@@ -55,18 +54,13 @@ const DishTags = ({ tags, onChange, canEdit }) => {
           ))
         }
         renderInput={params => (
-          <TextField
-            {...params}
-            variant="filled"
-            placeholder="Add new tags"
-            fullWidth
-          />
+          <TextField {...params} variant="filled" label="Add new" fullWidth />
         )}
         onChange={(event, newValue) => {
           handleOnChange(event, newValue);
         }}
       />
-    </div>
+    </>
   );
 };
 

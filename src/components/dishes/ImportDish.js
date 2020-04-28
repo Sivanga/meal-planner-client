@@ -196,7 +196,6 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
           <NewDish
             onDishAdded={dish => onDishAdd(dish)}
             dish={dishFromUrl}
-            edit={true}
             allowRedirect={allowRedirect}
           />
         </Modal.Body>

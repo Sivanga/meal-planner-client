@@ -26,7 +26,7 @@ const DISH_MEAL_VALID = "valid";
 
 const mapStateToProps = state => {
   return {
-    meals: state.meals.meals,
+    mealsSore: state.meals.meals,
     dataReceived: state.meals.dataReceived
   };
 };
@@ -37,7 +37,15 @@ const mapDispatchToProps = dispatch => ({
     dispatch(setPreviousLocationFavorites(ACTIVE_VIEW_DISHES))
 });
 
-const NewDish = props => {
+const NewDish = ({
+  mealsSore,
+  dataReceived,
+  fetchMeals,
+  setPreviousLocationFavorites,
+  dish,
+  onDishAdded,
+  allowRedirect
+}) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -47,7 +55,7 @@ const NewDish = props => {
   let history = useHistory();
 
   /** Dish state */
-  const [dish, setDish] = useState(props.dish ? props.dish : { name: "" });
+  const [dishState, setDishState] = useState(dish ? dish : { name: "" });
 
   const [validated, setValidated] = useState(false);
 
@@ -67,7 +75,7 @@ const NewDish = props => {
   /**
   Selected Meals */
   const [selectedMeals, setSelectedMeals] = useState(
-    props.dish && props.dish.meals ? props.dish.meals : []
+    dishState && dishState.meals ? dishState.meals : []
   );
 
   /**
@@ -75,14 +83,14 @@ const NewDish = props => {
    */
   useEffect(() => {
     if (!auth.authState.user) return;
-    if (!props.dataReceived) {
-      props.fetchMeals(auth.authState.user.uid);
+    if (!dataReceived) {
+      fetchMeals(auth.authState.user.uid);
     } else {
-      if (props.meals && props.meals.length > 0) {
-        setMeals(props.meals);
+      if (mealsSore && mealsSore.length > 0) {
+        setMeals(mealsSore);
       }
     }
-  }, [auth, props.dataReceived]);
+  }, [auth, dataReceived]);
 
   /** Create a ref for a File Uploader in order to not use it's default input **/
   let fileUploaderInput = React.createRef();
@@ -92,8 +100,8 @@ const NewDish = props => {
     var localImageUrl = URL.createObjectURL(files[0]);
     var imageFile = files[0];
 
-    setDish({
-      ...dish,
+    setDishState({
+      ...dishState,
       localImageUrl: localImageUrl,
       imageFile: imageFile
     });
@@ -125,6 +133,7 @@ const NewDish = props => {
     var mealsError =
       selectedMealsCopy.length < 1 ? DISH_MEAL_ERROR : DISH_MEAL_VALID;
     setErrors({ ...errors, meals: mealsError });
+    return mealsError;
   };
 
   /** Validate the form and add the dish */
@@ -132,33 +141,26 @@ const NewDish = props => {
     event.preventDefault();
     event.stopPropagation();
 
-    if (!props.edit) {
-      props.onClose();
-      return;
-    }
-
-    setSelectedMealsErrors();
-
     const form = event.currentTarget;
-    var isValid = form.checkValidity() && errors.meals === DISH_MEAL_VALID;
+    var isValid =
+      form.checkValidity() && setSelectedMealsErrors() === DISH_MEAL_VALID;
 
     setValidated(true);
-
     if (isValid) {
       // Set selected meals
-      dish.meals = selectedMeals;
+      dishState.meals = selectedMeals;
 
       // Set share public if not already defind
-      if (!dish.hasOwnProperty("sharePublic")) dish.sharePublic = true;
+      if (!dishState.hasOwnProperty("sharePublic"))
+        dishState.sharePublic = true;
 
-      props.onDishAdded(dish);
+      onDishAdded(dishState);
 
       // Check if redirect is wanted
-      if (typeof props.allowRedirect !== "undefined" && !props.allowRedirect)
-        return;
+      if (typeof allowRedirect !== "undefined" && !allowRedirect) return;
 
       // Go to My Favorites to Dishes view
-      props.setPreviousLocationFavorites();
+      setPreviousLocationFavorites();
       history.push("/myFavorites");
     }
   };
@@ -179,8 +181,8 @@ const NewDish = props => {
 
   /** Use placeholder or local image url if exist */
   var imageSrc = DishPlaceholder;
-  if (dish && dish.localImageUrl) {
-    imageSrc = dish.localImageUrl;
+  if (dishState && dishState.localImageUrl) {
+    imageSrc = dishState.localImageUrl;
   }
 
   return (
@@ -213,19 +215,18 @@ const NewDish = props => {
           <TextField
             fullWidth
             label="Dish Name"
-            readOnly={!props.edit}
             type="text"
-            value={dish && dish.name ? dish.name : ""}
+            value={dishState && dishState.name ? dishState.name : ""}
             placeholder=""
             onChange={event =>
-              setDish({
-                ...dish,
+              setDishState({
+                ...dishState,
                 name: event.target.value
               })
             }
             required
-            error={dish && dish.name === ""}
-            helperText={dish && dish.name === "" ? "Required" : ""}
+            error={dishState && dishState.name === ""}
+            helperText={dishState && dishState.name === "" ? "Required" : ""}
           />
           <DishMeals
             meals={meals}
@@ -238,85 +239,76 @@ const NewDish = props => {
           )}
         </Col>
       </Form.Group>
-      <Form>
-        <Form.Group as={Row} controlId="dishTags">
-          <Col xs="8" sm="6">
-            <DishTags
-              canEdit={props.edit}
-              tags={dish && dish.tags ? dish.tags : []}
-              onChange={tags => {
-                if (props.edit) {
-                  setDish({
-                    ...dish,
-                    tags: tags
-                  });
-                }
-              }}
-            />
-          </Col>
-
-          <Col xs="8" sm="6" className>
-            <TextField
-              fullWidth
-              noWrap
-              label="Link:"
-              readOnly={!props.edit}
-              value={dish && dish.link ? dish.link : ""}
-              onChange={event =>
-                setDish({
-                  ...dish,
-                  link: event.target.value
-                })
-              }
-              onClick={() => {
-                if (dish && dish.link) {
-                  window.open(dish.link);
-                }
-              }}
-            />
-          </Col>
-        </Form.Group>
-      </Form>
-      <Form.Group as={Row} controlId="dishTextArea">
-        <Col sm="8">
+      <Form.Group as={Row}>
+        <Col xs="8" sm="6">
+          <DishTags
+            id="tags-auto-complete"
+            tags={dishState && dishState.tags ? dishState.tags : []}
+            onChange={tags => {
+              setDishState({
+                ...dishState,
+                tags: tags
+              });
+            }}
+          />
+        </Col>
+        <Col xs="8" sm="6" className="new-dish-ingredients">
           <TextField
-            margin="normal"
             fullWidth
             noWrap
             multiline
             rows={4}
             label="Ingredients:"
-            readOnly={!props.edit}
-            value={dish && dish.ingredient ? dish.ingredient : ""}
+            value={
+              dishState && dishState.ingredient ? dishState.ingredient : ""
+            }
             onChange={event =>
-              setDish({
-                ...dish,
+              setDishState({
+                ...dishState,
                 ingredient: event.target.value
               })
             }
           />
         </Col>
       </Form.Group>
+      <Form.Group as={Row} controlId="dishTextArea">
+        <Col xs="8" sm="6">
+          <TextField
+            fullWidth
+            noWrap
+            label="Link:"
+            value={dishState && dishState.link ? dishState.link : ""}
+            onChange={event =>
+              setDishState({
+                ...dishState,
+                link: event.target.value
+              })
+            }
+            onClick={() => {
+              if (dishState && dishState.link) {
+                window.open(dishState.link);
+              }
+            }}
+          />
+        </Col>
 
-      <Form.Group as={Row} controlId="sharePublic">
-        <Col sm="8">
+        <Col sm="6" className="new-dish-share">
           <FormControlLabel
             margin="none"
             control={
               <Checkbox
-                disabled={!props.edit}
                 className="dish-public-share"
                 checked={
-                  dish && dish.hasOwnProperty("sharePublic")
-                    ? dish.sharePublic
+                  dishState && dishState.hasOwnProperty("sharePublic")
+                    ? dishState.sharePublic
                     : true
                 }
                 onChange={e =>
-                  setDish({
-                    ...dish,
+                  setDishState({
+                    ...dishState,
                     sharePublic:
-                      dish && dish.hasOwnProperty("sharePublic")
-                        ? !dish.sharePublic
+                      dishState && dishState.hasOwnProperty("sharePublic")
+                        ? !dishState.sharePublic
                         : false
                   })
                 }
@@ -331,7 +323,7 @@ const NewDish = props => {
         </Col>
       </Form.Group>
       <Button variant="outline" type="submit" className="btn-new-dish">
-        {props.edit ? "Add" : "Close"}
+        {dish ? "Edit" : "Add"}
       </Button>
     </Form>
   );

@@ -128,15 +128,12 @@ const useRandomDishes = (
     const mealsFavoriteDishes = findDishesForMeal(
       randomDishesSource.private,
       meal,
-      returnAnyIfMealNotFound
+      false
     );
     var mergedDishes = mealsFavoriteDishes;
 
-    // If mealsFavoriteDishes length is less then days length, use public dishes as well
-    if (
-      mealsFavoriteDishes &&
-      mealsFavoriteDishes.length < menuData.days.length
-    ) {
+    // If no dishes found, use public dishes as well
+    if (!mealsFavoriteDishes || mealsFavoriteDishes.length < 1) {
       const mealsPublicDishes = findDishesForMeal(
         randomDishesSource.public,
         meal,

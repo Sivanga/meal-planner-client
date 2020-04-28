@@ -35,7 +35,6 @@ const DishCard = ({
   clickedDish,
   onClick,
   onDishEditClick,
-  onDishViewClick,
   onDishAddToMenuClick,
   handleCloseExtraDishClick,
   setComment
@@ -148,20 +147,11 @@ const DishCard = ({
         <ul className="dish-card-menu-list">
           <li
             onClick={() => {
-              onDishViewClick(dish);
+              onDishEditClick(dish);
             }}
           >
-            View
+            View/Edit
           </li>
-          {dishListEnum === DishListEnum.MY_FAVORITES_LIST && (
-            <li
-              onClick={() => {
-                onDishEditClick(dish);
-              }}
-            >
-              Edit
-            </li>
-          )}
           {menus && (
             <li>
               <ButtonToolbar>

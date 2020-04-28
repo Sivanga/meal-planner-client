@@ -37,8 +37,19 @@ function dishes(state = [], action) {
       var foundIndex = dishesCopy.findIndex(
         dish => dish.id === action.payload.id
       );
-      dishesCopy[foundIndex] = action.payload;
-      return dishesCopy;
+      if (foundIndex > -1) {
+        // Update existing dish
+        dishesCopy[foundIndex] = action.payload;
+        return dishesCopy;
+      } else {
+        // This dish isn't in the array yet, add it locally
+        // Set isLocal. This will be overidden in beckend
+        var dishCopy = Object.assign({}, action.payload, {
+          isLocal: true
+        });
+        return [dishCopy, ...state];
+      }
+
     case FETCH_DISHES:
       // Append dishes to previos array
       var dishesCopy = [...state];

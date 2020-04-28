@@ -1,6 +1,7 @@
 import React from "react";
 import {
   addDish,
+  updateDish,
   fetchPublicDishes,
   cleanUpFetchPublicDishesListener,
   addToFavorites,
@@ -33,6 +34,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
+  updateDish: (dish, uid) => dispatch(updateDish(dish, uid)),
   fetchPublicDishes: (uid, filters, next, lastFavCount) =>
     dispatch(fetchPublicDishes(uid, filters, next, lastFavCount)),
   cleanUpFetchPublicDishesListener: () =>
@@ -55,6 +57,7 @@ const Dishes = ({
   privateMenus,
   privateMenusDataReceived,
   addDish,
+  updateDish,
   addToFavorites,
   removeFromFavorites,
   searchPublicDishes,
@@ -106,6 +109,11 @@ const Dishes = ({
     addToMenu(dish, menuId, privateMenus);
   };
 
+  const onDishEdit = dish => {
+    setShowEditDishModal({ show: false, dish: null, edit: false });
+    updateDish(dish, auth.authState.user.uid);
+  };
+
   /**
    * If dishes data is still loading, show message
    */
@@ -122,7 +130,7 @@ const Dishes = ({
           onEditDishHide={() =>
             setShowEditDishModal({ show: false, dish: null })
           }
-          edit={false}
+          onDishEdit={dish => onDishEdit(dish)}
         />
       )}
       <SearchComponent
@@ -153,8 +161,8 @@ const Dishes = ({
         onDishAddToMenuClick={(dish, menuId) =>
           handleAddToMenuClick(dish, menuId)
         }
-        onDishViewClick={dish =>
-          setShowEditDishModal({ show: true, dish: dish, edit: false })
+        onDishEditClick={dish =>
+          setShowEditDishModal({ show: true, dish: dish })
         }
         onDishAdd={dish => onDishAdd(dish)}
       />

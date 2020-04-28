@@ -65,7 +65,7 @@ const TableDroppable = ({
               handleDishLock={() => handleDishLock(dayIndex)}
               handleDishUnlock={() => handleDishUnlock(dayIndex)}
               showPlusButton={showPlusButton}
-              onDishClicked={dish => onDishClicked(dish)}
+              onDishClicked={dish => onDishClicked(dish, dayIndex)}
               setComment={comment => setComment(dayIndex, comment)}
             />
           ))}

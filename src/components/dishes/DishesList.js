@@ -15,7 +15,6 @@ const DishesList = ({
   dishListEnum,
   currentUid,
   onDishEditClick,
-  onDishViewClick,
   onDishAddToMenuClick,
   onDishAdd
 }) => {
@@ -55,7 +54,6 @@ const DishesList = ({
             clickedDish={clickedDish}
             onClick={dish => setClickedDish(dish.id)}
             onDishEditClick={dish => onDishEditClick(dish)}
-            onDishViewClick={dish => onDishViewClick(dish)}
             onDishAddToMenuClick={(dish, menuId) =>
               onDishAddToMenuClick(dish, menuId)
             }

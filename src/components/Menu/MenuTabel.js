@@ -50,7 +50,9 @@ const MenuTabel = ({
           onPlusClick={dayIndex => setShowPanel(true)}
           showPlusButton={showPlusButton}
           isEditMode={isEditMode}
-          onDishClicked={dish => onDishClicked(dish)}
+          onDishClicked={(dish, dayIndex) =>
+            onDishClicked(dish, mealIndex, dayIndex)
+          }
           setComment={(dayIndex, comment) =>
             setComment(mealIndex, dayIndex, comment)
           }

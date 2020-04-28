@@ -6,6 +6,7 @@ import "../../scss/GenerateMenu.scss";
 import SearchPanel from "./SearchPanel";
 import {
   addDish,
+  updateDish,
   fetchDishes,
   fetchPublicDishesForMeals,
   searchAllDishes,
@@ -64,6 +65,7 @@ const mapDispatchToProps = dispatch => ({
   fetchDishes: (uid, selectedFilters) =>
     dispatch(fetchDishes(uid, selectedFilters)),
   addDish: (dish, uid) => dispatch(addDish(dish, uid)),
+  updateDish: (dish, uid) => dispatch(updateDish(dish, uid)),
   fetchPublicDishesForMeals: (uid, selectedFilters, meals) =>
     dispatch(fetchPublicDishesForMeals(uid, selectedFilters, meals)),
   setMenu: (payload, uid) => dispatch(setMenu(payload, uid)),
@@ -98,6 +100,7 @@ const GenerateMenu = ({
   seenTour,
   fetchDishes,
   addDish,
+  updateDish,
   fetchPublicDishesForMeals,
   setMenu,
   resetMenuState,
@@ -659,6 +662,16 @@ const GenerateMenu = ({
     setRandomDishes(previousRandom);
   };
 
+  const onDishUpdate = dish => {
+    updateDish(dish, getUid());
+    setShowEditDishModal({ show: false, dish: null });
+
+    // Update the random dishes with the edited dish
+    var randomCopy = { ...randomDishes };
+    randomCopy[showEditDishModal.mealIndex][showEditDishModal.dayIndex] = dish;
+    setRandomDishes(randomCopy);
+  };
+
   /**
    * If there's no days and meals data in menu
    */
@@ -760,7 +773,8 @@ const GenerateMenu = ({
             dish: null
           })
         }
-        edit={false}
+        allowRedirectAfterEdit={false}
+        onDishEdit={dish => onDishUpdate(dish)}
       />
 
       <div
@@ -871,10 +885,12 @@ const GenerateMenu = ({
               setShowPanel={setShowPanel}
               showPlusButton={showPlusButton}
               isEditMode={isEditMode}
-              onDishClicked={dish => {
+              onDishClicked={(dish, mealIndex, dayIndex) => {
                 setShowEditDishModal({
                   show: true,
-                  dish: dish
+                  dish: dish,
+                  mealIndex: mealIndex,
+                  dayIndex: dayIndex
                 });
               }}
               setComment={(mealIndex, dayIndex, comment) =>

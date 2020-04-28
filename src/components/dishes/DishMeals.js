@@ -32,8 +32,9 @@ const DishMeals = ({
       })}
 
       <TextField
+        size="small"
         variant="filled"
-        label="Or add new:"
+        label="Add new:"
         value={newMealState}
         onKeyPress={event => {
           if (event.key === "Enter") {

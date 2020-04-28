@@ -2,13 +2,17 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import NewDish from "./NewDish";
 
-const EditDishModal = ({ show, dish, edit, onEditDishHide, onDishEdit }) => {
+const EditDishModal = ({
+  show,
+  dish,
+  onEditDishHide,
+  onDishEdit,
+  allowRedirectAfterEdit
+}) => {
   return (
     <Modal show={show} onHide={onEditDishHide} size="lg">
       <Modal.Header className="text-center" closeButton>
-        <Modal.Title className="w-100 m-auto">
-          {edit ? "Edit Dish" : "View Dish"}
-        </Modal.Title>
+        <Modal.Title className="w-100 m-auto">{"Edit Dish"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <NewDish
@@ -18,8 +22,8 @@ const EditDishModal = ({ show, dish, edit, onEditDishHide, onDishEdit }) => {
               onDishEdit(dish);
             }
           }}
-          edit={edit}
           onClose={onEditDishHide}
+          allowRedirect={allowRedirectAfterEdit}
         />
       </Modal.Body>
     </Modal>

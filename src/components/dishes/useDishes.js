@@ -14,8 +14,7 @@ function useDishes(
   /** Show editDishModal */
   const [showEditDishModal, setShowEditDishModal] = useState({
     show: false,
-    dish: null,
-    edit: false
+    dish: null
   });
 
   /** Used to determine if to show results from searchResult object */
