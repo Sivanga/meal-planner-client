@@ -35,7 +35,7 @@ import { PANEL_DROPPABLE_ID } from "./PanelDroppable";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import Tour from "reactour";
 import { MenuOptions } from "./MenuItem";
-import ShareModal from "./ShareModal";
+import ShareMenuModal from "./ShareMenuModal";
 import SaveModal from "./SaveModal";
 import ResetMenuModal from "./ResetModal";
 import MenuTabel from "./MenuTabel";
@@ -726,7 +726,7 @@ const GenerateMenu = ({
           onSaveClick(menuShareState, menuNameState)
         }
       />
-      <ShareModal
+      <ShareMenuModal
         isPrivateMenu={!menuDataProps.sharePublic}
         show={shareModalShow}
         handleHide={() => {
@@ -747,6 +747,8 @@ const GenerateMenu = ({
           });
         }}
         menuName={menuDataProps.name}
+        triggerPrintRef={triggerPrintRef}
+        componentRef={componentRef}
       />
 
       <ResetMenuModal
@@ -922,7 +924,7 @@ const GenerateMenu = ({
           {menuDataProps.meals.map((meal, mealIndex) => {
             return menuDataProps.days.map((day, dayIndex) =>
               randomDishes[mealIndex][dayIndex] ? (
-                <li>
+                <li key={menuDataProps.days.length * mealIndex + dayIndex}>
                   <a
                     href={randomDishes[mealIndex][dayIndex].link}
                     target="_blank"
