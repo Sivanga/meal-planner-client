@@ -19,7 +19,7 @@ const PrintAndShare = ({
               aria-hidden="true"
               ref={triggerPrintRef}
             ></i>
-            {" PRINT"}
+            {" PRINT/ PDF"}
           </Button>
         )}
         content={() => componentRef.current}

@@ -9,11 +9,11 @@ $panel-width-small: 12rem;
   max-width: 100%;
   position: relative;
   padding-top: 0.5rem;
+  height: 100%;
 }
 
 .generateMenuTable {
   overflow: scroll;
-  height: 600px;
   padding: 5px;
 }
 
@@ -152,7 +152,8 @@ li {
 }
 
 @media screen and (min-width: 1024px) {
-  .filters-and-search {
+  .filters-and-search,
+  .menu-links {
     padding-right: 100px;
     padding-left: 100px;
   }
@@ -161,6 +162,15 @@ li {
 .menuShareLable {
   label {
     margin-top: 0.6rem;
+  }
+}
+
+.menu-links {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  li {
+    margin-bottom: 0.5rem;
   }
 }
 

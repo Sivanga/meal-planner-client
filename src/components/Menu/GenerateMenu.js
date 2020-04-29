@@ -917,6 +917,24 @@ const GenerateMenu = ({
             </div>
           </div>
         </DragDropContext>
+        <ul className="menu-links">
+          Links:
+          {menuDataProps.meals.map((meal, mealIndex) => {
+            return menuDataProps.days.map((day, dayIndex) =>
+              randomDishes[mealIndex][dayIndex] ? (
+                <li>
+                  <a
+                    href={randomDishes[mealIndex][dayIndex].link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {randomDishes[mealIndex][dayIndex].link}
+                  </a>
+                </li>
+              ) : null
+            );
+          })}
+        </ul>
       </div>
     </>
   );
