@@ -49,7 +49,7 @@ const useRandomDishes = (
 
   /** Recompute all unlocked dishes
    */
-  const handleRandomClick = () => {
+  const handleRandomClick = (useFilterMode = false) => {
     var copy = { ...randomDishes };
     var randomDishesSource = createRandomDishesSource();
 
@@ -65,12 +65,18 @@ const useRandomDishes = (
 
         // No more dishes in search result to be used
         if (
+          useFilterMode &&
           randomDishesSource.search.length === 0 &&
           (isFilterMode || isSearchMode)
         ) {
           return copy[mealIndex][dayIndex];
         }
-        const randomDish = getRandomDish(meal, randomDishesSource, false);
+        const randomDish = getRandomDish(
+          meal,
+          randomDishesSource,
+          false,
+          useFilterMode
+        );
         // Remove random dish from the source so we won't pick it up again
         if (randomDish) {
           randomDishesSource = removeDishFromRandomSource(
@@ -86,17 +92,27 @@ const useRandomDishes = (
     setRandomDishes(copy);
   };
 
+  /** Recopute all unloacked dishes from the filtered results */
+  const handleFilterRandomClick = () => {
+    return handleRandomClick(true);
+  };
+
   /**
    * @param  {The wanted meal for the retrned dish} meal
    * @param  {The source of dishes to choose from} randomDishesSource
    * @param  {If no dish was found for wanted meal, return any dish from source} returnAnyIfMealNotFound
    */
-  const getRandomDish = (meal, randomDishesSource, returnAnyIfMealNotFound) => {
+  const getRandomDish = (
+    meal,
+    randomDishesSource,
+    returnAnyIfMealNotFound,
+    useFilterMode = false
+  ) => {
     var dishes;
 
     // If isFilterMode, get dishes from search result. If there isn't any dishes
     // in the search result, get from all dishes source
-    if (isFilterMode || isSearchMode) {
+    if (useFilterMode && (isFilterMode || isSearchMode)) {
       dishes = findDishesForMeal(
         randomDishesSource.search,
         meal,
@@ -200,7 +216,8 @@ const useRandomDishes = (
     randomDishes,
     setRandomDishes,
     computeRandomDishes,
-    handleRandomClick
+    handleRandomClick,
+    handleFilterRandomClick
   };
 };
 

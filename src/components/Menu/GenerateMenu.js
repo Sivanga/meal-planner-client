@@ -194,7 +194,8 @@ const GenerateMenu = ({
     randomDishes,
     setRandomDishes,
     computeRandomDishes,
-    handleRandomClick
+    handleRandomClick,
+    handleFilterRandomClick
   } = useRandomDishes(
     menuDataProps,
     searchResult,
@@ -914,7 +915,7 @@ const GenerateMenu = ({
                 filters={suggestedFilters}
                 removeFilter={filter => removeFilter(filter)}
                 applyFilter={filter => applyFilter(filter)}
-                handleRandomClick={handleRandomClick}
+                handleRandomClick={() => handleFilterRandomClick()}
               />
             </div>
           </div>
