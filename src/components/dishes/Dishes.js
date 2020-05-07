@@ -42,7 +42,8 @@ const mapDispatchToProps = dispatch => ({
   fetchMenus: uid => dispatch(fetchMenus(uid)),
   addToFavorites: (dish, uid) => dispatch(addToFavorites(dish, uid)),
   removeFromFavorites: (id, uid) => dispatch(removeDish(id, uid)),
-  searchPublicDishes: (uid, query) => dispatch(searchPublicDishes(uid, query)),
+  searchPublicDishes: (uid, query, next) =>
+    dispatch(searchPublicDishes(uid, query, next)),
   clearSearchPublicDishes: () => dispatch(clearSearchPublicDishes())
 });
 
@@ -80,7 +81,8 @@ const Dishes = ({
     privateMenusDataReceived,
     fetchMenus,
     searchPublicDishes,
-    clearSearchPublicDishes
+    clearSearchPublicDishes,
+    searchReceived
   );
 
   const getUid = () => {
@@ -114,6 +116,19 @@ const Dishes = ({
     updateDish(dish, auth.authState.user.uid);
   };
 
+  const showMoreButton = () => {
+    var received = null;
+    if (isSearchMode.active) received = searchReceived;
+    else received = dataReceived;
+
+    // Not search mode
+    if (received && received.next && received.next !== END_PAGINATION) {
+      return true;
+    }
+
+    return false;
+  };
+
   /**
    * If dishes data is still loading, show message
    */
@@ -140,19 +155,19 @@ const Dishes = ({
         onSearchClear={onSearchClear}
       />
       {/* Searching */}
-      {isSearchMode && !searchReceived && (
+      {isSearchMode.active && !searchReceived.received && (
         <div className="center-text">Searching...</div>
       )}
       {/* No search result to show */}
-      {isSearchMode &&
-        searchReceived &&
+      {isSearchMode.active &&
+        searchReceived.received &&
         (!searchResult || searchResult.length === 0) && (
           <div className="center-text">
             Couldn't find what you've search for
           </div>
         )}
       <DishesList
-        dishes={isSearchMode ? searchResult : publicDishes}
+        dishes={isSearchMode.active ? searchResult : publicDishes}
         menus={privateMenus}
         dishListEnum={DishListEnum.PUBLIC_LIST}
         currentUid={getUid()}
@@ -166,17 +181,15 @@ const Dishes = ({
         }
         onDishAdd={dish => onDishAdd(dish)}
       />
-      {dataReceived &&
-        dataReceived.next &&
-        dataReceived.next !== END_PAGINATION && (
-          <Button
-            className="meal-plan-btn more-btn"
-            type="button"
-            onClick={onNextPage}
-          >
-            More
-          </Button>
-        )}
+      {showMoreButton() && (
+        <Button
+          className="meal-plan-btn more-btn"
+          type="button"
+          onClick={onNextPage}
+        >
+          More
+        </Button>
+      )}
     </>
   );
 };

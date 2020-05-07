@@ -241,6 +241,7 @@ const GenerateMenu = ({
           location.state.menuData,
           location.state.extraDishInfo ? true : false
         );
+        setRandomDishes(location.state.menuData.dishes);
         return;
       }
     }
@@ -923,19 +924,21 @@ const GenerateMenu = ({
         <ul className="menu-links">
           Links:
           {menuDataProps.meals.map((meal, mealIndex) => {
-            return menuDataProps.days.map((day, dayIndex) =>
-              randomDishes[mealIndex][dayIndex] ? (
-                <li key={menuDataProps.days.length * mealIndex + dayIndex}>
-                  <a
-                    href={randomDishes[mealIndex][dayIndex].link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {randomDishes[mealIndex][dayIndex].link}
-                  </a>
-                </li>
-              ) : null
-            );
+            return menuDataProps.days.map((day, dayIndex) => {
+              if (randomDishes[mealIndex]) {
+                return randomDishes[mealIndex][dayIndex] ? (
+                  <li key={menuDataProps.days.length * mealIndex + dayIndex}>
+                    <a
+                      href={randomDishes[mealIndex][dayIndex].link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {randomDishes[mealIndex][dayIndex].link}
+                    </a>
+                  </li>
+                ) : null;
+              }
+            });
           })}
         </ul>
       </div>

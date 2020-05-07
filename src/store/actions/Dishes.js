@@ -33,6 +33,7 @@ import * as firebase from "firebase/app";
 
 export const END_PAGINATION = "END_PAGINATION";
 export const PAGINATION_SIZE = 40;
+export const SEARCH_PAGINATION_SIZE = 10;
 
 /**
  * Add dish to backend. Update list will be invoked by fetchDishes observer
@@ -266,25 +267,70 @@ export const clearSearchPrivateDishes = () => async dispatch => {
   dispatch({ type: CLEAR_SEARCH_PRIVATE_DISHES });
 };
 
-export const searchPublicDishes = (uid, query) => async dispatch => {
+export const searchPublicDishes = (
+  uid,
+  query,
+  startFrom = 0
+) => async dispatch => {
+  console.log(
+    "searchPublicDishes called. query: ",
+    query,
+    " startFrom: ",
+    startFrom
+  );
+
+  // If startFrom is 0, the first page is being requested
+  // Clear previous results
+  if (startFrom === 0) {
+    dispatch({
+      type: CLEAR_SEARCH_PUBLIC_DISHES
+    });
+  }
+
+  dispatch({
+    type: SEARCH_PUBLIC_DATA_RECEIVED,
+    payload: {
+      received: false
+    }
+  });
+
   const search = firebase.functions().httpsCallable("searchPublicDishes");
-  search({ query: query, uid: uid })
+  console.log("search httpsCallable");
+  search({
+    query: query,
+    uid: uid,
+    startFrom: startFrom
+  })
     .then(result => {
+      var data = result && result.data ? result.data : [];
+      console.log("Search query: ", query, " result: ", result);
       dispatch({
         type: SEARCH_PUBLIC_DISHES,
-        payload: result.data
+        payload: data
+      });
+      dispatch({
+        type: SEARCH_PUBLIC_DATA_RECEIVED,
+        payload: {
+          received: true,
+          next:
+            data.length > 0 && data.length === SEARCH_PAGINATION_SIZE
+              ? SEARCH_PAGINATION_SIZE + startFrom
+              : END_PAGINATION
+        }
       });
     })
     .catch(err => {
+      console.log("err: ", err);
       dispatch({
         type: SEARCH_PUBLIC_DISHES,
         payload: []
       });
-    })
-    .finally(() => {
       dispatch({
         type: SEARCH_PUBLIC_DATA_RECEIVED,
-        payload: true
+        payload: {
+          received: true,
+          next: null
+        }
       });
     });
 };

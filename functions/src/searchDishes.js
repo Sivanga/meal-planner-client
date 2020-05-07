@@ -265,14 +265,22 @@ exports.searchPrivateDishes = functions.https.onCall((data, context) => {
 });
 
 /** elastic - search in "public_dishes" index */
+
 exports.searchPublicDishes = functions.https.onCall((data, context) => {
-  console.log("Search for ", data.query, " in public_dishes");
+  console.log(
+    "Search for ",
+    data.query,
+    " in public_dishes. data.startFrom: ",
+    data.startFrom
+  );
+
   // callback API
   return new Promise((resolve, reject) => {
     esClient.search(
       {
         index: "public_dishes_v6",
         body: {
+          from: data.startFrom,
           query: {
             bool: {
               should: [
@@ -298,9 +306,9 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
       },
       { ignore: [404] },
       (err, result) => {
+        var dishesToReturn = [];
         if (result.body.hits) {
           console.log("result.body.hits: ", result.body.hits);
-          var dishesToReturn = [];
           result.body.hits.hits.map(result => {
             return dishesToReturn.push(result._source);
           });
@@ -308,7 +316,7 @@ exports.searchPublicDishes = functions.https.onCall((data, context) => {
         }
         if (err) {
           console.log("err.meta.body.error: ", err.meta.body.error);
-          reject(err);
+          reject(dishesToReturn);
         }
       }
     );

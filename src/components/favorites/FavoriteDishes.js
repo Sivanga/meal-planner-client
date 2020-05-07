@@ -144,15 +144,15 @@ const FavoriteDishes = ({
         />
       )}
       {/* Searching */}
-      {isSearchMode && !searchReceived && (
+      {isSearchMode.active && !searchReceived && (
         <div className="center-text">Searching...</div>
       )}
       {/* No search result to show */}
-      {isSearchMode && searchReceived && searchResult.length === 0 && (
+      {isSearchMode.active && searchReceived && searchResult.length === 0 && (
         <div className="center-text">Couldn't find what you've search for</div>
       )}
       <DishesList
-        dishes={isSearchMode ? searchResult : dishes}
+        dishes={isSearchMode.active ? searchResult : dishes}
         menus={privateMenus}
         handleDishRemove={id => handleDishRemove(id)}
         dishListEnum={DishListEnum.MY_FAVORITES_LIST}

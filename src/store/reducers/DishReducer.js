@@ -52,8 +52,8 @@ function dishes(state = [], action) {
 
     case FETCH_DISHES:
       // Append dishes to previos array
-      var dishesCopy = [...state];
-      return dishesCopy.concat(action.payload);
+      var dishesFetchCopy = [...state];
+      return dishesFetchCopy.concat(action.payload);
     case REMOVE_DISH:
       // Remove dish from the local state
       return [...state].filter(dish => {
@@ -73,7 +73,7 @@ function searchDishes(state = [], action) {
     case CLEAR_SEARCH_PRIVATE_DISHES:
       return [];
     case SEARCH_PUBLIC_DISHES:
-      return action.payload;
+      return [...state].concat(action.payload);
     case CLEAR_SEARCH_PUBLIC_DISHES:
       return [];
     case SEARCH_ALL_DISHES:
@@ -182,7 +182,10 @@ function privateDishesSearchReceived(state = false, action) {
   }
 }
 
-function publicDishesSearchDataReceived(state = false, action) {
+function publicDishesSearchDataReceived(
+  state = { received: false, next: null },
+  action
+) {
   switch (action.type) {
     case SEARCH_PUBLIC_DATA_RECEIVED:
       return action.payload;

@@ -9,7 +9,8 @@ function useDishes(
   menuReceived,
   fetchMenus,
   searchDishes,
-  clearSearchDishes
+  clearSearchDishes,
+  searchReceived
 ) {
   /** Show editDishModal */
   const [showEditDishModal, setShowEditDishModal] = useState({
@@ -18,7 +19,10 @@ function useDishes(
   });
 
   /** Used to determine if to show results from searchResult object */
-  const [isSearchMode, setIsSearchMode] = useState(false);
+  const [isSearchMode, setIsSearchMode] = useState({
+    active: false,
+    query: ""
+  });
 
   /**
    * Auth hook to get update for changes from auth provider
@@ -82,21 +86,25 @@ function useDishes(
   };
 
   const onNextPage = () => {
-    fetchDishes(
-      getUid(),
-      null,
-      dishesReceived.next,
-      dishesReceived.lastFavCount
-    );
+    if (!isSearchMode.active) {
+      fetchDishes(
+        getUid(),
+        null,
+        dishesReceived.next,
+        dishesReceived.lastFavCount
+      );
+    } else {
+      searchDishes(getUid(), isSearchMode.query, searchReceived.next);
+    }
   };
 
   const onSearch = query => {
-    setIsSearchMode(true);
+    setIsSearchMode({ active: true, query: query });
     searchDishes(getUid(), query);
   };
 
   const onSearchClear = () => {
-    setIsSearchMode(false);
+    setIsSearchMode({ active: false, query: "" });
     clearSearchDishes();
   };
 
