@@ -2,6 +2,7 @@ import React from "react";
 import ImportDish, { ImportDishType } from "../dishes/ImportDish";
 import PrintAndShare from "./PrintAndShare";
 import { ButtonGroup, Button } from "mdbreact";
+import { analytics } from "../../firebase";
 
 const MenuBar = ({
   isEditMode,
@@ -33,6 +34,11 @@ const MenuBar = ({
               hideButton={true}
               type={ImportDishType.BUTTON}
               allowRedirect={false}
+              onAddButtonClick={() => {
+                analytics.logEvent("create_dish_clicked", {
+                  location: "MENU"
+                });
+              }}
             />
           </>
         )}

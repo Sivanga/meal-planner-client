@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "mdbreact";
 import { logout } from "../store/actions/Actions";
-import firebase, { authProviders } from "../firebase";
+import firebase, { authProviders, analytics } from "../firebase";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import "../scss/Login.scss";
 import { useAuth } from "./auth/UseAuth";
@@ -18,11 +18,17 @@ const Login = ({ logout }) => {
   var uiConfig = {
     callbacks: {
       signInSuccessWithAuthResult: () => {
+        analytics.logEvent("login_success");
+
         // Check if redirect is needed
         if (location.state && location.state.from) {
           const from = location.state.from;
+          analytics.logEvent("login_redirect", { from: from });
           history.push(from);
         }
+      },
+      signInFailure: error => {
+        analytics.logEvent("login_failure", { reason: error });
       }
     },
     signInFlow: "popup",
@@ -51,6 +57,7 @@ const Login = ({ logout }) => {
             onClick={() => {
               logout();
               firebase.auth().signOut();
+              analytics.logEvent("sign_out_clicked");
             }}
           >
             Sign-out

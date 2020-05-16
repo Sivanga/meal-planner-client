@@ -20,6 +20,7 @@ import {
   Checkbox,
   FormHelperText
 } from "@material-ui/core";
+import { analytics } from "../../firebase";
 
 const DISH_MEAL_ERROR = "Please select at least one meal";
 const DISH_MEAL_VALID = "valid";
@@ -155,6 +156,7 @@ const NewDish = ({
         dishState.sharePublic = true;
 
       onDishAdded(dishState);
+      analytics.logEvent("create_dish_added", { dish: dishState });
 
       // Check if redirect is wanted
       if (typeof allowRedirect !== "undefined" && !allowRedirect) return;

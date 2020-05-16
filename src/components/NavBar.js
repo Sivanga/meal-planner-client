@@ -3,6 +3,8 @@ import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { MDBBtn } from "mdbreact";
 import { useAuth } from "../components/auth/UseAuth";
+import { analytics } from "../firebase";
+import "firebase/analytics";
 
 import "../scss/Navbar.scss";
 
@@ -48,7 +50,14 @@ function NavBar() {
                 href="/login"
                 className="nav-login-btn"
               >
-                <Button variant="outline-dark">
+                <Button
+                  variant="outline-dark"
+                  onClick={() => {
+                    auth.authState.user
+                      ? analytics.logEvent("nav_username_clicked")
+                      : analytics.logEvent("nav_login_clicked");
+                  }}
+                >
                   {" "}
                   {auth.authState.user
                     ? auth.authState.user.displayName

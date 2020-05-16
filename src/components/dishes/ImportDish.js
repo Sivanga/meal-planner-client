@@ -7,13 +7,19 @@ import "../../scss/ImportDIsh.scss";
 import "../../scss/PlusItem.scss";
 import { useAuth } from "../auth/UseAuth";
 import LoginAlert from "../auth/LoginAlert";
+import { analytics } from "../../firebase";
 
 export const ImportDishType = {
   CARD: 1, // Default
   BUTTON: 2
 };
 
-const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
+const ImportDish = ({
+  addDish,
+  allowRedirect,
+  type = ImportDishType.CARD,
+  onAddButtonClick
+}) => {
   /**
    * Auth hook to get update for changes from auth provider
    */
@@ -75,6 +81,7 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
   };
 
   const handleCreateYourOwnDish = () => {
+    analytics.logEvent("create_dish_manual_clicked");
     setDishFromUrl(null);
     setModalsShowState({
       ...modalsShowState,
@@ -105,6 +112,7 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
         new: false
       });
     }
+    onAddButtonClick();
   };
 
   return (
@@ -155,7 +163,12 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
                   className={classNames("import-dish-button", {
                     disabled: urlState.loading
                   })}
-                  onClick={() => fetchDishFromUrl()}
+                  onClick={() => {
+                    analytics.logEvent("create_dish_url_clicked", {
+                      url: urlState.content
+                    });
+                    fetchDishFromUrl();
+                  }}
                 >
                   {urlState.loading && (
                     <Spinner
@@ -182,12 +195,14 @@ const ImportDish = ({ addDish, allowRedirect, type = ImportDishType.CARD }) => {
       </Modal>
       <Modal
         show={modalsShowState.new}
-        onHide={() =>
+        onHide={() => {
+          analytics.logEvent("create_dish_cancelled");
+
           setModalsShowState({
             ...modalsShowState,
             new: false
-          })
-        }
+          });
+        }}
       >
         <Modal.Header className="text-center" closeButton>
           <Modal.Title className="w-100 m-auto">Add new dish</Modal.Title>

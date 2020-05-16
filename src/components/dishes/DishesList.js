@@ -6,6 +6,7 @@ import { DishListEnum } from "./DishCard";
 import LoginAlert from "../auth/LoginAlert";
 import "../../scss/DishesList.scss";
 import ImportDish from "../dishes/ImportDish";
+import { analytics } from "../../firebase";
 
 const DishesList = ({
   dishes,
@@ -38,7 +39,22 @@ const DishesList = ({
         onClose={() => setShowLoginAlert(false)}
       />
       <CardColumns>
-        <ImportDish addDish={dish => onDishAdd(dish)} />
+        <ImportDish
+          addDish={dish => onDishAdd(dish)}
+          onAddButtonClick={() => {
+            if (
+              dishListEnum === DishListEnum.MY_FAVORITES_LIST ||
+              dishListEnum === DishListEnum.PUBLIC_LIST
+            ) {
+              analytics.logEvent("create_dish_clicked", {
+                location:
+                  dishListEnum === DishListEnum.MY_FAVORITES_LIST
+                    ? "FAVORITE"
+                    : "PUBLIC"
+              });
+            }
+          }}
+        />
 
         {dishes.map((dish, index) => (
           <DishCard
