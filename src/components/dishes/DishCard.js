@@ -10,6 +10,7 @@ import {
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import "../../scss/DishCard.scss";
+import { analytics } from "../../firebase";
 
 export const DishListEnum = {
   MY_FAVORITES_LIST: 1,
@@ -124,6 +125,20 @@ const DishCard = ({
     }
   };
 
+  // Analytics prpose
+  var location;
+  switch (dishListEnum) {
+    case DishListEnum.MY_FAVORITES_LIST:
+      location = "FAVORITE";
+      break;
+    case DishListEnum.PUBLIC_LIST:
+      location = "PUBLIC";
+      break;
+    default:
+      location = "";
+      break;
+  }
+
   return (
     <div
       className={classNames("dish-card", {
@@ -147,6 +162,10 @@ const DishCard = ({
         <ul className="dish-card-menu-list">
           <li
             onClick={() => {
+              analytics.logEvent("view/edit_dish_clicked", {
+                location: location,
+                dish: JSON.stringify(dish)
+              });
               onDishEditClick(dish);
             }}
           >
@@ -162,6 +181,12 @@ const DishCard = ({
                   onSelect={(eventKey, event) =>
                     handleAddToMenu(eventKey, event)
                   }
+                  onClick={() => {
+                    analytics.logEvent("dish_add_to_menu_clicked", {
+                      location: location,
+                      dish: JSON.stringify(dish)
+                    });
+                  }}
                   className="add-to-menu-dropdown-btn"
                 >
                   <Dropdown.Item eventKey={"createNew"}>
@@ -273,6 +298,12 @@ const DishCard = ({
                       visibility: dish.ingredient ? "visible" : "hidden"
                     }}
                     onClick={e => {
+                      analytics.logEvent("dish_read_more_clicked", {
+                        type:
+                          expandCardsArray[index] === true ? "LESS" : "MORE",
+                        location: location,
+                        dish: JSON.stringify(dish)
+                      });
                       handleExpandCard(e, index);
                     }}
                     aria-controls="ingredient"
@@ -290,6 +321,10 @@ const DishCard = ({
                     <span
                       onClick={e => {
                         e.stopPropagation();
+                        analytics.logEvent("dish_unfavorite_clicked", {
+                          location: location,
+                          dish: JSON.stringify(dish)
+                        });
                         setShowDeletOverlay(true);
                       }}
                     >
@@ -306,6 +341,10 @@ const DishCard = ({
                       <span
                         onClick={e => {
                           e.stopPropagation();
+                          analytics.logEvent("dish_favorite_clicked", {
+                            location: location,
+                            dish: JSON.stringify(dish)
+                          });
                           favoriteDish(dish);
                         }}
                       >

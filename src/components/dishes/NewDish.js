@@ -156,7 +156,9 @@ const NewDish = ({
         dishState.sharePublic = true;
 
       onDishAdded(dishState);
-      analytics.logEvent("create_dish_added", { dish: dishState });
+      analytics.logEvent("create_dish_added", {
+        dish: JSON.stringify(dishState)
+      });
 
       // Check if redirect is wanted
       if (typeof allowRedirect !== "undefined" && !allowRedirect) return;

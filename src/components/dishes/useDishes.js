@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../auth/UseAuth";
 import { useHistory } from "react-router-dom";
+import { analytics } from "../../firebase";
 
 function useDishes(
   dishesReceived,
@@ -93,8 +94,15 @@ function useDishes(
         dishesReceived.next,
         dishesReceived.lastFavCount
       );
+      analytics.logEvent("dishes_more_clicked", {
+        type: "REGULAR"
+      });
     } else {
       searchDishes(getUid(), isSearchMode.query, searchReceived.next);
+      analytics.logEvent("dishes_more_clicked", {
+        type: "SEARCH",
+        term: isSearchMode.query
+      });
     }
   };
 

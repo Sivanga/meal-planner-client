@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import "../../scss/MenuItem.scss";
 import { Card, Button } from "react-bootstrap";
 import classNames from "classnames";
+import { analytics } from "../../firebase";
 
 export const MenuListEnum = {
   MY_FAVORITES_LIST: 1,
@@ -62,6 +63,14 @@ const MenuItem = ({
     });
   };
 
+  // Analytics
+  var location = "";
+  if (menuListEnum === MenuListEnum.PUBLIC_LIST) {
+    location = "PUBLIC";
+  } else if (menuListEnum === MenuListEnum.MY_FAVORITES_LIST) {
+    location = "FAVORITE";
+  }
+
   return (
     <div
       id="menu-item"
@@ -80,6 +89,10 @@ const MenuItem = ({
           <li
             onClick={() => {
               onMenuOpenClick();
+              analytics.logEvent("menu_open_clicked", {
+                location: location,
+                menuId: menu.id
+              });
             }}
           >
             Open
@@ -87,12 +100,20 @@ const MenuItem = ({
           <li
             onClick={() => {
               onMenuOpenClick(MenuOptions.PRINT);
+              analytics.logEvent("menu_print_clicked", {
+                location: location,
+                menuId: menu.id
+              });
             }}
           >
             Print
           </li>
           <li
             onClick={() => {
+              analytics.logEvent("menu_share_clicked", {
+                location: location,
+                menuId: menu.id
+              });
               onMenuOpenClick(MenuOptions.SHARE);
             }}
           >

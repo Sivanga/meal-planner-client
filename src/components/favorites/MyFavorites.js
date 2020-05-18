@@ -12,6 +12,7 @@ import {
   ACTIVE_VIEW_DISHES,
   ACTIVE_VIEW_MENUS
 } from "../../store/actions/PreviousLocation";
+import { analytics } from "../../firebase";
 
 const mapStateToProps = state => {
   return {
@@ -40,7 +41,13 @@ const MyFavorites = ({ activeView, setActiveView }) => {
           className={classNames("meal-pill", {
             active: activeView === ACTIVE_VIEW_DISHES
           })}
-          onClick={() => setActiveView(ACTIVE_VIEW_DISHES)}
+          onClick={() => {
+            setActiveView(ACTIVE_VIEW_DISHES);
+            analytics.logEvent("list_tab_clicked", {
+              location: "FAVORITES",
+              type: "DISHES"
+            });
+          }}
         >
           Dishes
         </MDBBadge>
@@ -51,7 +58,13 @@ const MyFavorites = ({ activeView, setActiveView }) => {
           className={classNames("meal-pill", {
             active: activeView === ACTIVE_VIEW_MENUS
           })}
-          onClick={() => setActiveView(ACTIVE_VIEW_MENUS)}
+          onClick={() => {
+            setActiveView(ACTIVE_VIEW_MENUS);
+            analytics.logEvent("list_tab_clicked", {
+              location: "FAVORITES",
+              type: "MENUS"
+            });
+          }}
         >
           Menus
         </MDBBadge>

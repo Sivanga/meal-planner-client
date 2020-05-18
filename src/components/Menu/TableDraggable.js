@@ -3,6 +3,7 @@ import { Draggable } from "react-beautiful-dnd";
 import classNames from "classnames";
 import DishCard, { DishListEnum } from "../dishes/DishCard";
 import "../../scss/TableDraggable.scss";
+import { analytics } from "../../firebase";
 
 const TableDraggable = ({
   id,
@@ -47,6 +48,10 @@ const TableDraggable = ({
               handleDishLock={handleDishLock}
               handleDishUnlock={handleDishUnlock}
               onClick={dish => {
+                analytics.logEvent("view/edit_dish_clicked", {
+                  location: "MENU",
+                  dish: dish
+                });
                 onDishClicked(dish);
               }}
               setComment={comment => setComment(comment)}
