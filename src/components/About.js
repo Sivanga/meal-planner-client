@@ -4,14 +4,16 @@ import "../scss/About.scss";
 import SivanGalamidiImage from "../images/SivanGalamidi.jpg";
 import SivanGalamidiFavMenu from "../components/Menu/sivanGalamidiFavMenu.json";
 import MenuItem from "../components/Menu/MenuItem";
+import { analytics } from "../firebase";
 
 const About = () => {
   let history = useHistory();
 
   const onFavMenuClick = () => {
+    analytics.logEvent("about_favorite_menu_clicked");
     history.push(`/menu/generate/public/${SivanGalamidiFavMenu.id}`, {
       menuData: SivanGalamidiFavMenu
-    }); 
+    });
   };
 
   return (

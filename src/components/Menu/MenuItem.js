@@ -154,6 +154,10 @@ const MenuItem = ({
               menu.favoriteUsers.indexOf(currentUid) !== -1)) && (
             <span
               onClick={e => {
+                analytics.logEvent("menu_unfavorite_clicked", {
+                  location: location,
+                  menuId: menu.id
+                });
                 setShowDeletOverlay(true);
                 e.stopPropagation();
               }}
@@ -169,6 +173,10 @@ const MenuItem = ({
             menu.favoriteUsers.indexOf(currentUid) === -1 && (
               <span
                 onClick={e => {
+                  analytics.logEvent("menu_favorite_clicked", {
+                    location: location,
+                    menuId: menu.id
+                  });
                   favoriteClicked(e);
                   e.stopPropagation();
                 }}

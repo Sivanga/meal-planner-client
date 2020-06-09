@@ -86,7 +86,7 @@ const FavoriteMenus = ({
         <div style={{ textAlign: "center" }}>
           You don't have manus saved yet.. <br />
           Would you like to add one?
-          <CreateNewMenu />
+          <CreateNewMenu location="FAVORITE" />
         </div>
       </>
     );

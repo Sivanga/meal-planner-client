@@ -29,7 +29,16 @@ function NavBar() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link as={Link} to="/menu/newMenu" href="/menu/newMenu">
+              <Nav.Link
+                as={Link}
+                to="/menu/newMenu"
+                href="/menu/newMenu"
+                onClick={() => {
+                  analytics.logEvent("create_menu_clicked", {
+                    location: "NAV"
+                  });
+                }}
+              >
                 Create Menu
               </Nav.Link>
             </Nav.Item>

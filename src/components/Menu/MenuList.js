@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import MenuItem from "./MenuItem";
 import CreateNewMenu from "./CreateNewMenu";
 import "../../scss/MenuList.scss";
+import { MenuListEnum } from "./MenuItem";
 
 const MenuList = ({
   menus,
@@ -19,9 +20,17 @@ const MenuList = ({
     setClickedMenu("");
   }, [onOptionItemClick]);
 
+  // Analytics
+  var location = "";
+  if (menuListEnum === MenuListEnum.PUBLIC_LIST) {
+    location = "PUBLIC";
+  } else if (menuListEnum === MenuListEnum.MY_FAVORITES_LIST) {
+    location = "FAVORITE";
+  }
+
   return (
     <div className="menu-list-container">
-      <CreateNewMenu />
+      <CreateNewMenu location={location} />
 
       {menus.map(menu => {
         return (
