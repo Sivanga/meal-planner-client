@@ -17,6 +17,7 @@ import {
   fetchMeals
 } from "../../store/actions/Actions";
 import { useAuth } from "../auth/UseAuth";
+import { analytics } from "../../firebase";
 
 const mapStateToProps = state => {
   return {
@@ -192,8 +193,13 @@ const TemplateMenu = ({
       return meal.name.length > 0;
     });
 
-    // Set meals in the backend if user is connected
+    // Analytics
+    analytics.logEvent("create_menu_template_created", {
+      days: days,
+      meals: finalMeals
+    });
 
+    // Set meals in the backend if user is connected
     if (auth.authState.user) {
       setMealsBackend(finalMeals, auth.authState.user.uid);
     }

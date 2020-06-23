@@ -43,6 +43,7 @@ import MenuBar from "./MenuBar";
 import useRandomDishes from "./useRandomDishes";
 import { Button } from "mdbreact";
 import { useHistory, useLocation, Prompt, useParams } from "react-router-dom";
+import { analytics } from "../../firebase";
 
 import "../../../node_modules/@animated-burgers/burger-arrow/dist/styles.css";
 
@@ -394,6 +395,22 @@ const GenerateMenu = ({
    * Reorder dishes logic when drag ends
    */
   const onDragEnd = ({ source, destination }) => {
+    // Analytics
+    var analyticsSource;
+    switch (source.droppableId) {
+      case EXTRA_DISH_DROPPABLE_ID:
+        analyticsSource = "EXTRA_DISH";
+        break;
+      case PANEL_DROPPABLE_ID:
+        analyticsSource = "PANEL";
+        break;
+      default:
+        analyticsSource = "MENU";
+        break;
+    }
+
+    analytics.logEvent("menu_drag_end", { source: analyticsSource });
+
     setShowPlusButton(true);
 
     // Dropped outside the allowed area
@@ -487,6 +504,7 @@ const GenerateMenu = ({
   };
 
   const onMinusClick = (mealIndex, dayIndex) => {
+    analytics.logEvent("menu_dish_removed");
     var mealResult = { ...randomDishes };
     mealResult[mealIndex][dayIndex] = null;
 
@@ -494,6 +512,7 @@ const GenerateMenu = ({
   };
 
   const handleDishLock = (mealIndex, dayIndex) => {
+    analytics.logEvent("menu_dish_lock");
     var randomDishesCopy = { ...randomDishes };
     var dishCopy = {
       ...randomDishesCopy[mealIndex][dayIndex]
@@ -504,6 +523,7 @@ const GenerateMenu = ({
   };
 
   const handleDishUnlock = (mealIndex, dayIndex) => {
+    analytics.logEvent("menu_dish_unlock");
     var randomDishesCopy = { ...randomDishes };
     randomDishesCopy[mealIndex][dayIndex].locked = false;
     setRandomDishes(randomDishesCopy);
@@ -549,6 +569,15 @@ const GenerateMenu = ({
       setMenuFavoriteActiveView(ACTIVE_VIEW_MENUS);
       history.push("/myFavorites");
     }
+
+    analytics.logEvent("menu_save_success", {
+      name: menuNameState,
+      days: menuDataProps.days,
+      meals: menuDataProps.meals,
+      dishes: randomDishes,
+      share_public: menuShareState
+    });
+
     setSaveModalShow(false, false);
   };
 
@@ -722,6 +751,9 @@ const GenerateMenu = ({
       <SaveModal
         saveModalShow={saveModalShow.show}
         toggle={() => {
+          if (saveModalShow.show) {
+            analytics.logEvent("menu_save_modal_cancelled");
+          }
           setSaveModalShow({ show: !saveModalShow.show });
         }}
         onSaveClick={(menuShareState, menuNameState) =>
@@ -757,6 +789,7 @@ const GenerateMenu = ({
         show={resetModalShow}
         handleHide={() => setResetModalShow(false)}
         handleResetClick={() => {
+          analytics.logEvent("menu_reset_clicked");
           resetMenuState();
           history.push("/menu/newMenu");
         }}
@@ -805,6 +838,9 @@ const GenerateMenu = ({
             isEditMode={isEditMode}
             onEditClick={() => onEditClick()}
             onSaveButtonClick={() => {
+              analytics.logEvent("menu_save_button_clicked", {
+                is_logged_in: getUid() !== null
+              });
               if (!validateLoggedInUser()) return;
               setSaveModalShow({ show: true });
             }}
@@ -817,7 +853,10 @@ const GenerateMenu = ({
             onShareClick={() => {
               onShareClick();
             }}
-            handleRandomClick={() => handleRandomClick()}
+            handleRandomClick={() => {
+              analytics.logEvent("menu_random_all_clicked");
+              handleRandomClick();
+            }}
             resetClick={() => setResetModalShow(true)}
           />
 
@@ -833,7 +872,12 @@ const GenerateMenu = ({
                 })}
               >
                 <Button
-                  onClick={() => setShowPanel(!showPanel)}
+                  onClick={() => {
+                    analytics.logEvent("menu_panel_clicked", {
+                      open: !showPanel
+                    });
+                    setShowPanel(!showPanel);
+                  }}
                   className="meal-plan-btn"
                 >
                   Search and filter
@@ -912,11 +956,19 @@ const GenerateMenu = ({
                 searchReceived={searchReceived}
                 searchResult={searchResult}
                 isEditMode={isEditMode}
-                onPanelClose={() => setShowPanel(false)}
+                onPanelClose={() => {
+                  analytics.logEvent("menu_panel_clicked", {
+                    open: false
+                  });
+                  setShowPanel(false);
+                }}
                 filters={suggestedFilters}
                 removeFilter={filter => removeFilter(filter)}
                 applyFilter={filter => applyFilter(filter)}
-                handleRandomClick={() => handleFilterRandomClick()}
+                handleRandomClick={() => {
+                  analytics.logEvent("menu_panel_random_clicked");
+                  handleFilterRandomClick();
+                }}
               />
             </div>
           </div>
